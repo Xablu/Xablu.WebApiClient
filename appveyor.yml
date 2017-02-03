@@ -9,7 +9,7 @@
     ANDROID_HOME: "C:\\android-sdk-windows"
     NUGET_SOURCE: https://www.nuget.org/api/v2/package
     NUGET_APIKEY:
-      secure: 
+      secure: Fa1CPP5b0AEtKdI1cPJOwFalpn/bKgcbBYw6KFdSN7S2YIn9hQsNcgDEmc5EnPhD
   init:
   - cd \
   - appveyor DownloadFile http://dl.google.com/android/android-sdk_r24.4.1-windows.zip
@@ -37,7 +37,7 @@
     ANDROID_HOME: "C:\\android-sdk-windows"
     NUGET_SOURCE: https://www.myget.org/F/xabluhq/api/v2/package
     NUGET_APIKEY:
-      secure: 
+      secure: tyxmEfZy6Pn3y6WrIGSElHFII1LpMaArT2Sv+zTEcIp1/l8Y2L2rHO+XoG2vXUDg
   init:
   - cd \
   - appveyor DownloadFile http://dl.google.com/android/android-sdk_r24.4.1-windows.zip
