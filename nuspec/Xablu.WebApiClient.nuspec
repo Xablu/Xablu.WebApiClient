@@ -1,0 +1,22 @@
+
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Xablu.WebApiClient</id>
+        <version>0.9.0</version>
+        <title>Web API client by Xablu</title>
+        <authors>Xablu</authors>
+        <owners>Xablu</owners>
+        <licenseUrl>https://github.com/Xablu/Xablu.WebApiClient/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/Xablu/Xablu.WebApiClient</projectUrl>
+        <iconUrl>https://raw.githubusercontent.com/Xablu/Xablu.WebApiClient/master/icon_xablu.png</iconUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of Web API services in .NET projects.</description>
+        <summary>C# HTTP library to simplify Web API consumption</summary>
+        <tags>xamarin, monodroid, C#, xamarin.android, android, ios, uwp, Windows, tvOS, Mac, MacOS, Xablu, Web API, ASP.NET, .NET</tags>
+        <dependencies>
+            <dependency id="Newtonsoft.Json" version="9.0.1" />
+            <dependency id="Fusillade " version="0.7.0" />
+        </dependencies>
+    </metadata>
+</package>
