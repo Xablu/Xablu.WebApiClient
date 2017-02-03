@@ -1,5 +1,4 @@
-
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Xablu.WebApiClient</id>
@@ -16,8 +15,12 @@
         <tags>xamarin, monodroid, C#, xamarin.android, android, ios, uwp, Windows, tvOS, Mac, MacOS, Xablu, Web API, ASP.NET, .NET</tags>
         <dependencies>
             <dependency id="Newtonsoft.Json" version="9.0.1" />
-            <dependency id="Fusillade " version="0.7.0" />
+            <dependency id="Fusillade" version="0.7.0" />
             <dependency id="Polly" version="4.3.0" />
         </dependencies>
     </metadata>
+    <files>
+        <file src="..\src\Xablu.WebApiClient\bin\Release\Xablu.WebApiClient.dll" target="lib\portable-net45+wp8+win8\Xablu.WebApiClient.dll" />
+        <file src="..\src\Xablu.WebApiClient\bin\Release\Xablu.WebApiClient.pdb" target="lib\portable-net45+wp8+win8\Xablu.WebApiClient.pdb" />
+    </files>
 </package>
