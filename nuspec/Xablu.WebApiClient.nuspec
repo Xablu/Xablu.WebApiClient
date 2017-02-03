@@ -17,6 +17,7 @@
         <dependencies>
             <dependency id="Newtonsoft.Json" version="9.0.1" />
             <dependency id="Fusillade " version="0.7.0" />
+            <dependency id="Polly" version="4.3.0" />
         </dependencies>
     </metadata>
 </package>
