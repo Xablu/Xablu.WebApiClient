@@ -9,11 +9,11 @@ namespace Xablu.WebApiClient.HttpExtensions
 
 	public static class HttpResponseMessageExtensions
 	{
-		public static async Task EnsureSuccessStatusCodeAsync(this HttpResponseMessage response)
+		public static async Task<bool> EnsureSuccessStatusCodeAsync(this HttpResponseMessage response)
 		{
 			if (response.IsSuccessStatusCode)
 			{
-				return;
+				return true;
 			}
 
 			var content = await response.Content.ReadAsStringAsync();
