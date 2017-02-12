@@ -7,6 +7,13 @@ namespace Xablu.WebApiClient.Resolvers
     public class SimpleJsonContentResolver
         : IHttpContentResolver
     {
+        private JsonSerializer _serializer;
+
+        public SimpleJsonContentResolver(JsonSerializer serializer)
+        {
+            _serializer = serializer;
+        }
+
         public HttpContent ResolveHttpContent<TContent>(TContent content)
         {
             var serializedContent = JsonConvert.SerializeObject(content);

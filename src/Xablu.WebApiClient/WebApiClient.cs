@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Fusillade;
 using Xablu.WebApiClient.Resolvers;
 using Xablu.WebApiClient.HttpExtensions;
+using Newtonsoft.Json;
 
 namespace Xablu.WebApiClient
 {
@@ -49,7 +50,7 @@ namespace Xablu.WebApiClient
 
             _explicit = new Lazy<HttpClient>(() => createClient(
                 new RateLimitedHttpMessageHandler(httpHandler.Invoke(), Fusillade.Priority.Explicit)));
-
+            
             _background = new Lazy<HttpClient>(() => createClient(
                 new RateLimitedHttpMessageHandler(httpHandler.Invoke(), Fusillade.Priority.Background)));
 
@@ -59,6 +60,8 @@ namespace Xablu.WebApiClient
             _speculative = new Lazy<HttpClient>(() => createClient(
                 new RateLimitedHttpMessageHandler(httpHandler.Invoke(), Fusillade.Priority.Speculative)));
         }
+
+        private JsonSerializer _serializer = new JsonSerializer();
 
         /// <summary>
         /// Gets or sets the implementation of the <see cref="IHttpContentResolver"/> interface associated with the WebApiClient.
@@ -72,7 +75,7 @@ namespace Xablu.WebApiClient
         /// </remarks>
         public IHttpContentResolver HttpContentResolver
         {
-            get { return _httpContentResolver ?? (_httpContentResolver = new SimpleJsonContentResolver()); }
+            get { return _httpContentResolver ?? (_httpContentResolver = new SimpleJsonContentResolver(_serializer)); }
             set { _httpContentResolver = value; }
         }
 
@@ -88,7 +91,7 @@ namespace Xablu.WebApiClient
         /// </remarks>
         public IHttpResponseResolver HttpResponseResolver
         {
-            get { return _httpResponseResolver ?? (_httpResponseResolver = new SimpleJsonResponseResolver()); }
+            get { return _httpResponseResolver ?? (_httpResponseResolver = new SimpleJsonResponseResolver(_serializer)); }
             set { _httpResponseResolver = value; }
         }
 
@@ -115,7 +118,8 @@ namespace Xablu.WebApiClient
                 .SendAsync(httpRequest, cancellationToken)
                 .ConfigureAwait(false);
 
-            await response.EnsureSuccessStatusCodeAsync();
+            if(!await response.EnsureSuccessStatusCodeAsync())
+                return default(TResult);
 
             return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
         }
@@ -132,8 +136,8 @@ namespace Xablu.WebApiClient
                 .SendAsync(httpRequest, cancellationToken)
                 .ConfigureAwait(false);
 
-            //var response = await httpClient.GetAsync(path, cancellationToken).ConfigureAwait(false);
-            await response.EnsureSuccessStatusCodeAsync();
+            if (!await response.EnsureSuccessStatusCodeAsync())
+                return default(HttpResponseMessage);
 
             return response;
         }
@@ -175,7 +179,8 @@ namespace Xablu.WebApiClient
                 .PostAsync(path, httpContent)
                 .ConfigureAwait(false);
 
-            await response.EnsureSuccessStatusCodeAsync();
+            if (!await response.EnsureSuccessStatusCodeAsync())
+                return default(TResult);
 
             return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
         }
@@ -195,7 +200,8 @@ namespace Xablu.WebApiClient
                 .PutAsync(path, httpContent)
                 .ConfigureAwait(false);
 
-            await response.EnsureSuccessStatusCodeAsync();
+            if (!await response.EnsureSuccessStatusCodeAsync())
+                return default(TResult);
 
             return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
         }
@@ -210,7 +216,8 @@ namespace Xablu.WebApiClient
                 ? await httpClient.DeleteAsync(path).ConfigureAwait(false)
                 : await httpClient.DeleteAsync(path, (CancellationToken)cancellationToken).ConfigureAwait(false);
 
-            await response.EnsureSuccessStatusCodeAsync();
+            if (!await response.EnsureSuccessStatusCodeAsync())
+                return default(TResult);
 
             return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
         }
@@ -237,6 +244,8 @@ namespace Xablu.WebApiClient
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(AcceptHeader));
+
+            client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
 
             foreach (var header in Headers)
                 client.DefaultRequestHeaders.Add(header.Key, header.Value);
