@@ -16,17 +16,17 @@ The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of 
 
 Register iOS Handler in MvvmCross
 
-```
+```c#
 	Mvx.RegisterSingleton<IWebApiClient>(new WebApiClient(Settings.ApiBaseUrl, () => new NSUrlSessionHandler()));
 ```
 
 Register Android Handler in MvvmCross
-```
+```c#
 	Mvx.RegisterSingleton<IWebApiClient>(new WebApiClient(Settings.ApiBaseUrl, () => new AndroidClientHandler()));
 ```
 
 Create a client to handle Http traffic
-```
+```c#
 	public class AuthenticationClient : BaseClient, IAuthenticationClient
 	{
 		public AuthenticationClient(IWebApiClient apiClient) : base(apiClient)
@@ -44,10 +44,10 @@ Create a client to handle Http traffic
 			return ExecuteRemoteRequest(async () => await apiClient.PostAsync<MultipartFormDataContent, int>(Priority.UserInitiated, uri.Resolve(), content).ConfigureAwait(false));
 		}
 	}
-  ```
-  
-  Add a Service to change and handle user logic
-  ```
+```
+	
+Add a Service to change and handle user logic
+```c#
 	public class AuthenticationService : IAuthenticationService
 	{
 		private IBlobCache cache;
@@ -91,5 +91,3 @@ Create a client to handle Http traffic
 			await cache.InvalidateAll().ToTask().ConfigureAwait(false);
 		}
 	}
-	
-	```
