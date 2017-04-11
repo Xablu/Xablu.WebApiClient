@@ -34,7 +34,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="BaseClient.cs" />
     <Compile Include="Exceptions\NoSessionException.cs" />
     <Compile Include="HttpExtensions\HttpResponseMessageExtensions.cs" />
     <Compile Include="HttpExtensions\LargeFormUrlEncodedContent.cs" />
