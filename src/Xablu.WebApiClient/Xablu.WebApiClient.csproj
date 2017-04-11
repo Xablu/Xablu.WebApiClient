@@ -57,10 +57,6 @@
       <HintPath>$(SolutionDir)\packages\Newtonsoft.Json.9.0.1\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Polly, Version=4.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\Polly.4.3.0\lib\portable-net45+netcore45+wpa81+wp8\Polly.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Punchclock, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)\packages\Punchclock.1.1.1\lib\Portable-net45+win+wpa81+wp80\Punchclock.dll</HintPath>
       <Private>True</Private>
