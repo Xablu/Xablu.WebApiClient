@@ -47,6 +47,8 @@
     <Compile Include="Resolvers\SimpleJsonContentResolver.cs" />
     <Compile Include="Resolvers\SimpleJsonResponseResolver.cs" />
     <Compile Include="WebApiClient.cs" />
+    <Compile Include="BaseClient.cs" />
+    <Compile Include="HttpExtensions\ProgressStreamContent.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Fusillade, Version=0.7.0.0, Culture=neutral, processorArchitecture=MSIL">

@@ -27,6 +27,7 @@ namespace Xablu.WebApiClient.Resolvers
                 Debug.WriteLine("RECEIVED: " + text);
                 return JsonConvert.DeserializeObject<TResult>(text);
             }
+
             #else
             using (var stream = await responseMessage.Content.ReadAsStreamAsync())
             using (var reader = new StreamReader(stream))

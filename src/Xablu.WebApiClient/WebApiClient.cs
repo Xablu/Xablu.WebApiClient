@@ -97,12 +97,11 @@ namespace Xablu.WebApiClient
         public async Task<TResult> GetAsync<TResult>(Priority priority, string path, CancellationToken cancellationToken = default(CancellationToken))
         {
             var httpClient = GetWebApiClient(priority);
-
             SetHttpRequestHeaders(httpClient);
 
             //TODO: httpClient.GetAsync may throw NetworkOnMainThreadException
             // see: https://bugzilla.xamarin.com/show_bug.cgi?id=44961
-            //var response = await httpClient.GetAsync(path, cancellationToken).ConfigureAwait(false);
+            // var response = await httpClient.GetAsync(path, cancellationToken).ConfigureAwait(false);
 
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, path);
 
@@ -123,7 +122,7 @@ namespace Xablu.WebApiClient
             SetHttpRequestHeaders(httpClient);
 
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, path);
-
+          
             var response = await httpClient
                 .SendAsync(httpRequest, cancellationToken)
                 .ConfigureAwait(false);
@@ -137,7 +136,6 @@ namespace Xablu.WebApiClient
         public async Task<TResult> PostAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent), IHttpContentResolver contentResolver = null)
         {
             var httpClient = GetWebApiClient(priority);
-
             SetHttpRequestHeaders(httpClient);
 
             HttpContent httpContent = null;
@@ -147,6 +145,7 @@ namespace Xablu.WebApiClient
                 if (content is HttpContent)
                 {
                     httpContent = content as HttpContent;
+                   
                 }
                 else
                 {
@@ -167,8 +166,18 @@ namespace Xablu.WebApiClient
                     }
                 }
             }
+
+            var stream = await httpContent.ReadAsStreamAsync();
+            var progressContent = new ProgressStreamContent(stream, CancellationToken.None);
+            progressContent.Progress = (bytes, totalBytes, totalBytesExpected) =>
+            {
+                    var x = totalBytes;
+                    var y = totalBytesExpected;
+            };
+            progressContent.AddHeaders(httpContent);
+
             var response = await httpClient
-                .PostAsync(path, httpContent)
+                .PostAsync(path, progressContent)
                 .ConfigureAwait(false);
 
             if (!await response.EnsureSuccessStatusCodeAsync())
