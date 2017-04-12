@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -34,7 +34,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="BaseClient.cs" />
     <Compile Include="Exceptions\NoSessionException.cs" />
     <Compile Include="HttpExtensions\HttpResponseMessageExtensions.cs" />
     <Compile Include="HttpExtensions\LargeFormUrlEncodedContent.cs" />
@@ -48,6 +47,9 @@
     <Compile Include="Resolvers\SimpleJsonContentResolver.cs" />
     <Compile Include="Resolvers\SimpleJsonResponseResolver.cs" />
     <Compile Include="WebApiClient.cs" />
+    <Compile Include="BaseClient.cs" />
+    <Compile Include="HttpExtensions\ProgressStreamContent.cs" />
+    <Compile Include="HttpExtensions\WebApiClientProgressExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Fusillade, Version=0.7.0.0, Culture=neutral, processorArchitecture=MSIL">

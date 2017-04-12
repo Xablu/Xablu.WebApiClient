@@ -30,14 +30,6 @@ namespace Xablu.WebApiClient
             SetBaseAddress(apiBaseAddress);
         }
 
-        public WebApiClient(string apiBaseAddress)
-        {
-            if (httpHandler == null)
-                throw new ArgumentNullException(nameof(httpHandler));
-
-            SetBaseAddress(apiBaseAddress);
-        }
-
         public void SetBaseAddress(string apiBaseAddress)
         {
             if (apiBaseAddress == null)
@@ -105,12 +97,11 @@ namespace Xablu.WebApiClient
         public async Task<TResult> GetAsync<TResult>(Priority priority, string path, CancellationToken cancellationToken = default(CancellationToken))
         {
             var httpClient = GetWebApiClient(priority);
-
             SetHttpRequestHeaders(httpClient);
 
             //TODO: httpClient.GetAsync may throw NetworkOnMainThreadException
             // see: https://bugzilla.xamarin.com/show_bug.cgi?id=44961
-            //var response = await httpClient.GetAsync(path, cancellationToken).ConfigureAwait(false);
+            // var response = await httpClient.GetAsync(path, cancellationToken).ConfigureAwait(false);
 
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, path);
 
@@ -131,7 +122,7 @@ namespace Xablu.WebApiClient
             SetHttpRequestHeaders(httpClient);
 
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, path);
-
+          
             var response = await httpClient
                 .SendAsync(httpRequest, cancellationToken)
                 .ConfigureAwait(false);
@@ -145,36 +136,10 @@ namespace Xablu.WebApiClient
         public async Task<TResult> PostAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent), IHttpContentResolver contentResolver = null)
         {
             var httpClient = GetWebApiClient(priority);
-
             SetHttpRequestHeaders(httpClient);
 
-            HttpContent httpContent = null;
+            var httpContent = ResolveHttpContent(content);
 
-            if (content != null)
-            {
-                if (content is HttpContent)
-                {
-                    httpContent = content as HttpContent;
-                }
-                else
-                {
-                    if (contentResolver != null)
-                    {
-                        httpContent = contentResolver.ResolveHttpContent(content);
-                    }
-                    else
-                    {
-                        if (content is Dictionary<string, string>)
-                        {
-                            httpContent = new DictionaryContentResolver().ResolveHttpContent(content as Dictionary<string, string>);
-                        }
-                        else
-                        {
-                            httpContent = HttpContentResolver.ResolveHttpContent(content);
-                        }
-                    }
-                }
-            }
             var response = await httpClient
                 .PostAsync(path, httpContent)
                 .ConfigureAwait(false);
@@ -222,7 +187,7 @@ namespace Xablu.WebApiClient
             return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
         }
 
-        private HttpClient GetWebApiClient(Priority prioriy)
+        internal HttpClient GetWebApiClient(Priority prioriy)
         {
             switch (prioriy)
             {
@@ -239,7 +204,7 @@ namespace Xablu.WebApiClient
             }
         }
 
-        void SetHttpRequestHeaders(HttpClient client)
+        internal void SetHttpRequestHeaders(HttpClient client)
         {
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Accept.Clear();
@@ -249,6 +214,38 @@ namespace Xablu.WebApiClient
 
             foreach (var header in Headers)
                 client.DefaultRequestHeaders.Add(header.Key, header.Value);
+        }
+
+        internal HttpContent ResolveHttpContent<TContent>(TContent content, IHttpContentResolver contentResolver = null)
+        {
+            HttpContent httpContent = null;
+
+            if (content != null)
+            {
+                if (content is HttpContent)
+                {
+                    httpContent = content as HttpContent;
+                }
+                else
+                {
+                    if (contentResolver != null)
+                    {
+                        httpContent = contentResolver.ResolveHttpContent(content);
+                    }
+                    else
+                    {
+                        if (content is Dictionary<string, string>)
+                        {
+                            httpContent = new DictionaryContentResolver().ResolveHttpContent(content as Dictionary<string, string>);
+                        }
+                        else
+                        {
+                            httpContent = HttpContentResolver.ResolveHttpContent(content);
+                        }
+                    }
+                }
+            }
+            return httpContent;
         }
 
         public void Dispose()
