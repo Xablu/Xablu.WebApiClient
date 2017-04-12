@@ -7,11 +7,6 @@ namespace Xablu.WebApiClient
 {
     public static class WebApiClientProgressExtension
     {
-        public static string UppercaseFirstLetter(this IWebApiClient value)
-        {
-            return string.Empty;
-        }
-
         public static async Task<TResult> PostAsync<TContent, TResult>(this WebApiClient webApiClient, Priority priority, string path, TContent content = default(TContent), ProgressDelegate progressDelegate = null, IHttpContentResolver contentResolver = null)
         {
             var httpClient = webApiClient.GetWebApiClient(priority);
