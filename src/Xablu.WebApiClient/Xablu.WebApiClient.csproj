@@ -49,6 +49,7 @@
     <Compile Include="WebApiClient.cs" />
     <Compile Include="BaseClient.cs" />
     <Compile Include="HttpExtensions\ProgressStreamContent.cs" />
+    <Compile Include="HttpExtensions\WebApiClientProgressExtension.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Fusillade, Version=0.7.0.0, Culture=neutral, processorArchitecture=MSIL">

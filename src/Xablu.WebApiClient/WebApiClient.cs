@@ -138,46 +138,10 @@ namespace Xablu.WebApiClient
             var httpClient = GetWebApiClient(priority);
             SetHttpRequestHeaders(httpClient);
 
-            HttpContent httpContent = null;
-
-            if (content != null)
-            {
-                if (content is HttpContent)
-                {
-                    httpContent = content as HttpContent;
-                   
-                }
-                else
-                {
-                    if (contentResolver != null)
-                    {
-                        httpContent = contentResolver.ResolveHttpContent(content);
-                    }
-                    else
-                    {
-                        if (content is Dictionary<string, string>)
-                        {
-                            httpContent = new DictionaryContentResolver().ResolveHttpContent(content as Dictionary<string, string>);
-                        }
-                        else
-                        {
-                            httpContent = HttpContentResolver.ResolveHttpContent(content);
-                        }
-                    }
-                }
-            }
-
-            var stream = await httpContent.ReadAsStreamAsync();
-            var progressContent = new ProgressStreamContent(stream, CancellationToken.None);
-            progressContent.Progress = (bytes, totalBytes, totalBytesExpected) =>
-            {
-                    var x = totalBytes;
-                    var y = totalBytesExpected;
-            };
-            progressContent.AddHeaders(httpContent);
+            var httpContent = ResolveHttpContent(content);
 
             var response = await httpClient
-                .PostAsync(path, progressContent)
+                .PostAsync(path, httpContent)
                 .ConfigureAwait(false);
 
             if (!await response.EnsureSuccessStatusCodeAsync())
@@ -223,7 +187,7 @@ namespace Xablu.WebApiClient
             return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
         }
 
-        private HttpClient GetWebApiClient(Priority prioriy)
+        internal HttpClient GetWebApiClient(Priority prioriy)
         {
             switch (prioriy)
             {
@@ -240,7 +204,7 @@ namespace Xablu.WebApiClient
             }
         }
 
-        void SetHttpRequestHeaders(HttpClient client)
+        internal void SetHttpRequestHeaders(HttpClient client)
         {
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Accept.Clear();
@@ -250,6 +214,38 @@ namespace Xablu.WebApiClient
 
             foreach (var header in Headers)
                 client.DefaultRequestHeaders.Add(header.Key, header.Value);
+        }
+
+        internal HttpContent ResolveHttpContent<TContent>(TContent content, IHttpContentResolver contentResolver = null)
+        {
+            HttpContent httpContent = null;
+
+            if (content != null)
+            {
+                if (content is HttpContent)
+                {
+                    httpContent = content as HttpContent;
+                }
+                else
+                {
+                    if (contentResolver != null)
+                    {
+                        httpContent = contentResolver.ResolveHttpContent(content);
+                    }
+                    else
+                    {
+                        if (content is Dictionary<string, string>)
+                        {
+                            httpContent = new DictionaryContentResolver().ResolveHttpContent(content as Dictionary<string, string>);
+                        }
+                        else
+                        {
+                            httpContent = HttpContentResolver.ResolveHttpContent(content);
+                        }
+                    }
+                }
+            }
+            return httpContent;
         }
 
         public void Dispose()
