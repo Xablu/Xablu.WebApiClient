@@ -6,19 +6,20 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-/// <summary>
-/// This class helps to track upload and download progress. It is a slight modified implemnation of https://github.com/paulcbetts/ModernHttpClient/blob/64b36bb670ae655455477b766c60683ca0cf3a3e/src/ModernHttpClient/ProgressStreamContent.cs
-/// </summary>
 namespace Xablu.WebApiClient
 {
 	public delegate void ProgressDelegate(long bytes, long totalBytes, long totalBytesExpected);
 
+    /// <summary>
+    /// This class helps to track upload and download progress. It is a slight modified implementation of https://github.com/paulcbetts/ModernHttpClient/blob/64b36bb670ae655455477b766c60683ca0cf3a3e/src/ModernHttpClient/ProgressStreamContent.cs
+    /// </summary>
 	public class ProgressStreamContent : StreamContent
 	{
         public ProgressStreamContent(HttpContentHeaders headers, Stream stream, CancellationToken token) : this(new ProgressStream(stream, token))
         {
-            foreach (var h in Headers)
+            foreach (var h in headers) {
 				this.Headers.Add(h.Key,h.Value);
+            }
         }
 
 		public ProgressStreamContent(Stream stream, CancellationToken token) : this(new ProgressStream(stream, token)) { }
