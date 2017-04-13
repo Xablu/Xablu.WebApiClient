@@ -48,6 +48,8 @@
     <Compile Include="Resolvers\SimpleJsonContentResolver.cs" />
     <Compile Include="Resolvers\SimpleJsonResponseResolver.cs" />
     <Compile Include="WebApiClient.cs" />
+    <Compile Include="HttpContentExtensions\ProgressStreamContent.cs" />
+    <Compile Include="HttpExtensions\WebApiClientProgressExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Fusillade, Version=0.7.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -89,6 +91,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="HttpContentExtensions\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
