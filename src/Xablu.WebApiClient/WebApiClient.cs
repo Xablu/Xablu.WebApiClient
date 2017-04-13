@@ -148,33 +148,7 @@ namespace Xablu.WebApiClient
 
             SetHttpRequestHeaders(httpClient);
 
-            HttpContent httpContent = null;
-
-            if (content != null)
-            {
-                if (content is HttpContent)
-                {
-                    httpContent = content as HttpContent;
-                }
-                else
-                {
-                    if (contentResolver != null)
-                    {
-                        httpContent = contentResolver.ResolveHttpContent(content);
-                    }
-                    else
-                    {
-                        if (content is Dictionary<string, string>)
-                        {
-                            httpContent = new DictionaryContentResolver().ResolveHttpContent(content as Dictionary<string, string>);
-                        }
-                        else
-                        {
-                            httpContent = HttpContentResolver.ResolveHttpContent(content);
-                        }
-                    }
-                }
-            }
+            HttpContent httpContent = ResolveHttpContent(content);
             var response = await httpClient
                 .PostAsync(path, httpContent)
                 .ConfigureAwait(false);
@@ -222,7 +196,39 @@ namespace Xablu.WebApiClient
             return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
         }
 
-        private HttpClient GetWebApiClient(Priority prioriy)
+        internal HttpContent ResolveHttpContent<TContent>(TContent content, IHttpContentResolver contentResolver = null)
+        {
+        	HttpContent httpContent = null;
+
+        	if (content != null)
+        	{
+        		if (content is HttpContent)
+        		{
+        			httpContent = content as HttpContent;
+        		}
+        		else
+        		{
+        			if (contentResolver != null)
+        			{
+        				httpContent = contentResolver.ResolveHttpContent(content);
+        			}
+        			else
+        			{
+        				if (content is Dictionary<string, string>)
+        				{
+        					httpContent = new DictionaryContentResolver().ResolveHttpContent(content as Dictionary<string, string>);
+        				}
+        				else
+        				{
+        					httpContent = HttpContentResolver.ResolveHttpContent(content);
+        				}
+        			}
+        		}
+        	}
+            return httpContent;
+        }
+
+        internal HttpClient GetWebApiClient(Priority prioriy)
         {
             switch (prioriy)
             {
@@ -239,7 +245,7 @@ namespace Xablu.WebApiClient
             }
         }
 
-        void SetHttpRequestHeaders(HttpClient client)
+        internal void SetHttpRequestHeaders(HttpClient client)
         {
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Accept.Clear();
