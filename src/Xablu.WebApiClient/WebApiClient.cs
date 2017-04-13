@@ -30,14 +30,6 @@ namespace Xablu.WebApiClient
             SetBaseAddress(apiBaseAddress);
         }
 
-        public WebApiClient(string apiBaseAddress)
-        {
-            if (httpHandler == null)
-                throw new ArgumentNullException(nameof(httpHandler));
-
-            SetBaseAddress(apiBaseAddress);
-        }
-
         public void SetBaseAddress(string apiBaseAddress)
         {
             if (apiBaseAddress == null)
