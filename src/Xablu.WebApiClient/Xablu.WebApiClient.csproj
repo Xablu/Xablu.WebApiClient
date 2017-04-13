@@ -38,6 +38,7 @@
     <Compile Include="Exceptions\NoSessionException.cs" />
     <Compile Include="HttpExtensions\HttpResponseMessageExtensions.cs" />
     <Compile Include="HttpExtensions\LargeFormUrlEncodedContent.cs" />
+    <Compile Include="HttpExtensions\WebApiClientPollyExtensions.cs" />
     <Compile Include="IHttpContentResolver.cs" />
     <Compile Include="IHttpResponseResolver.cs" />
     <Compile Include="IWebApiClient.cs" />
@@ -92,9 +93,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="HttpContentExtensions\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
