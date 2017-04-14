@@ -16,9 +16,12 @@ namespace Xablu.WebApiClient
             this.apiClient = apiClient;
         }
 
-        protected async Task<TResult> ExecuteRemoteRequest<TResult>(Func<Task<TResult>> action)
+        protected Task<TResult> ExecuteRemoteRequest<TResult>(Func<Task<TResult>> action)
         {
-            return await WebApiClientPollyExtensions.PollyDecorator(action, 5, 5);
+            return WebApiClientPollyExtensions.PollyDecorator(
+                action, 
+                3, 
+                (retryAttempt) => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         }
     }
 }
