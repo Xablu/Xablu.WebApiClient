@@ -142,15 +142,15 @@ namespace Xablu.WebApiClient
             return response;
         }
 
-        public async Task<TResult> PostAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent), IHttpContentResolver contentResolver = null)
+        public async Task<TResult> PostAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent), IHttpContentResolver contentResolver = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var httpClient = GetWebApiClient(priority);
 
             SetHttpRequestHeaders(httpClient);
 
-            HttpContent httpContent = ResolveHttpContent(content);
+            var httpContent = ResolveHttpContent(content, contentResolver);
             var response = await httpClient
-                .PostAsync(path, httpContent)
+                .PostAsync(path, httpContent, cancellationToken)
                 .ConfigureAwait(false);
 
             if (!await response.EnsureSuccessStatusCodeAsync())
@@ -159,19 +159,15 @@ namespace Xablu.WebApiClient
             return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
         }
 
-        public async Task<TResult> PutAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent))
+        public async Task<TResult> PutAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent), IHttpContentResolver contentResolver = null, CancellationToken cancellationToken = default(CancellationToken))
         {
             var httpClient = GetWebApiClient(priority);
 
             SetHttpRequestHeaders(httpClient);
 
-            HttpContent httpContent = null;
-
-            if (content != null)
-                httpContent = HttpContentResolver.ResolveHttpContent(content);
-
+            var httpContent = ResolveHttpContent(content, contentResolver);
             var response = await httpClient
-                .PutAsync(path, httpContent)
+                .PutAsync(path, httpContent, cancellationToken)
                 .ConfigureAwait(false);
 
             if (!await response.EnsureSuccessStatusCodeAsync())
@@ -180,15 +176,13 @@ namespace Xablu.WebApiClient
             return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
         }
 
-        public async Task<TResult> DeleteAsync<TContent, TResult>(Priority priority, string path, CancellationToken? cancellationToken = null)
+        public async Task<TResult> DeleteAsync<TResult>(Priority priority, string path, CancellationToken cancellationToken = default(CancellationToken))
         {
             var httpClient = GetWebApiClient(priority);
 
             SetHttpRequestHeaders(httpClient);
 
-            var response = cancellationToken == null
-                ? await httpClient.DeleteAsync(path).ConfigureAwait(false)
-                : await httpClient.DeleteAsync(path, (CancellationToken)cancellationToken).ConfigureAwait(false);
+            var response = await httpClient.DeleteAsync(path, cancellationToken).ConfigureAwait(false);
 
             if (!await response.EnsureSuccessStatusCodeAsync())
                 return default(TResult);
@@ -214,14 +208,11 @@ namespace Xablu.WebApiClient
         			}
         			else
         			{
-        				if (content is Dictionary<string, string>)
-        				{
-        					httpContent = new DictionaryContentResolver().ResolveHttpContent(content as Dictionary<string, string>);
-        				}
-        				else
-        				{
-        					httpContent = HttpContentResolver.ResolveHttpContent(content);
-        				}
+                        var contentAsDictionary = content as Dictionary<string, string>;
+
+                        httpContent = contentAsDictionary != null
+                            ? new DictionaryContentResolver().ResolveHttpContent(content as Dictionary<string, string>)
+                            : HttpContentResolver.ResolveHttpContent(content);
         			}
         		}
         	}

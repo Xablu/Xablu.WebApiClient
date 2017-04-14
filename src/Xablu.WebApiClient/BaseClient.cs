@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Polly;
-using System.Net;
+using Xablu.WebApiClient.HttpExtensions;
 
 namespace Xablu.WebApiClient
 {
@@ -17,31 +16,12 @@ namespace Xablu.WebApiClient
             this.apiClient = apiClient;
         }
 
-        protected async Task<TResult> ExecuteRemoteRequest<TResult>(Func<Task<TResult>> action)
+        protected Task<TResult> ExecuteRemoteRequest<TResult>(Func<Task<TResult>> action)
         {
-            TResult result = default(TResult);
-
-            try
-            {
-                result = await Policy
-                    .Handle<WebException>()
-                    .WaitAndRetryAsync
-                    (
-                        retryCount: 5,
-                        sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
-                    )
-                    .ExecuteAsync(action).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                if (e.GetType().Namespace == "Java.Net")
-                {
-                    throw new HttpExtensions.HttpResponseException(HttpStatusCode.RequestTimeout, e.Message, e.StackTrace);
-                }
-                throw;
-            }
-
-            return result;
+            return WebApiClientPollyExtensions.PollyDecorator(
+                action, 
+                3, 
+                (retryAttempt) => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         }
     }
 }
