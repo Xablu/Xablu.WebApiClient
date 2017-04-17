@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Fusillade;
 using Xablu.WebApiClient.HttpExtensions;
 
-namespace Xablu.WebApiClient
+namespace Xablu.WebApiClient.HttpExtensions
 {
 	public static class WebApiClientProgressExtension
 	{
