@@ -17,77 +17,82 @@ The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of 
 Register iOS Handler in MvvmCross
 
 ```c#
-	Mvx.RegisterSingleton<IWebApiClient>(new WebApiClient(Settings.ApiBaseUrl, () => new NSUrlSessionHandler()));
+Mvx.RegisterSingleton<IWebApiClient>(new WebApiClient(Settings.ApiBaseUrl, () => new NSUrlSessionHandler()));
 ```
 
 Register Android Handler in MvvmCross
+
 ```c#
-	Mvx.RegisterSingleton<IWebApiClient>(new WebApiClient(Settings.ApiBaseUrl, () => new AndroidClientHandler()));
+Mvx.RegisterSingleton<IWebApiClient>(new WebApiClient(Settings.ApiBaseUrl, () => new AndroidClientHandler()));
 ```
 
 Create a client to handle Http traffic
+
 ```c#
-	public class AuthenticationClient : BaseClient, IAuthenticationClient
-	{
-		public AuthenticationClient(IWebApiClient apiClient) : base(apiClient)
-		{
-		}
+public class AuthenticationClient : BaseClient, IAuthenticationClient
+{
+   public AuthenticationClient(IWebApiClient apiClient) : base(apiClient)
+   {
+   }
 
-		public Task<int> AuthenticateWithCredentials(string username, string password)
-		{
-			var uri = new UriTemplate("user/logon");
+   public Task<int> AuthenticateWithCredentials(string username, string password)
+   {
+      var uri = new UriTemplate("user/logon");
 
-			var content = new MultipartFormDataContent();
-			content.Add(new StringContent(username), "username");
-			content.Add(new StringContent(password), "password");
+      var content = new MultipartFormDataContent();
+      content.Add(new StringContent(username), "username");
+      content.Add(new StringContent(password), "password");
 
-			return ExecuteRemoteRequest(async () => await apiClient.PostAsync<MultipartFormDataContent, int>(Priority.UserInitiated, uri.Resolve(), content).ConfigureAwait(false));
-		}
-	}
+      return ExecuteRemoteRequest(async () => await apiClient.PostAsync<MultipartFormDataContent, int>(Priority.UserInitiated, uri.Resolve(), content).ConfigureAwait(false));
+   }
+}
 ```
 	
 Add a Service to change and handle user logic
+
 ```c#
-	public class AuthenticationService : IAuthenticationService
-	{
-		private IBlobCache cache;
-		private IAuthenticationClient authClient;
+public class AuthenticationService : IAuthenticationService
+{
+   private IBlobCache cache;
+   private IAuthenticationClient authClient;
 
-		public AuthenticationService(IAuthenticationClient authClient, IBlobCache cache = null)
-			: base()
-		{
-			this.cache = (cache ?? BlobCache.Secure);
-			this.authClient = authClient;
-		}
+   public AuthenticationService(IAuthenticationClient authClient, IBlobCache cache = null)
+      : base()
+   {
+      this.cache = (cache ?? BlobCache.Secure);
+      this.authClient = authClient;
+   }
 
-		public async Task<bool> Login(string username, string password)
-		{
-			var userId = await authClient.AuthenticateWithCredentials(username, password).ConfigureAwait(false);
+   public async Task<bool> Login(string username, string password)
+   {
+      var userId = await authClient.AuthenticateWithCredentials(username, password).ConfigureAwait(false);
 
-			if (userId != default(int))
-			{
-				await this.cache.InsertObject(Settings.UserIdCacheKey, userId);
-				return true;
-			}
+      if (userId != default(int))
+      {
+         await this.cache.InsertObject(Settings.UserIdCacheKey, userId);
+	 return true;
+      }
 
-			return false;
-		}
+      return false;
+   }
 
-		public async Task<bool> IsAuthenticated()
-		{
-			try
-			{
-				var userId = await cache.GetObject<int>(Settings.UserIdCacheKey).ToTask().ConfigureAwait(false);
-				return true;
-			}
-			catch (KeyNotFoundException)
-			{
-				return false;
-			}
-		}
+   public async Task<bool> IsAuthenticated()
+   {
+      try
+      {
+         var userId = await cache.GetObject<int>(Settings.UserIdCacheKey).ToTask().ConfigureAwait(false);
+	 return true;
+      }
+      catch (KeyNotFoundException)
+      {
+         return false;
+      }
+   }
 
-		public async Task Logout()
-		{
-			await cache.InvalidateAll().ToTask().ConfigureAwait(false);
-		}
-	}
+   public async Task Logout()
+   {
+      await cache.InvalidateAll().ToTask().ConfigureAwait(false);
+   }
+}
+```
+
