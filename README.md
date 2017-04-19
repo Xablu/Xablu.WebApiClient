@@ -14,6 +14,15 @@ The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of 
 
 # Usage
 
+### Standard
+
+Create a new singleton of WebApiClient and use it to do REST operations.
+```c#
+var webApiClient = new WebApiClient();
+```
+
+### MvvmCross
+
 Register iOS Handler in MvvmCross
 
 ```c#
