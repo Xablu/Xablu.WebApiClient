@@ -22,7 +22,7 @@ namespace Xablu.WebApiClient
         private Lazy<HttpClient> _background;
         private Lazy<HttpClient> _userInitiated;
         private Lazy<HttpClient> _speculative;
-        private Func<HttpMessageHandler> httpHandler = () => new HttpClientHandler();
+        private Func<HttpMessageHandler> _httpHandler = () => new HttpClientHandler();
 
         public WebApiClient()
         {
@@ -30,15 +30,15 @@ namespace Xablu.WebApiClient
 
         public WebApiClient(string apiBaseAddress)
         {
-            if (httpHandler == null)
-                throw new ArgumentNullException(nameof(httpHandler));
+            if (_httpHandler == null)
+                throw new ArgumentNullException(nameof(_httpHandler));
 
             SetBaseAddress(apiBaseAddress);
         }
 
         public WebApiClient(string apiBaseAddress, Func<HttpMessageHandler> handler)
         {
-            httpHandler = handler;
+            _httpHandler = handler;
             SetBaseAddress(apiBaseAddress);
         }
 
@@ -53,16 +53,16 @@ namespace Xablu.WebApiClient
             Func<HttpMessageHandler, HttpClient> createClient = messageHandler => new HttpClient(messageHandler) { BaseAddress = new Uri(apiBaseAddress) };
 
             _explicit = new Lazy<HttpClient>(() => createClient(
-                new RateLimitedHttpMessageHandler(httpHandler.Invoke(), Fusillade.Priority.Explicit)));
+                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Fusillade.Priority.Explicit)));
 
             _background = new Lazy<HttpClient>(() => createClient(
-                new RateLimitedHttpMessageHandler(httpHandler.Invoke(), Fusillade.Priority.Background)));
+                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Fusillade.Priority.Background)));
 
             _userInitiated = new Lazy<HttpClient>(() => createClient(
-                new RateLimitedHttpMessageHandler(httpHandler.Invoke(), Fusillade.Priority.UserInitiated)));
+                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Fusillade.Priority.UserInitiated)));
 
             _speculative = new Lazy<HttpClient>(() => createClient(
-                new RateLimitedHttpMessageHandler(httpHandler.Invoke(), Fusillade.Priority.Speculative)));
+                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Fusillade.Priority.Speculative)));
         }
 
         private JsonSerializer _serializer = new JsonSerializer();
