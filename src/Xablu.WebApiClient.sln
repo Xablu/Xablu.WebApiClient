@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xablu.WebApiClient", "src\Xablu.WebApiClient\Xablu.WebApiClient.csproj", "{80534D81-9231-4EC1-8263-F3D1A8D61EBB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xablu.WebApiClient", "Xablu.WebApiClient\Xablu.WebApiClient.csproj", "{80534D81-9231-4EC1-8263-F3D1A8D61EBB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
