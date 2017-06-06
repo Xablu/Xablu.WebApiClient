@@ -8,6 +8,7 @@ using Fusillade;
 using Xablu.WebApiClient.Resolvers;
 using Xablu.WebApiClient.HttpExtensions;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace Xablu.WebApiClient
 {
@@ -22,7 +23,7 @@ namespace Xablu.WebApiClient
         private Lazy<HttpClient> _background;
         private Lazy<HttpClient> _userInitiated;
         private Lazy<HttpClient> _speculative;
-        private Func<HttpMessageHandler> _httpHandler = () => new HttpClientHandler();
+        private Func<HttpMessageHandler> _httpHandler = () => new HttpClientHandler() {  AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate };
 
         public WebApiClient()
         {
