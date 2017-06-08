@@ -1,9 +1,10 @@
-﻿using Fusillade;
+﻿﻿using Fusillade;
 using Polly;
 using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using Xablu.WebApiClient.Exceptions;
 
 namespace Xablu.WebApiClient.HttpExtensions
 {

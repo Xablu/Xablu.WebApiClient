@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net;
 using Xablu.WebApiClient.Exceptions;
@@ -31,19 +30,24 @@ namespace Xablu.WebApiClient.HttpExtensions
 				throw exception;
 			}
 		}
-	}
 
-	public class HttpResponseException : Exception
-	{
-		public HttpStatusCode StatusCode { get; private set; }
-		public string Content { get; private set; }
-
-		public HttpResponseException (HttpStatusCode statusCode, string reasonPhrase, string content)
-			: base (reasonPhrase)
+        public static async Task<IRestApiResult<TResult>> BuildRestApiResult<TResult>(this HttpResponseMessage response, IHttpResponseResolver resolver)
 		{
-			StatusCode = statusCode;
-			Content = content;
+			if (response.IsSuccessStatusCode)
+			{
+                var result = await resolver.ResolveHttpResponseAsync<TResult>(response);
+                return new RestApiResult<TResult>(response.StatusCode, result, response.ReasonPhrase);
+			}
+
+			var content = await response.Content.ReadAsStringAsync();
+
+			if (response.Content != null)
+				response.Content.Dispose();
+
+            return new RestApiResult<TResult>(response.StatusCode, default(TResult), response.ReasonPhrase, content);
 		}
 	}
+
+
 }
 

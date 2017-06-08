@@ -12,6 +12,7 @@ using System.Net;
 
 namespace Xablu.WebApiClient
 {
+    [Obsolete("Class `WebApiClient` is deprecated, please use the `RestApiClient` class instead.")]
     public class WebApiClient : IWebApiClient
     {
         private string _apiBaseAddress;

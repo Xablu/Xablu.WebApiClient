@@ -7,6 +7,7 @@ using Fusillade;
 
 namespace Xablu.WebApiClient
 {
+    [Obsolete("Interface `IWebApiClient` is deprecated, please use the `IRestApiClient` interface instead.")]
     public interface IWebApiClient : IDisposable
     {
         void SetBaseAddress(string apiBaseAddress);
