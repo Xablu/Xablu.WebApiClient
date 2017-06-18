@@ -18,21 +18,27 @@ The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of 
 
 Create a new singleton of WebApiClient and use it to do REST operations.
 ```c#
-var webApiClient = new WebApiClient();
+var webApiClient = new WebApiClient("http://baseurl.com/");
 ```
 
 ### MvvmCross
 
-Register iOS Handler in MvvmCross
+If you want to use the standard HTTP client handlers, just register `IWebApiClient` with a base url. You can set the type of native handler in your csproj settings.
 
 ```c#
-Mvx.RegisterSingleton<IWebApiClient>(new WebApiClient(Settings.ApiBaseUrl, () => new NSUrlSessionHandler()));
+Mvx.RegisterSingleton<IWebApiClient>(new WebApiClient(Constants.ApiBaseUrl));
 ```
 
-Register Android Handler in MvvmCross
+When using custom HTTP handler, register a custom iOS Handler
 
 ```c#
-Mvx.RegisterSingleton<IWebApiClient>(new WebApiClient(Settings.ApiBaseUrl, () => new AndroidClientHandler()));
+Mvx.RegisterSingleton<IWebApiClient>(new WebApiClient(Constants.ApiBaseUrl, () => new NSUrlSessionHandler()));
+```
+
+Register the custom handler in Android
+
+```c#
+Mvx.RegisterSingleton<IWebApiClient>(new WebApiClient(Constants.ApiBaseUrl, () => new AndroidClientHandler()));
 ```
 
 Create a client to handle Http traffic
