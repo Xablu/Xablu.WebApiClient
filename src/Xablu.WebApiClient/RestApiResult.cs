@@ -18,7 +18,7 @@ namespace Xablu.WebApiClient
 			HttpStatusCode = httpStatusCode;
 			Content = content;
             ReasonPhrase = reasonPhrase;
-            DetailedErrorMessage = DetailedErrorMessage;
+            DetailedErrorMessage = detailedErrorMessage;
 		}
 
 		public bool IsSuccessStatusCode => Regex.IsMatch(((int)HttpStatusCode).ToString(), "^2\\d\\d$");

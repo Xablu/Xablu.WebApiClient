@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net;
 using Xablu.WebApiClient.Exceptions;
@@ -39,12 +40,13 @@ namespace Xablu.WebApiClient.HttpExtensions
                 return new RestApiResult<TResult>(response.StatusCode, result, response.ReasonPhrase);
 			}
 
-			var content = await response.Content.ReadAsStringAsync();
+		    var errorMessage = string.Empty;
+		    if (response.Content != null)
+		    {
+		        errorMessage = await response.Content.ReadAsStringAsync();
+		    }
 
-			if (response.Content != null)
-				response.Content.Dispose();
-
-            return new RestApiResult<TResult>(response.StatusCode, default(TResult), response.ReasonPhrase, content);
+		    return new RestApiResult<TResult>(response.StatusCode, default(TResult), response.ReasonPhrase, errorMessage);
 		}
 	}
 

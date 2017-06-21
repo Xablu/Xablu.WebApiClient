@@ -49,6 +49,7 @@
     <Compile Include="Resolvers\FormUrlEncodedContentResolver.cs" />
     <Compile Include="Resolvers\SimpleJsonContentResolver.cs" />
     <Compile Include="Resolvers\SimpleJsonResponseResolver.cs" />
+    <Compile Include="Resolvers\SimpleStringResponseResolver.cs" />
     <Compile Include="WebApiClient.cs" />
     <Compile Include="HttpContentExtensions\ProgressStreamContent.cs" />
     <Compile Include="HttpExtensions\WebApiClientProgressExtensions.cs" />

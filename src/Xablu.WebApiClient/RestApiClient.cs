@@ -15,8 +15,10 @@ namespace Xablu.WebApiClient
     public class RestApiClient
         : IRestApiClient
 	{
-		private string _apiBaseAddress;
+	    private readonly Func<HttpMessageHandler> _httpHandler;
+	    private readonly JsonSerializer _serializer = new JsonSerializer();
 
+        private string _apiBaseAddress;
 		private IHttpContentResolver _httpContentResolver;
 		private IHttpResponseResolver _httpResponseResolver;
 		private bool _isDisposed;
@@ -24,23 +26,29 @@ namespace Xablu.WebApiClient
 		private Lazy<HttpClient> _background;
 		private Lazy<HttpClient> _userInitiated;
 		private Lazy<HttpClient> _speculative;
-		private Func<HttpMessageHandler> _httpHandler = () => new HttpClientHandler() { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate };
 
-		public RestApiClient()
+        public RestApiClient()
 		{
-		}
+            _httpHandler = () => new HttpClientHandler
+            {
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            };
+        }
 
 		public RestApiClient(string apiBaseAddress)
+            : this()
 		{
-			if (_httpHandler == null)
-				throw new ArgumentNullException(nameof(_httpHandler));
-
-			SetBaseAddress(apiBaseAddress);
+            SetBaseAddress(apiBaseAddress);
 		}
 
-		public RestApiClient(string apiBaseAddress, Func<HttpMessageHandler> handler)
-		{
-			_httpHandler = handler;
+	    public RestApiClient(Func<HttpMessageHandler> handler)
+	    {
+	        _httpHandler = handler ?? throw new ArgumentNullException(nameof(handler));
+	    }
+
+	    public RestApiClient(string apiBaseAddress, Func<HttpMessageHandler> handler)
+            : this(handler)
+        {
 			SetBaseAddress(apiBaseAddress);
 		}
 
@@ -52,22 +60,20 @@ namespace Xablu.WebApiClient
 			if (_apiBaseAddress == apiBaseAddress) return;
 			_apiBaseAddress = apiBaseAddress;
 
-			Func<HttpMessageHandler, HttpClient> createClient = messageHandler => new HttpClient(messageHandler) { BaseAddress = new Uri(apiBaseAddress) };
+		    HttpClient CreateClient(HttpMessageHandler messageHandler) => new HttpClient(messageHandler) {BaseAddress = new Uri(apiBaseAddress)};
 
-			_explicit = new Lazy<HttpClient>(() => createClient(
-				new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Fusillade.Priority.Explicit)));
+		    _explicit = new Lazy<HttpClient>(() => CreateClient(
+				new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Priority.Explicit)));
 
-			_background = new Lazy<HttpClient>(() => createClient(
-				new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Fusillade.Priority.Background)));
+			_background = new Lazy<HttpClient>(() => CreateClient(
+				new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Priority.Background)));
 
-			_userInitiated = new Lazy<HttpClient>(() => createClient(
-				new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Fusillade.Priority.UserInitiated)));
+			_userInitiated = new Lazy<HttpClient>(() => CreateClient(
+				new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Priority.UserInitiated)));
 
-			_speculative = new Lazy<HttpClient>(() => createClient(
-				new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Fusillade.Priority.Speculative)));
+			_speculative = new Lazy<HttpClient>(() => CreateClient(
+				new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Priority.Speculative)));
 		}
-
-		private JsonSerializer _serializer = new JsonSerializer();
 
 		/// <summary>
 		/// Gets or sets the implementation of the <see cref="IHttpContentResolver"/> interface associated with the WebApiClient.
@@ -76,13 +82,13 @@ namespace Xablu.WebApiClient
 		/// The <see cref="IHttpContentResolver"/> implementation is responsible for serializing content which needs to be send to the server
 		/// using a HTTP POST or PUT request.
 		/// 
-		/// When no other value is supplied the <see cref="WebApiClient"/> by default uses the <see cref="SimpleJsonContentResolver"/>. This resolver will
+		/// When no other value is supplied the <see cref="RestApiClient"/> by default uses the <see cref="SimpleJsonContentResolver"/>. This resolver will
 		/// try to serialize the content to a JSON message and returns the proper <see cref="System.Net.Http.HttpContent"/> instance.
 		/// </remarks>
 		public virtual IHttpContentResolver HttpContentResolver
 		{
-			get { return _httpContentResolver ?? (_httpContentResolver = new SimpleJsonContentResolver(_serializer)); }
-			set { _httpContentResolver = value; }
+			get => _httpContentResolver ?? (_httpContentResolver = new SimpleJsonContentResolver(_serializer));
+		    set => _httpContentResolver = value;
 		}
 
 		/// <summary>
@@ -92,13 +98,13 @@ namespace Xablu.WebApiClient
 		/// The <see cref="IHttpResponseResolver"/> implementation is responsible for deserialising the <see cref="System.Net.Http.HttpResponseMessage"/>
 		/// into the required result object.
 		/// 
-		/// When no other value is supplied the <see cref="WebApiClient"/> by default uses the <see cref="SimpleJsonResponseResolver"/>. This resolver will
+		/// When no other value is supplied the <see cref="RestApiClient"/> by default uses the <see cref="SimpleJsonResponseResolver"/>. This resolver will
 		/// assumes the response is a JSON message and tries to deserialize it into the required result object.
 		/// </remarks>
 		public virtual IHttpResponseResolver HttpResponseResolver
 		{
-			get { return _httpResponseResolver ?? (_httpResponseResolver = new SimpleJsonResponseResolver(_serializer)); }
-			set { _httpResponseResolver = value; }
+			get => _httpResponseResolver ?? (_httpResponseResolver = new SimpleJsonResponseResolver(_serializer));
+		    set => _httpResponseResolver = value;
 		}
 
 		/// <summary>
@@ -214,10 +220,9 @@ namespace Xablu.WebApiClient
 		internal void SetHttpRequestHeaders(HttpClient client)
 		{
 			client.DefaultRequestHeaders.Clear();
-			client.DefaultRequestHeaders.Accept.Clear();
+			
 			client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(AcceptHeader));
-
-			client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+            client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
 
 			foreach (var header in Headers)
 				client.DefaultRequestHeaders.Add(header.Key, header.Value);
