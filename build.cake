@@ -97,19 +97,19 @@ Task("Package")
     .Does(() => 
 {
     var nugetSettings = new NuGetPackSettings {
-		Authors = new [] { "Xablu" },
-		Owners = new [] { "Xablu" },
-		IconUrl = new Uri("https://raw.githubusercontent.com/Xablu/Xablu.WebApiClient/master/icon_xablu.png"),
-		ProjectUrl = new Uri("https://github.com/Xablu/Xablu.WebApiClient"),
-		LicenseUrl = new Uri("https://github.com/Xablu/Xablu.WebApiClient/blob/master/LICENSE"),
-		Copyright = "Copyright (c) Xablu",
-		RequireLicenseAcceptance = false,
-		Version = versionInfo.NuGetVersion,
-		Symbols = false,
-		NoPackageAnalysis = true,
-		OutputDirectory = outputDir,
-		Verbosity = NuGetVerbosity.Detailed,
-		BasePath = "./nuspec"
+        Authors = new [] { "Xablu" },
+        Owners = new [] { "Xablu" },
+        IconUrl = new Uri("https://raw.githubusercontent.com/Xablu/Xablu.WebApiClient/master/icon_xablu.png"),
+        ProjectUrl = new Uri("https://github.com/Xablu/Xablu.WebApiClient"),
+        LicenseUrl = new Uri("https://github.com/Xablu/Xablu.WebApiClient/blob/master/LICENSE"),
+        Copyright = "Copyright (c) Xablu",
+        RequireLicenseAcceptance = false,
+        Version = versionInfo.NuGetVersion,
+        Symbols = false,
+        NoPackageAnalysis = true,
+        OutputDirectory = outputDir,
+        Verbosity = NuGetVerbosity.Detailed,
+        BasePath = "./nuspec"
     };
 
     EnsureDirectoryExists(outputDir);
@@ -144,6 +144,7 @@ Task("PublishPackages")
 	var apiKey = nugetKeySource.Item1;
 	var source = nugetKeySource.Item2;
 
+	Information("Search for nuget packages in: " + outputDir);
 	var nugetFiles = GetFiles(outputDir + "/*.nupkg");
 
 	foreach(var nugetFile in nugetFiles)
@@ -201,7 +202,7 @@ bool IsRepository(string repoName)
 	{
 		try
 		{
-			var path = MakeAbsolute(new DirectoryPath("")).GetDirectory().FullPath;
+			var path = MakeAbsolute(new DirectoryPath("./")).FullPath;
 			using (var repo = new LibGit2Sharp.Repository(path))
 			{
 				var origin = repo.Network.Remotes.FirstOrDefault(
@@ -220,7 +221,7 @@ bool IsRepository(string repoName)
 
 bool IsTagged()
 {
-	var path = MakeAbsolute(new DirectoryPath("")).GetDirectory().FullPath;
+	var path = MakeAbsolute(new DirectoryPath("./")).FullPath;
 	using (var repo = new LibGit2Sharp.Repository(path))
 	{
 		var head = repo.Head;
