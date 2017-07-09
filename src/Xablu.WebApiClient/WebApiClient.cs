@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -24,7 +24,12 @@ namespace Xablu.WebApiClient
         private Lazy<HttpClient> _background;
         private Lazy<HttpClient> _userInitiated;
         private Lazy<HttpClient> _speculative;
-        private Func<HttpMessageHandler> _httpHandler = () => new HttpClientHandler() {  AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate };
+
+        private Func<HttpMessageHandler> _httpHandler =
+            () => new HttpClientHandler()
+            {
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            };
 
         public WebApiClient()
         {
@@ -52,7 +57,8 @@ namespace Xablu.WebApiClient
             if (_apiBaseAddress == apiBaseAddress) return;
             _apiBaseAddress = apiBaseAddress;
 
-            Func<HttpMessageHandler, HttpClient> createClient = messageHandler => new HttpClient(messageHandler) { BaseAddress = new Uri(apiBaseAddress) };
+            Func<HttpMessageHandler, HttpClient> createClient =
+                messageHandler => new HttpClient(messageHandler) {BaseAddress = new Uri(apiBaseAddress)};
 
             _explicit = new Lazy<HttpClient>(() => createClient(
                 new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Fusillade.Priority.Explicit)));
@@ -97,7 +103,10 @@ namespace Xablu.WebApiClient
         /// </remarks>
         public virtual IHttpResponseResolver HttpResponseResolver
         {
-            get { return _httpResponseResolver ?? (_httpResponseResolver = new SimpleJsonResponseResolver(_serializer)); }
+            get
+            {
+                return _httpResponseResolver ?? (_httpResponseResolver = new SimpleJsonResponseResolver(_serializer));
+            }
             set { _httpResponseResolver = value; }
         }
 
@@ -108,7 +117,8 @@ namespace Xablu.WebApiClient
 
         public virtual IDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
 
-        public virtual async Task<TResult> GetAsync<TResult>(Priority priority, string path, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<TResult> GetAsync<TResult>(Priority priority, string path,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             var httpClient = GetWebApiClient(priority);
 
@@ -130,7 +140,8 @@ namespace Xablu.WebApiClient
             return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
         }
 
-        public virtual async Task<HttpResponseMessage> GetAsync(Priority priority, string path, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<HttpResponseMessage> GetAsync(Priority priority, string path,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             var httpClient = GetWebApiClient(priority);
 
@@ -148,29 +159,33 @@ namespace Xablu.WebApiClient
             return response;
         }
 
-		public virtual async Task<TResult> PatchAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent), IHttpContentResolver contentResolver = null, CancellationToken cancellationToken = default(CancellationToken))
-		{
-			var httpClient = GetWebApiClient(priority);
+        public virtual async Task<TResult> PatchAsync<TContent, TResult>(Priority priority, string path,
+            TContent content = default(TContent), IHttpContentResolver contentResolver = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var httpClient = GetWebApiClient(priority);
 
-			SetHttpRequestHeaders(httpClient);
+            SetHttpRequestHeaders(httpClient);
 
-			var httpContent = ResolveHttpContent(content, contentResolver);
+            var httpContent = ResolveHttpContent(content, contentResolver);
             var httpRequestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), path)
             {
                 Content = httpContent
             };
 
             var response = await httpClient
-				.SendAsync(httpRequestMessage, cancellationToken)
-				.ConfigureAwait(false);
+                .SendAsync(httpRequestMessage, cancellationToken)
+                .ConfigureAwait(false);
 
-			if (!await response.EnsureSuccessStatusCodeAsync())
-				return default(TResult);
+            if (!await response.EnsureSuccessStatusCodeAsync())
+                return default(TResult);
 
-			return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
-		}
+            return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
+        }
 
-        public virtual async Task<TResult> PostAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent), IHttpContentResolver contentResolver = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<TResult> PostAsync<TContent, TResult>(Priority priority, string path,
+            TContent content = default(TContent), IHttpContentResolver contentResolver = null,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             var httpClient = GetWebApiClient(priority);
 
@@ -187,7 +202,9 @@ namespace Xablu.WebApiClient
             return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
         }
 
-        public virtual async Task<TResult> PutAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent), IHttpContentResolver contentResolver = null, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<TResult> PutAsync<TContent, TResult>(Priority priority, string path,
+            TContent content = default(TContent), IHttpContentResolver contentResolver = null,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             var httpClient = GetWebApiClient(priority);
 
@@ -204,7 +221,8 @@ namespace Xablu.WebApiClient
             return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
         }
 
-        public virtual async Task<TResult> DeleteAsync<TResult>(Priority priority, string path, CancellationToken cancellationToken = default(CancellationToken))
+        public virtual async Task<TResult> DeleteAsync<TResult>(Priority priority, string path,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
             var httpClient = GetWebApiClient(priority);
 
@@ -250,7 +268,8 @@ namespace Xablu.WebApiClient
         internal HttpClient GetWebApiClient(Priority prioriy)
         {
             if (_apiBaseAddress == null)
-                throw new ArgumentNullException(nameof(_apiBaseAddress), "Api base adress is not set. Call SetBaseAddress() to initialize.");
+                throw new ArgumentNullException(nameof(_apiBaseAddress),
+                    "Api base adress is not set. Call SetBaseAddress() to initialize.");
 
             switch (prioriy)
             {

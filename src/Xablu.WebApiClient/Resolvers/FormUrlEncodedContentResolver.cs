@@ -13,7 +13,9 @@ namespace Xablu.WebApiClient.Resolvers
             var nameValueCollection = content as IEnumerable<KeyValuePair<string, string>>;
 
             if (nameValueCollection == null)
-                throw new ArgumentException("Content parameter is of the wrong type. The parameter should derive from 'IEnumerable<KeyValuePair<string, string>>'.", nameof(content));
+                throw new ArgumentException(
+                    "Content parameter is of the wrong type. The parameter should derive from 'IEnumerable<KeyValuePair<string, string>>'.",
+                    nameof(content));
 
             return new LargeFormUrlEncodedContent(nameValueCollection);
         }

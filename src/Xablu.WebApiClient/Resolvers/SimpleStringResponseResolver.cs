@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -16,7 +15,7 @@ namespace Xablu.WebApiClient.Resolvers
                 result = await responseMessage.Content.ReadAsStringAsync();
             }
 
-            return (TResult)Convert.ChangeType(result, typeof(TResult));
+            return (TResult) Convert.ChangeType(result, typeof(TResult));
         }
     }
 }

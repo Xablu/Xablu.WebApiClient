@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
@@ -17,11 +17,25 @@ namespace Xablu.WebApiClient
         IHttpContentResolver HttpContentResolver { get; set; }
         IHttpResponseResolver HttpResponseResolver { get; set; }
 
-        Task<TResult> GetAsync<TResult>(Priority priority, string path, CancellationToken cancellationToken = default(CancellationToken));
-        Task<HttpResponseMessage> GetAsync(Priority priority, string path, CancellationToken cancellationToken = default(CancellationToken));
-        Task<TResult> PatchAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent), IHttpContentResolver contentResolver = null, CancellationToken cancellationToken = default(CancellationToken));
-        Task<TResult> PostAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent), IHttpContentResolver contentResolver = null, CancellationToken cancellationToken = default(CancellationToken));
-        Task<TResult> PutAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent), IHttpContentResolver contentResolver = null, CancellationToken cancellationToken = default(CancellationToken));
-        Task<TResult> DeleteAsync<TResult>(Priority priority, string path, CancellationToken cancellationToken = default(CancellationToken));
+        Task<TResult> GetAsync<TResult>(Priority priority, string path,
+            CancellationToken cancellationToken = default(CancellationToken));
+
+        Task<HttpResponseMessage> GetAsync(Priority priority, string path,
+            CancellationToken cancellationToken = default(CancellationToken));
+
+        Task<TResult> PatchAsync<TContent, TResult>(Priority priority, string path,
+            TContent content = default(TContent), IHttpContentResolver contentResolver = null,
+            CancellationToken cancellationToken = default(CancellationToken));
+
+        Task<TResult> PostAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent),
+            IHttpContentResolver contentResolver = null,
+            CancellationToken cancellationToken = default(CancellationToken));
+
+        Task<TResult> PutAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent),
+            IHttpContentResolver contentResolver = null,
+            CancellationToken cancellationToken = default(CancellationToken));
+
+        Task<TResult> DeleteAsync<TResult>(Priority priority, string path,
+            CancellationToken cancellationToken = default(CancellationToken));
     }
 }

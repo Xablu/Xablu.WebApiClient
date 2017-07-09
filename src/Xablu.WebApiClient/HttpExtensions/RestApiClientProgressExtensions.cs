@@ -7,7 +7,9 @@ namespace Xablu.WebApiClient.HttpExtensions
 {
     public static class RestApiClientProgressExtension
     {
-        public static async Task<IRestApiResult<TResult>> PostAsync<TContent, TResult>(this RestApiClient apiClient, Priority priority, string path, TContent content = default(TContent), ProgressDelegate progressDelegate = null, IHttpContentResolver contentResolver = null)
+        public static async Task<IRestApiResult<TResult>> PostAsync<TContent, TResult>(this RestApiClient apiClient,
+            Priority priority, string path, TContent content = default(TContent),
+            ProgressDelegate progressDelegate = null, IHttpContentResolver contentResolver = null)
         {
             var httpClient = apiClient.GetRestApiClient(priority);
 
