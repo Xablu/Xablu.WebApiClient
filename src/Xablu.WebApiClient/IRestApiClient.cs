@@ -17,7 +17,8 @@ namespace Xablu.WebApiClient
 		IHttpResponseResolver HttpResponseResolver { get; set; }
 
 		Task<IRestApiResult<TResult>> GetAsync<TResult>(Priority priority, string path, CancellationToken cancellationToken = default(CancellationToken));
-		Task<IRestApiResult<TResult>> PostAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent), IHttpContentResolver contentResolver = null, CancellationToken cancellationToken = default(CancellationToken));
+		Task<IRestApiResult<TResult>> PatchAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent), IHttpContentResolver contentResolver = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<IRestApiResult<TResult>> PostAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent), IHttpContentResolver contentResolver = null, CancellationToken cancellationToken = default(CancellationToken));
 		Task<IRestApiResult<TResult>> PutAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent), IHttpContentResolver contentResolver = null, CancellationToken cancellationToken = default(CancellationToken));
 		Task<IRestApiResult<TResult>> DeleteAsync<TResult>(Priority priority, string path, CancellationToken cancellationToken = default(CancellationToken));
 	}

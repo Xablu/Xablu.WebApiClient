@@ -129,6 +129,25 @@ namespace Xablu.WebApiClient
             return await response.BuildRestApiResult<TResult>(HttpResponseResolver);
 		}
 
+		public virtual async Task<IRestApiResult<TResult>> PatchAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent), IHttpContentResolver contentResolver = null, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var httpClient = GetRestApiClient(priority);
+
+			SetHttpRequestHeaders(httpClient);
+
+			var httpContent = ResolveHttpContent(content, contentResolver);
+			var httpRequestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), path)
+			{
+				Content = httpContent
+			};
+
+			var response = await httpClient
+				.SendAsync(httpRequestMessage, cancellationToken)
+				.ConfigureAwait(false);
+            
+			return await response.BuildRestApiResult<TResult>(HttpResponseResolver);
+		}
+
 		public virtual async Task<IRestApiResult<TResult>> PostAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent), IHttpContentResolver contentResolver = null, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			var httpClient = GetRestApiClient(priority);
