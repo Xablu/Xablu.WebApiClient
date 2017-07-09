@@ -187,7 +187,7 @@ namespace Xablu.WebApiClient
 			return await response.BuildRestApiResult<TResult>(HttpResponseResolver);
 		}
 
-		internal HttpContent ResolveHttpContent<TContent>(TContent content, IHttpContentResolver contentResolver = null)
+		protected virtual HttpContent ResolveHttpContent<TContent>(TContent content, IHttpContentResolver contentResolver = null)
 		{
 			HttpContent httpContent = null;
 
@@ -216,7 +216,7 @@ namespace Xablu.WebApiClient
 			return httpContent;
 		}
 
-		internal HttpClient GetRestApiClient(Priority prioriy)
+		protected virtual HttpClient GetRestApiClient(Priority prioriy)
 		{
 			if (_apiBaseAddress == null)
 				throw new ArgumentNullException(nameof(_apiBaseAddress), "Api base adress is not set. Call SetBaseAddress() to initialize.");
@@ -236,7 +236,7 @@ namespace Xablu.WebApiClient
 			}
 		}
 
-		internal void SetHttpRequestHeaders(HttpClient client)
+		protected virtual void SetHttpRequestHeaders(HttpClient client)
 		{
 			client.DefaultRequestHeaders.Clear();
 			
