@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
         <id>Xablu.WebApiClient</id>
-        <version>0.11.0</version>
+        <version>0.12.0</version>
         <title>Web API client by Xablu</title>
         <authors>Xablu</authors>
         <owners>Xablu</owners>
