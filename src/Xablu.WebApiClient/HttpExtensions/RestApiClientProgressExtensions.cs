@@ -5,17 +5,17 @@ using Xablu.WebApiClient.HttpContentExtensions;
 
 namespace Xablu.WebApiClient.HttpExtensions
 {
-    public static class WebApiClientProgressExtension
+    public static class RestApiClientProgressExtension
     {
-        public static async Task<TResult> PostAsync<TContent, TResult>(this WebApiClient webApiClient,
+        public static async Task<IRestApiResult<TResult>> PostAsync<TContent, TResult>(this RestApiClient apiClient,
             Priority priority, string path, TContent content = default(TContent),
             ProgressDelegate progressDelegate = null, IHttpContentResolver contentResolver = null)
         {
-            var httpClient = webApiClient.GetWebApiClient(priority);
+            var httpClient = apiClient.GetRestApiClient(priority);
 
-            webApiClient.SetHttpRequestHeaders(httpClient);
+            apiClient.SetHttpRequestHeaders(httpClient);
 
-            var httpContent = webApiClient.ResolveHttpContent(content);
+            var httpContent = apiClient.ResolveHttpContent(content);
 
             var stream = await httpContent.ReadAsStreamAsync();
             var progressContent = new ProgressStreamContent(httpContent.Headers, stream, CancellationToken.None);
@@ -25,10 +25,7 @@ namespace Xablu.WebApiClient.HttpExtensions
                 .PostAsync(path, progressContent)
                 .ConfigureAwait(false);
 
-            if (!await response.EnsureSuccessStatusCodeAsync())
-                return default(TResult);
-
-            return await webApiClient.HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
+            return await response.BuildRestApiResult<TResult>(apiClient.HttpResponseResolver);
         }
     }
 }

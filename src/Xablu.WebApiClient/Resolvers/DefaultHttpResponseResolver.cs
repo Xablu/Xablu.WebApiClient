@@ -8,9 +8,9 @@ using System.Diagnostics;
 
 namespace Xablu.WebApiClient.Resolvers
 {
-	internal class DefaultHttpResponseResolver
-		: IHttpResponseResolver
-	{
+    internal class DefaultHttpResponseResolver
+        : IHttpResponseResolver
+    {
         private JsonSerializer _serializer;
 
         public DefaultHttpResponseResolver(JsonSerializer serializer)
@@ -18,8 +18,8 @@ namespace Xablu.WebApiClient.Resolvers
             _serializer = serializer;
         }
 
-		public async Task<TResult> ResolveHttpResponseAsync<TResult>(HttpResponseMessage responseMessage)
-		{
+        public async Task<TResult> ResolveHttpResponseAsync<TResult>(HttpResponseMessage responseMessage)
+        {
             //If you need logging for development, use #if DEBUG and JsonConvert otherwise
 #if DEBUG
             using (var stream = await responseMessage.Content.ReadAsStreamAsync())
@@ -27,7 +27,7 @@ namespace Xablu.WebApiClient.Resolvers
             {
                 string text = await reader.ReadToEndAsync();
                 var jobject = JObject.Parse(text);
-                var result = (string)jobject.SelectToken("Result");
+                var result = (string) jobject.SelectToken("Result");
 
                 Debug.WriteLine("RECEIVED: " + result);
                 return JsonConvert.DeserializeObject<TResult>(result);
@@ -48,7 +48,6 @@ namespace Xablu.WebApiClient.Resolvers
             }
             */
 #endif
-		}
-	}
+        }
+    }
 }
-

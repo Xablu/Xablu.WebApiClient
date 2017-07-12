@@ -13,8 +13,8 @@ namespace Xablu.WebApiClient.HttpExtensions
     public class LargeFormUrlEncodedContent : ByteArrayContent
     {
         const string mediaContentType = "application/x-www-form-urlencoded";
-        
-		/// <summary>
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="LargeFormUrlEncodedContent"/> class.
         /// </summary>
         /// <param name="nameValueCollection">The name value collection.</param>
@@ -23,8 +23,8 @@ namespace Xablu.WebApiClient.HttpExtensions
         {
             Headers.ContentType = new MediaTypeHeaderValue(mediaContentType);
         }
-        
-		/// <summary>
+
+        /// <summary>
         /// Gets the content byte array in <see cref="mediaContentType"/> format.
         /// </summary>
         /// <param name="nameValueCollection">The name value collection.</param>

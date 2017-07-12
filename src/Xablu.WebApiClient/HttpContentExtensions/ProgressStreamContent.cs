@@ -8,243 +8,215 @@ using System.Threading.Tasks;
 
 namespace Xablu.WebApiClient.HttpContentExtensions
 {
-	public delegate void ProgressDelegate(long bytes, long totalBytes, long totalBytesExpected);
+    public delegate void ProgressDelegate(long bytes, long totalBytes, long totalBytesExpected);
 
-	/// <summary>
-	/// This class helps to track upload and download progress. It is a slight modified implementation of https://github.com/paulcbetts/ModernHttpClient/blob/64b36bb670ae655455477b766c60683ca0cf3a3e/src/ModernHttpClient/ProgressStreamContent.cs
-	/// </summary>
-	public class ProgressStreamContent : StreamContent
-	{
-		public ProgressStreamContent(HttpContentHeaders headers, Stream stream, CancellationToken token) : this(new ProgressStream(stream, token))
-		{
-			foreach (var h in headers)
-			{
-				this.Headers.Add(h.Key, h.Value);
-			}
-		}
+    /// <summary>
+    /// This class helps to track upload and download progress. It is a slight modified implementation of https://github.com/paulcbetts/ModernHttpClient/blob/64b36bb670ae655455477b766c60683ca0cf3a3e/src/ModernHttpClient/ProgressStreamContent.cs
+    /// </summary>
+    public class ProgressStreamContent : StreamContent
+    {
+        public ProgressStreamContent(HttpContentHeaders headers, Stream stream, CancellationToken token) : this(
+            new ProgressStream(stream, token))
+        {
+            foreach (var h in headers)
+            {
+                this.Headers.Add(h.Key, h.Value);
+            }
+        }
 
-		public ProgressStreamContent(Stream stream, CancellationToken token) : this(new ProgressStream(stream, token)) { }
+        public ProgressStreamContent(Stream stream, CancellationToken token) : this(new ProgressStream(stream, token))
+        {
+        }
 
-		public ProgressStreamContent(Stream stream, int bufferSize) : this(new ProgressStream(stream, CancellationToken.None), bufferSize) { }
+        public ProgressStreamContent(Stream stream, int bufferSize) : this(
+            new ProgressStream(stream, CancellationToken.None), bufferSize)
+        {
+        }
 
-		ProgressStreamContent(ProgressStream stream) : base(stream)
-		{
-			init(stream);
-		}
+        ProgressStreamContent(ProgressStream stream) : base(stream)
+        {
+            init(stream);
+        }
 
-		ProgressStreamContent(ProgressStream stream, int bufferSize) : base(stream, bufferSize)
-		{
-			init(stream);
-		}
+        ProgressStreamContent(ProgressStream stream, int bufferSize) : base(stream, bufferSize)
+        {
+            init(stream);
+        }
 
-		void init(ProgressStream stream)
-		{
-			stream.ReadCallback = readBytes;
+        void init(ProgressStream stream)
+        {
+            stream.ReadCallback = readBytes;
 
-			Progress = delegate { };
-		}
+            Progress = delegate { };
+        }
 
-		void reset()
-		{
-			_totalBytes = 0L;
-		}
+        void reset()
+        {
+            _totalBytes = 0L;
+        }
 
-		long _totalBytes;
-		long _totalBytesExpected = -1;
+        long _totalBytes;
+        long _totalBytesExpected = -1;
 
-		void readBytes(long bytes)
-		{
-			if (_totalBytesExpected == -1)
-				_totalBytesExpected = Headers.ContentLength ?? -1;
+        void readBytes(long bytes)
+        {
+            if (_totalBytesExpected == -1)
+                _totalBytesExpected = Headers.ContentLength ?? -1;
 
-			long computedLength;
-			if (_totalBytesExpected == -1 && TryComputeLength(out computedLength))
-				_totalBytesExpected = computedLength == 0 ? -1 : computedLength;
+            long computedLength;
+            if (_totalBytesExpected == -1 && TryComputeLength(out computedLength))
+                _totalBytesExpected = computedLength == 0 ? -1 : computedLength;
 
-			// If less than zero still then change to -1
-			_totalBytesExpected = Math.Max(-1, _totalBytesExpected);
-			_totalBytes += bytes;
+            // If less than zero still then change to -1
+            _totalBytesExpected = Math.Max(-1, _totalBytesExpected);
+            _totalBytes += bytes;
 
-			Progress(bytes, _totalBytes, _totalBytesExpected);
-		}
+            Progress(bytes, _totalBytes, _totalBytesExpected);
+        }
 
-		ProgressDelegate _progress;
-		public ProgressDelegate Progress
-		{
-			get
-			{
-				return _progress;
-			}
-			set
-			{
-				if (value == null) _progress = delegate { };
-				else _progress = value;
-			}
-		}
+        ProgressDelegate _progress;
 
-		protected override Task SerializeToStreamAsync(Stream stream, TransportContext context)
-		{
-			reset();
-			return base.SerializeToStreamAsync(stream, context);
-		}
+        public ProgressDelegate Progress
+        {
+            get { return _progress; }
+            set
+            {
+                if (value == null) _progress = delegate { };
+                else _progress = value;
+            }
+        }
 
-		protected override bool TryComputeLength(out long length)
-		{
-			var result = base.TryComputeLength(out length);
-			_totalBytesExpected = length;
-			return result;
-		}
+        protected override Task SerializeToStreamAsync(Stream stream, TransportContext context)
+        {
+            reset();
+            return base.SerializeToStreamAsync(stream, context);
+        }
 
-		class ProgressStream : Stream
-		{
-			CancellationToken token;
+        protected override bool TryComputeLength(out long length)
+        {
+            var result = base.TryComputeLength(out length);
+            _totalBytesExpected = length;
+            return result;
+        }
 
-			public ProgressStream(Stream stream, CancellationToken token)
-			{
-				ParentStream = stream;
-				this.token = token;
+        class ProgressStream : Stream
+        {
+            CancellationToken token;
 
-				ReadCallback = delegate { };
-				WriteCallback = delegate { };
-			}
+            public ProgressStream(Stream stream, CancellationToken token)
+            {
+                ParentStream = stream;
+                this.token = token;
 
-			public Action<long> ReadCallback
-			{
-				get;
-				set;
-			}
+                ReadCallback = delegate { };
+                WriteCallback = delegate { };
+            }
 
-			public Action<long> WriteCallback
-			{
-				get;
-				set;
-			}
+            public Action<long> ReadCallback { get; set; }
 
-			public Stream ParentStream
-			{
-				get;
-				private set;
-			}
+            public Action<long> WriteCallback { get; set; }
 
-			public override bool CanRead
-			{
-				get
-				{
-					return ParentStream.CanRead;
-				}
-			}
+            public Stream ParentStream { get; private set; }
 
-			public override bool CanSeek
-			{
-				get
-				{
-					return ParentStream.CanSeek;
-				}
-			}
+            public override bool CanRead
+            {
+                get { return ParentStream.CanRead; }
+            }
 
-			public override bool CanWrite
-			{
-				get
-				{
-					return ParentStream.CanWrite;
-				}
-			}
+            public override bool CanSeek
+            {
+                get { return ParentStream.CanSeek; }
+            }
 
-			public override bool CanTimeout
-			{
-				get
-				{
-					return ParentStream.CanTimeout;
-				}
-			}
+            public override bool CanWrite
+            {
+                get { return ParentStream.CanWrite; }
+            }
 
-			public override long Length
-			{
-				get
-				{
-					return ParentStream.Length;
-				}
-			}
+            public override bool CanTimeout
+            {
+                get { return ParentStream.CanTimeout; }
+            }
 
-			public override void Flush()
-			{
-				ParentStream.Flush();
-			}
+            public override long Length
+            {
+                get { return ParentStream.Length; }
+            }
 
-			public override Task FlushAsync(CancellationToken cancellationToken)
-			{
-				return ParentStream.FlushAsync(cancellationToken);
-			}
+            public override void Flush()
+            {
+                ParentStream.Flush();
+            }
 
-			public override long Position
-			{
-				get
-				{
-					return ParentStream.Position;
-				}
-				set
-				{
-					ParentStream.Position = value;
-				}
-			}
+            public override Task FlushAsync(CancellationToken cancellationToken)
+            {
+                return ParentStream.FlushAsync(cancellationToken);
+            }
 
-			public override int Read(byte[] buffer, int offset, int count)
-			{
-				token.ThrowIfCancellationRequested();
+            public override long Position
+            {
+                get { return ParentStream.Position; }
+                set { ParentStream.Position = value; }
+            }
 
-				var readCount = ParentStream.Read(buffer, offset, count);
-				ReadCallback(readCount);
-				return readCount;
-			}
+            public override int Read(byte[] buffer, int offset, int count)
+            {
+                token.ThrowIfCancellationRequested();
 
-			public override long Seek(long offset, SeekOrigin origin)
-			{
-				token.ThrowIfCancellationRequested();
-				return ParentStream.Seek(offset, origin);
-			}
+                var readCount = ParentStream.Read(buffer, offset, count);
+                ReadCallback(readCount);
+                return readCount;
+            }
 
-			public override void SetLength(long value)
-			{
-				token.ThrowIfCancellationRequested();
-				ParentStream.SetLength(value);
-			}
+            public override long Seek(long offset, SeekOrigin origin)
+            {
+                token.ThrowIfCancellationRequested();
+                return ParentStream.Seek(offset, origin);
+            }
 
-			public override void Write(byte[] buffer, int offset, int count)
-			{
-				token.ThrowIfCancellationRequested();
-				ParentStream.Write(buffer, offset, count);
-				WriteCallback(count);
-			}
+            public override void SetLength(long value)
+            {
+                token.ThrowIfCancellationRequested();
+                ParentStream.SetLength(value);
+            }
 
-			public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-			{
-				token.ThrowIfCancellationRequested();
-				var linked = CancellationTokenSource.CreateLinkedTokenSource(token, cancellationToken);
+            public override void Write(byte[] buffer, int offset, int count)
+            {
+                token.ThrowIfCancellationRequested();
+                ParentStream.Write(buffer, offset, count);
+                WriteCallback(count);
+            }
 
-				var readCount = await ParentStream.ReadAsync(buffer, offset, count, linked.Token);
+            public override async Task<int> ReadAsync(byte[] buffer, int offset, int count,
+                CancellationToken cancellationToken)
+            {
+                token.ThrowIfCancellationRequested();
+                var linked = CancellationTokenSource.CreateLinkedTokenSource(token, cancellationToken);
 
-				ReadCallback(readCount);
-				return readCount;
-			}
+                var readCount = await ParentStream.ReadAsync(buffer, offset, count, linked.Token);
 
-			public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-			{
-				token.ThrowIfCancellationRequested();
+                ReadCallback(readCount);
+                return readCount;
+            }
 
-				var linked = CancellationTokenSource.CreateLinkedTokenSource(token, cancellationToken);
-				var task = ParentStream.WriteAsync(buffer, offset, count, linked.Token);
+            public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+            {
+                token.ThrowIfCancellationRequested();
 
-				WriteCallback(count);
-				return task;
-			}
+                var linked = CancellationTokenSource.CreateLinkedTokenSource(token, cancellationToken);
+                var task = ParentStream.WriteAsync(buffer, offset, count, linked.Token);
 
-			protected override void Dispose(bool disposing)
-			{
-				if (disposing)
-				{
-					ParentStream.Dispose();
-				}
-			}
-		}
-	}
+                WriteCallback(count);
+                return task;
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    ParentStream.Dispose();
+                }
+            }
+        }
+    }
 }
