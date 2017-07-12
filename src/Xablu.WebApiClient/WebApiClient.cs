@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -8,6 +8,7 @@ using Fusillade;
 using Xablu.WebApiClient.Resolvers;
 using Xablu.WebApiClient.HttpExtensions;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace Xablu.WebApiClient
 {
@@ -22,7 +23,7 @@ namespace Xablu.WebApiClient
         private Lazy<HttpClient> _background;
         private Lazy<HttpClient> _userInitiated;
         private Lazy<HttpClient> _speculative;
-        private Func<HttpMessageHandler> _httpHandler = () => new HttpClientHandler();
+        private Func<HttpMessageHandler> _httpHandler = () => new HttpClientHandler() {  AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate };
 
         public WebApiClient()
         {
@@ -145,6 +146,28 @@ namespace Xablu.WebApiClient
 
             return response;
         }
+
+		public virtual async Task<TResult> PatchAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent), IHttpContentResolver contentResolver = null, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			var httpClient = GetWebApiClient(priority);
+
+			SetHttpRequestHeaders(httpClient);
+
+			var httpContent = ResolveHttpContent(content, contentResolver);
+            var httpRequestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), path)
+            {
+                Content = httpContent
+            };
+
+            var response = await httpClient
+				.SendAsync(httpRequestMessage, cancellationToken)
+				.ConfigureAwait(false);
+
+			if (!await response.EnsureSuccessStatusCodeAsync())
+				return default(TResult);
+
+			return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
+		}
 
         public virtual async Task<TResult> PostAsync<TContent, TResult>(Priority priority, string path, TContent content = default(TContent), IHttpContentResolver contentResolver = null, CancellationToken cancellationToken = default(CancellationToken))
         {
