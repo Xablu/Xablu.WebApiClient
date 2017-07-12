@@ -49,9 +49,18 @@
     <Compile Include="Resolvers\FormUrlEncodedContentResolver.cs" />
     <Compile Include="Resolvers\SimpleJsonContentResolver.cs" />
     <Compile Include="Resolvers\SimpleJsonResponseResolver.cs" />
+    <Compile Include="Resolvers\SimpleStringResponseResolver.cs" />
     <Compile Include="WebApiClient.cs" />
     <Compile Include="HttpContentExtensions\ProgressStreamContent.cs" />
     <Compile Include="HttpExtensions\WebApiClientProgressExtensions.cs" />
+    <Compile Include="IRestApiClient.cs" />
+    <Compile Include="RestApiResult.cs" />
+    <Compile Include="IRestApiResult.cs" />
+    <Compile Include="RestApiClient.cs" />
+    <Compile Include="Exceptions\HttpResponseException.cs" />
+    <Compile Include="HttpExtensions\RestApiClientPollyExtensions.cs" />
+    <Compile Include="HttpExtensions\RestApiClientProgressExtensions.cs" />
+    <Compile Include="HttpExtensions\RestApiResultExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Fusillade, Version=0.7.0.0, Culture=neutral, processorArchitecture=MSIL">

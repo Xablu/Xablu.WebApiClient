@@ -19,7 +19,7 @@ namespace Xablu.WebApiClient.Resolvers
         public async Task<TResult> ResolveHttpResponseAsync<TResult>(HttpResponseMessage responseMessage)
         {
             //If you need logging for development, use #if DEBUG and JsonConvert otherwise
-            #if DEBUG
+#if DEBUG
             using (var stream = await responseMessage.Content.ReadAsStreamAsync())
             using (var reader = new StreamReader(stream))
             {
@@ -27,7 +27,7 @@ namespace Xablu.WebApiClient.Resolvers
                 Debug.WriteLine("RECEIVED: " + text);
                 return JsonConvert.DeserializeObject<TResult>(text);
             }
-            #else
+#else
             using (var stream = await responseMessage.Content.ReadAsStreamAsync())
             using (var reader = new StreamReader(stream))
             using (var json = new JsonTextReader(reader))

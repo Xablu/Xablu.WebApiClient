@@ -12,11 +12,13 @@ using System.Net;
 
 namespace Xablu.WebApiClient
 {
-    [Obsolete("Class `WebApiClient` is deprecated, please use the `RestApiClient` class instead.")]
-    public class WebApiClient : IWebApiClient
+    public class RestApiClient
+        : IRestApiClient
     {
-        private string _apiBaseAddress;
+        private readonly Func<HttpMessageHandler> _httpHandler;
+        private readonly JsonSerializer _serializer = new JsonSerializer();
 
+        private string _apiBaseAddress;
         private IHttpContentResolver _httpContentResolver;
         private IHttpResponseResolver _httpResponseResolver;
         private bool _isDisposed;
@@ -25,27 +27,28 @@ namespace Xablu.WebApiClient
         private Lazy<HttpClient> _userInitiated;
         private Lazy<HttpClient> _speculative;
 
-        private Func<HttpMessageHandler> _httpHandler =
-            () => new HttpClientHandler()
+        public RestApiClient()
+        {
+            _httpHandler = () => new HttpClientHandler
             {
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
             };
-
-        public WebApiClient()
-        {
         }
 
-        public WebApiClient(string apiBaseAddress)
+        public RestApiClient(string apiBaseAddress)
+            : this()
         {
-            if (_httpHandler == null)
-                throw new ArgumentNullException(nameof(_httpHandler));
-
             SetBaseAddress(apiBaseAddress);
         }
 
-        public WebApiClient(string apiBaseAddress, Func<HttpMessageHandler> handler)
+        public RestApiClient(Func<HttpMessageHandler> handler)
         {
-            _httpHandler = handler;
+            _httpHandler = handler ?? throw new ArgumentNullException(nameof(handler));
+        }
+
+        public RestApiClient(string apiBaseAddress, Func<HttpMessageHandler> handler)
+            : this(handler)
+        {
             SetBaseAddress(apiBaseAddress);
         }
 
@@ -57,23 +60,23 @@ namespace Xablu.WebApiClient
             if (_apiBaseAddress == apiBaseAddress) return;
             _apiBaseAddress = apiBaseAddress;
 
-            Func<HttpMessageHandler, HttpClient> createClient =
-                messageHandler => new HttpClient(messageHandler) {BaseAddress = new Uri(apiBaseAddress)};
+            HttpClient CreateClient(HttpMessageHandler messageHandler) => new HttpClient(messageHandler)
+            {
+                BaseAddress = new Uri(apiBaseAddress)
+            };
 
-            _explicit = new Lazy<HttpClient>(() => createClient(
-                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Fusillade.Priority.Explicit)));
+            _explicit = new Lazy<HttpClient>(() => CreateClient(
+                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Priority.Explicit)));
 
-            _background = new Lazy<HttpClient>(() => createClient(
-                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Fusillade.Priority.Background)));
+            _background = new Lazy<HttpClient>(() => CreateClient(
+                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Priority.Background)));
 
-            _userInitiated = new Lazy<HttpClient>(() => createClient(
-                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Fusillade.Priority.UserInitiated)));
+            _userInitiated = new Lazy<HttpClient>(() => CreateClient(
+                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Priority.UserInitiated)));
 
-            _speculative = new Lazy<HttpClient>(() => createClient(
-                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Fusillade.Priority.Speculative)));
+            _speculative = new Lazy<HttpClient>(() => CreateClient(
+                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Priority.Speculative)));
         }
-
-        private JsonSerializer _serializer = new JsonSerializer();
 
         /// <summary>
         /// Gets or sets the implementation of the <see cref="IHttpContentResolver"/> interface associated with the WebApiClient.
@@ -82,13 +85,13 @@ namespace Xablu.WebApiClient
         /// The <see cref="IHttpContentResolver"/> implementation is responsible for serializing content which needs to be send to the server
         /// using a HTTP POST or PUT request.
         /// 
-        /// When no other value is supplied the <see cref="WebApiClient"/> by default uses the <see cref="SimpleJsonContentResolver"/>. This resolver will
+        /// When no other value is supplied the <see cref="RestApiClient"/> by default uses the <see cref="SimpleJsonContentResolver"/>. This resolver will
         /// try to serialize the content to a JSON message and returns the proper <see cref="System.Net.Http.HttpContent"/> instance.
         /// </remarks>
         public virtual IHttpContentResolver HttpContentResolver
         {
-            get { return _httpContentResolver ?? (_httpContentResolver = new SimpleJsonContentResolver(_serializer)); }
-            set { _httpContentResolver = value; }
+            get => _httpContentResolver ?? (_httpContentResolver = new SimpleJsonContentResolver(_serializer));
+            set => _httpContentResolver = value;
         }
 
         /// <summary>
@@ -98,16 +101,13 @@ namespace Xablu.WebApiClient
         /// The <see cref="IHttpResponseResolver"/> implementation is responsible for deserialising the <see cref="System.Net.Http.HttpResponseMessage"/>
         /// into the required result object.
         /// 
-        /// When no other value is supplied the <see cref="WebApiClient"/> by default uses the <see cref="SimpleJsonResponseResolver"/>. This resolver will
+        /// When no other value is supplied the <see cref="RestApiClient"/> by default uses the <see cref="SimpleJsonResponseResolver"/>. This resolver will
         /// assumes the response is a JSON message and tries to deserialize it into the required result object.
         /// </remarks>
         public virtual IHttpResponseResolver HttpResponseResolver
         {
-            get
-            {
-                return _httpResponseResolver ?? (_httpResponseResolver = new SimpleJsonResponseResolver(_serializer));
-            }
-            set { _httpResponseResolver = value; }
+            get => _httpResponseResolver ?? (_httpResponseResolver = new SimpleJsonResponseResolver(_serializer));
+            set => _httpResponseResolver = value;
         }
 
         /// <summary>
@@ -117,33 +117,10 @@ namespace Xablu.WebApiClient
 
         public virtual IDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
 
-        public virtual async Task<TResult> GetAsync<TResult>(Priority priority, string path,
+        public virtual async Task<IRestApiResult<TResult>> GetAsync<TResult>(Priority priority, string path,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var httpClient = GetWebApiClient(priority);
-
-            SetHttpRequestHeaders(httpClient);
-
-            //TODO: httpClient.GetAsync may throw NetworkOnMainThreadException
-            // see: https://bugzilla.xamarin.com/show_bug.cgi?id=44961
-            //var response = await httpClient.GetAsync(path, cancellationToken).ConfigureAwait(false);
-
-            var httpRequest = new HttpRequestMessage(HttpMethod.Get, path);
-
-            var response = await httpClient
-                .SendAsync(httpRequest, cancellationToken)
-                .ConfigureAwait(false);
-
-            if (!await response.EnsureSuccessStatusCodeAsync())
-                return default(TResult);
-
-            return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
-        }
-
-        public virtual async Task<HttpResponseMessage> GetAsync(Priority priority, string path,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var httpClient = GetWebApiClient(priority);
+            var httpClient = GetRestApiClient(priority);
 
             SetHttpRequestHeaders(httpClient);
 
@@ -153,17 +130,14 @@ namespace Xablu.WebApiClient
                 .SendAsync(httpRequest, cancellationToken)
                 .ConfigureAwait(false);
 
-            if (!await response.EnsureSuccessStatusCodeAsync())
-                return default(HttpResponseMessage);
-
-            return response;
+            return await response.BuildRestApiResult<TResult>(HttpResponseResolver);
         }
 
-        public virtual async Task<TResult> PatchAsync<TContent, TResult>(Priority priority, string path,
+        public virtual async Task<IRestApiResult<TResult>> PatchAsync<TContent, TResult>(Priority priority, string path,
             TContent content = default(TContent), IHttpContentResolver contentResolver = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var httpClient = GetWebApiClient(priority);
+            var httpClient = GetRestApiClient(priority);
 
             SetHttpRequestHeaders(httpClient);
 
@@ -177,17 +151,14 @@ namespace Xablu.WebApiClient
                 .SendAsync(httpRequestMessage, cancellationToken)
                 .ConfigureAwait(false);
 
-            if (!await response.EnsureSuccessStatusCodeAsync())
-                return default(TResult);
-
-            return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
+            return await response.BuildRestApiResult<TResult>(HttpResponseResolver);
         }
 
-        public virtual async Task<TResult> PostAsync<TContent, TResult>(Priority priority, string path,
+        public virtual async Task<IRestApiResult<TResult>> PostAsync<TContent, TResult>(Priority priority, string path,
             TContent content = default(TContent), IHttpContentResolver contentResolver = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var httpClient = GetWebApiClient(priority);
+            var httpClient = GetRestApiClient(priority);
 
             SetHttpRequestHeaders(httpClient);
 
@@ -196,17 +167,14 @@ namespace Xablu.WebApiClient
                 .PostAsync(path, httpContent, cancellationToken)
                 .ConfigureAwait(false);
 
-            if (!await response.EnsureSuccessStatusCodeAsync())
-                return default(TResult);
-
-            return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
+            return await response.BuildRestApiResult<TResult>(HttpResponseResolver);
         }
 
-        public virtual async Task<TResult> PutAsync<TContent, TResult>(Priority priority, string path,
+        public virtual async Task<IRestApiResult<TResult>> PutAsync<TContent, TResult>(Priority priority, string path,
             TContent content = default(TContent), IHttpContentResolver contentResolver = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var httpClient = GetWebApiClient(priority);
+            var httpClient = GetRestApiClient(priority);
 
             SetHttpRequestHeaders(httpClient);
 
@@ -215,32 +183,27 @@ namespace Xablu.WebApiClient
                 .PutAsync(path, httpContent, cancellationToken)
                 .ConfigureAwait(false);
 
-            if (!await response.EnsureSuccessStatusCodeAsync())
-                return default(TResult);
-
-            return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
+            return await response.BuildRestApiResult<TResult>(HttpResponseResolver);
         }
 
-        public virtual async Task<TResult> DeleteAsync<TResult>(Priority priority, string path,
+        public virtual async Task<IRestApiResult<TResult>> DeleteAsync<TResult>(Priority priority, string path,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var httpClient = GetWebApiClient(priority);
+            var httpClient = GetRestApiClient(priority);
 
             SetHttpRequestHeaders(httpClient);
 
             var response = await httpClient.DeleteAsync(path, cancellationToken).ConfigureAwait(false);
 
-            if (!await response.EnsureSuccessStatusCodeAsync())
-                return default(TResult);
-
-            return await HttpResponseResolver.ResolveHttpResponseAsync<TResult>(response);
+            return await response.BuildRestApiResult<TResult>(HttpResponseResolver);
         }
 
-        internal HttpContent ResolveHttpContent<TContent>(TContent content, IHttpContentResolver contentResolver = null)
+        public virtual HttpContent ResolveHttpContent<TContent>(TContent content,
+            IHttpContentResolver contentResolver = null)
         {
             HttpContent httpContent = null;
 
-            if (content != null)
+            if (!EqualityComparer<TContent>.Default.Equals(content, default(TContent)))
             {
                 if (content is HttpContent)
                 {
@@ -265,7 +228,7 @@ namespace Xablu.WebApiClient
             return httpContent;
         }
 
-        internal HttpClient GetWebApiClient(Priority prioriy)
+        public virtual HttpClient GetRestApiClient(Priority prioriy)
         {
             if (_apiBaseAddress == null)
                 throw new ArgumentNullException(nameof(_apiBaseAddress),
@@ -286,12 +249,11 @@ namespace Xablu.WebApiClient
             }
         }
 
-        internal void SetHttpRequestHeaders(HttpClient client)
+        public virtual void SetHttpRequestHeaders(HttpClient client)
         {
             client.DefaultRequestHeaders.Clear();
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(AcceptHeader));
 
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(AcceptHeader));
             client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
 
             foreach (var header in Headers)
