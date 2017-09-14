@@ -83,22 +83,22 @@ Task("UnitTest")
 	.IsDependentOn("Build")
 	.Does(() =>
 {
-	var testPaths = new List<string> {
-		new FilePath("./src/Tests/Xablu.WebApiClient.UnitTests/bin/Release/Xablu.WebApiClient.UnitTests.dll").FullPath
-	};
+	// var testPaths = new List<string> {
+	// 	new FilePath("./src/Tests/Xablu.WebApiClient.UnitTests/bin/Release/Xablu.WebApiClient.UnitTests.dll").FullPath
+	// };
 
-    var testResultsPath = new FilePath(outputDir + "/NUnitTestResult.xml");
+    // var testResultsPath = new FilePath(outputDir + "/NUnitTestResult.xml");
 
-	NUnit3(testPaths, new NUnit3Settings {
-		Timeout = 30000,
-		OutputFile = new FilePath(outputDir + "/NUnitOutput.txt"),
-		Results = testResultsPath
-	});
+	// NUnit3(testPaths, new NUnit3Settings {
+	// 	Timeout = 30000,
+	// 	OutputFile = new FilePath(outputDir + "/NUnitOutput.txt"),
+	// 	Results = testResultsPath
+	// });
 
-    if (isRunningOnAppVeyor)
-    {
-        AppVeyor.UploadTestResults(testResultsPath, AppVeyorTestResultsType.NUnit3);
-    }
+    // if (isRunningOnAppVeyor)
+    // {
+    //     AppVeyor.UploadTestResults(testResultsPath, AppVeyorTestResultsType.NUnit3);
+    // }
 });
 
 Task("GitLink")
