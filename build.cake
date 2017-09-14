@@ -118,7 +118,7 @@ Task("GitLink")
 		new GitLinkSettings {
 			RepositoryUrl = "https://github.com/Xablu/Xablu.WebApiClient",
 			Configuration = "Release",
-			SolutionFileName = "Xablu.WebApiClient.sln",
+			SolutionFileName = "src/Xablu.WebApiClient.sln",
 			ArgumentCustomization = args => args.Append("-ignore " + string.Join(",", projectsToIgnore))
 		});
 });
