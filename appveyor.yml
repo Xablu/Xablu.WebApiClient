@@ -1,9 +1,8 @@
-# configuration for "master" branch
 -
   branches:
       only:
         - master
-  version: 1.0.0.{build}
+  version: 1.0.{build}
   image: Visual Studio 2017
   environment:
     NUGET_SOURCE: https://www.nuget.org/api/v2/package
@@ -12,12 +11,11 @@
   build_script:
   - ps: .\build.ps1 -verbosity Diagnostic
   test: off
-  # configuration for "master" branch
 -
   branches:
       only:
         - develop
-  version: 1.0.0.{build}
+  version: 1.0.{build}
   image: Visual Studio 2017
   environment:
     NUGET_SOURCE: https://www.myget.org/F/xabluhq/api/v2/package

@@ -1,6 +1,7 @@
 #tool nuget:?package=GitVersion.CommandLine
-#tool nuget:?package=gitlink
+#tool nuget:?package=gitlink&version=2.4.0
 #tool nuget:?package=vswhere
+#tool nuget:?package=NUnit.ConsoleRunner
 #addin nuget:?package=Cake.Incubator
 #addin nuget:?package=Cake.Git
 
@@ -52,7 +53,8 @@ Task("Restore")
 	.IsDependentOn("ResolveBuildTools")
 	.Does(() => {
 	NuGetRestore(sln, new NuGetRestoreSettings {
-		ToolPath = "tools/nuget.exe"
+		ToolPath = "tools/nuget.exe",
+		Verbosity = NuGetVerbosity.Quiet
 	});
 	// MSBuild(sln, settings => settings.WithTarget("Restore"));
 });
@@ -67,7 +69,8 @@ Task("Build")
 	var settings = new MSBuildSettings 
 	{
 		Configuration = "Release",
-		ToolPath = msBuildPath
+		ToolPath = msBuildPath,
+		Verbosity = Verbosity.Minimal
 	};
 
 	settings.Properties.Add("DebugSymbols", new List<string> { "True" });
@@ -76,8 +79,30 @@ Task("Build")
 	MSBuild(sln, settings);
 });
 
-Task("GitLink")
+Task("UnitTest")
 	.IsDependentOn("Build")
+	.Does(() =>
+{
+	var testPaths = new List<string> {
+		new FilePath("./src/Tests/Xablu.WebApiClient.UnitTests/bin/Release/Xablu.WebApiClient.UnitTests.dll").FullPath
+	};
+
+    var testResultsPath = new FilePath(outputDir + "/NUnitTestResult.xml");
+
+	NUnit3(testPaths, new NUnit3Settings {
+		Timeout = 30000,
+		OutputFile = new FilePath(outputDir + "/NUnitOutput.txt"),
+		Results = testResultsPath
+	});
+
+    if (isRunningOnAppVeyor)
+    {
+        AppVeyor.UploadTestResults(testResultsPath, AppVeyorTestResultsType.NUnit3);
+    }
+});
+
+Task("GitLink")
+	.IsDependentOn("UnitTest")
 	//pdbstr.exe and costura are not xplat currently
 	.WithCriteria(() => IsRunningOnWindows())
 	.WithCriteria(() => 
@@ -85,19 +110,28 @@ Task("GitLink")
 		IsMasterOrReleases())
 	.Does(() => 
 {
-    GitLink(sln.GetDirectory(), 
-        new GitLinkSettings {
-            RepositoryUrl = "https://github.com/Xablu/Xablu.WebApiClient",
-            ArgumentCustomization = args => args.Append("-ignore apiclient.sample")
-        });
+	var projectsToIgnore = new string[] {
+		"apiclient.sample"
+	};
+
+	GitLink("./", 
+		new GitLinkSettings {
+			RepositoryUrl = "https://github.com/Xablu/Xablu.WebApiClient",
+			Configuration = "Release",
+			SolutionFileName = "Xablu.WebApiClient.sln",
+			ArgumentCustomization = args => args.Append("-ignore " + string.Join(",", projectsToIgnore))
+		});
 });
 
 Task("Package")
-    .IsDependentOn("GitLink")
-    .Does(() => 
+	.IsDependentOn("GitLink")
+	.WithCriteria(() => 
+		StringComparer.OrdinalIgnoreCase.Equals(versionInfo.BranchName, "develop") || 
+		IsMasterOrReleases())
+	.Does(() => 
 {
-    var nugetSettings = new NuGetPackSettings {
-        Authors = new [] { "Xablu" },
+	var nugetSettings = new NuGetPackSettings {
+		Authors = new [] { "Xablu" },
         Owners = new [] { "Xablu" },
         IconUrl = new Uri("https://raw.githubusercontent.com/Xablu/Xablu.WebApiClient/master/icon_xablu.png"),
         ProjectUrl = new Uri("https://github.com/Xablu/Xablu.WebApiClient"),
@@ -110,18 +144,16 @@ Task("Package")
         OutputDirectory = outputDir,
         Verbosity = NuGetVerbosity.Detailed,
         BasePath = "./nuspec"
-    };
+	};
 
-    EnsureDirectoryExists(outputDir);
+	var nuspecs = new List<string> {
+		"Xablu.WebApiClient.nuspec"
+	};
 
-    var nuspecs = new List<string> {
-        "Xablu.WebApiClient.nuspec"
-    };
-
-    foreach(var nuspec in nuspecs)
-    {
-        NuGetPack(nuspecDir + "/" + nuspec, nugetSettings);
-    }
+	foreach(var nuspec in nuspecs)
+	{
+		NuGetPack(nuspecDir + "/" + nuspec, nugetSettings);
+	}
 });
 
 Task("PublishPackages")
@@ -144,7 +176,6 @@ Task("PublishPackages")
 	var apiKey = nugetKeySource.Item1;
 	var source = nugetKeySource.Item2;
 
-	Information("Search for nuget packages in: " + outputDir);
 	var nugetFiles = GetFiles(outputDir + "/*.nupkg");
 
 	foreach(var nugetFile in nugetFiles)
@@ -202,7 +233,7 @@ bool IsRepository(string repoName)
 	{
 		try
 		{
-			var path = MakeAbsolute(new DirectoryPath("./")).FullPath;
+			var path = MakeAbsolute(sln).GetDirectory().FullPath;
 			using (var repo = new LibGit2Sharp.Repository(path))
 			{
 				var origin = repo.Network.Remotes.FirstOrDefault(
@@ -221,7 +252,7 @@ bool IsRepository(string repoName)
 
 bool IsTagged()
 {
-	var path = MakeAbsolute(new DirectoryPath("./")).FullPath;
+	var path = MakeAbsolute(sln).GetDirectory().FullPath;
 	using (var repo = new LibGit2Sharp.Repository(path))
 	{
 		var head = repo.Head;
