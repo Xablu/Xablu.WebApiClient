@@ -16,7 +16,7 @@ namespace Xablu.WebApiClient.Resolvers
             _serializer = serializer;
         }
 
-        public async Task<TResult> ResolveHttpResponseAsync<TResult>(HttpResponseMessage responseMessage)
+        public virtual async Task<TResult> ResolveHttpResponseAsync<TResult>(HttpResponseMessage responseMessage)
         {
             //If you need logging for development, use #if DEBUG and JsonConvert otherwise
 #if DEBUG
