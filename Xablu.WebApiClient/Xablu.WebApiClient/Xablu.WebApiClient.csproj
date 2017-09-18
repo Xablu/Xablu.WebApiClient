@@ -3,6 +3,14 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Xablu</Authors>
+    <Company>Xablu</Company>
+    <Product>Xablu WebApiClient</Product>
+    <Description>The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of Web API services in .NET projects.</Description>
+    <Copyright>Copyright (c) Xablu</Copyright>
+    <PackageLicenseUrl>https://github.com/Xablu/Xablu.WebApiClient/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Xablu/Xablu.WebApiClient</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Xablu/Xablu.WebApiClient</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
