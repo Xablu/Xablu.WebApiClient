@@ -18,6 +18,7 @@ namespace Xablu.WebApiClient
         private readonly Func<HttpMessageHandler> _httpHandler;
         private readonly JsonSerializer _serializer = new JsonSerializer();
 
+        private object _lockObject = new object();
         private string _apiBaseAddress;
         private IHttpContentResolver _httpContentResolver;
         private IHttpResponseResolver _httpResponseResolver;
@@ -251,13 +252,19 @@ namespace Xablu.WebApiClient
 
         public virtual void SetHttpRequestHeaders(HttpClient client)
         {
-            client.DefaultRequestHeaders.Clear();
+            lock (_lockObject)
+            {
+                client.DefaultRequestHeaders.Clear();
 
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(AcceptHeader));
-            client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(AcceptHeader));
+                client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
 
-            foreach (var header in Headers)
-                client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                foreach (var header in Headers)
+                {
+                    if (!client.DefaultRequestHeaders.Contains(header.Key))
+                        client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                }
+            }
         }
 
         public void Dispose()
