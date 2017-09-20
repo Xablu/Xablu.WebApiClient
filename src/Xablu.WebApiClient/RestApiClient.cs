@@ -9,6 +9,7 @@ using Xablu.WebApiClient.Resolvers;
 using Xablu.WebApiClient.HttpExtensions;
 using Newtonsoft.Json;
 using System.Net;
+using System.Collections.Concurrent;
 
 namespace Xablu.WebApiClient
 {
@@ -116,7 +117,7 @@ namespace Xablu.WebApiClient
         /// </summary>
         public virtual string AcceptHeader { get; set; } = "application/json";
 
-        public virtual IDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
+        public virtual IDictionary<string, string> Headers { get; } = new ConcurrentDictionary<string, string>();
 
         public virtual async Task<IRestApiResult<TResult>> GetAsync<TResult>(Priority priority, string path,
             CancellationToken cancellationToken = default(CancellationToken))
