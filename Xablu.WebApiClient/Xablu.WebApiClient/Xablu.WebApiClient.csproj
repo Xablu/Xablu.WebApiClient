@@ -12,6 +12,7 @@
     <PackageProjectUrl>https://github.com/Xablu/Xablu.WebApiClient</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Xablu/Xablu.WebApiClient</RepositoryUrl>
     <PackageTags>webapiclient xablu xamarin</PackageTags>
+    <Version>1.0.0-beta1</Version>
   </PropertyGroup>
 
   <ItemGroup>
