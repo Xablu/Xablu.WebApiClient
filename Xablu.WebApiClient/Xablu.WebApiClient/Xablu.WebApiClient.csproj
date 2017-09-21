@@ -11,8 +11,10 @@
     <PackageLicenseUrl>https://github.com/Xablu/Xablu.WebApiClient/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Xablu/Xablu.WebApiClient</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Xablu/Xablu.WebApiClient</RepositoryUrl>
-    <PackageTags>webapiclient xablu xamarin</PackageTags>
+    <PackageTags>xamarin, monodroid, C#, xamarin.android, android, ios, uwp, Windows, tvOS, Mac, MacOS, Xablu, Web API, ASP.NET, .NET, webapiclient</PackageTags>
     <Version>1.0.0-beta1</Version>
+    <PackageIconUrl>https://raw.githubusercontent.com/Xablu/Xablu.WebApiClient/master/icon_xablu.png</PackageIconUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
