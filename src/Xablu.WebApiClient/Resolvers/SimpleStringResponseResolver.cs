@@ -7,7 +7,7 @@ namespace Xablu.WebApiClient.Resolvers
     public class SimpleStringResponseResolver
         : IHttpResponseResolver
     {
-        public async Task<TResult> ResolveHttpResponseAsync<TResult>(HttpResponseMessage responseMessage)
+        public virtual async Task<TResult> ResolveHttpResponseAsync<TResult>(HttpResponseMessage responseMessage)
         {
             var result = string.Empty;
             if (responseMessage.Content != null)

@@ -9,6 +9,7 @@ using Xablu.WebApiClient.Resolvers;
 using Xablu.WebApiClient.HttpExtensions;
 using Newtonsoft.Json;
 using System.Net;
+using System.Collections.Concurrent;
 
 namespace Xablu.WebApiClient
 {
@@ -18,6 +19,7 @@ namespace Xablu.WebApiClient
         private readonly Func<HttpMessageHandler> _httpHandler;
         private readonly JsonSerializer _serializer = new JsonSerializer();
 
+        private object _lockObject = new object();
         private string _apiBaseAddress;
         private IHttpContentResolver _httpContentResolver;
         private IHttpResponseResolver _httpResponseResolver;
@@ -115,7 +117,7 @@ namespace Xablu.WebApiClient
         /// </summary>
         public virtual string AcceptHeader { get; set; } = "application/json";
 
-        public virtual IDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
+        public virtual IDictionary<string, string> Headers { get; } = new ConcurrentDictionary<string, string>();
 
         public virtual async Task<IRestApiResult<TResult>> GetAsync<TResult>(Priority priority, string path,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -251,13 +253,19 @@ namespace Xablu.WebApiClient
 
         public virtual void SetHttpRequestHeaders(HttpClient client)
         {
-            client.DefaultRequestHeaders.Clear();
+            lock (_lockObject)
+            {
+                client.DefaultRequestHeaders.Clear();
 
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(AcceptHeader));
-            client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(AcceptHeader));
+                client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
 
-            foreach (var header in Headers)
-                client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                foreach (var header in Headers)
+                {
+                    if (!client.DefaultRequestHeaders.Contains(header.Key))
+                        client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                }
+            }
         }
 
         public void Dispose()

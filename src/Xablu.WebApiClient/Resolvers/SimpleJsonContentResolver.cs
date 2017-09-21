@@ -14,7 +14,7 @@ namespace Xablu.WebApiClient.Resolvers
             _serializer = serializer;
         }
 
-        public HttpContent ResolveHttpContent<TContent>(TContent content)
+        public virtual HttpContent ResolveHttpContent<TContent>(TContent content)
         {
             var serializedContent = JsonConvert.SerializeObject(content);
 

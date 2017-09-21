@@ -8,7 +8,7 @@ namespace Xablu.WebApiClient.Resolvers
     public class FormUrlEncodedContentResolver
         : IHttpContentResolver
     {
-        public HttpContent ResolveHttpContent<TContent>(TContent content)
+        public virtual HttpContent ResolveHttpContent<TContent>(TContent content)
         {
             var nameValueCollection = content as IEnumerable<KeyValuePair<string, string>>;
 
