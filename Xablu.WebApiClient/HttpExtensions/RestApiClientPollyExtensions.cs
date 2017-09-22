@@ -4,91 +4,135 @@ using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Xablu.WebApiClient.HttpExtensions
 {
     public static class RestApiClientPollyExtensions
     {
-        public static Task<IRestApiResult<TResult>> GetAsync<TResult>(this IRestApiClient apiClient, Priority priority,
-            string path, int retryCount, int sleepDuration,
+        public static Task<IRestApiResult<TResult>> GetAsync<TResult>(this IRestApiClient apiClient,
+            Priority priority,
+            string path,
+            int retryCount,
+            int sleepDuration,
+            IList<KeyValuePair<string, string>> headers = null,
+            IHttpResponseResolver httpResponseResolver = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             return PollyDecorator(
-                () => apiClient.GetAsync<TResult>(priority, path, cancellationToken),
+                () => apiClient.GetAsync<TResult>(priority, path, headers, httpResponseResolver, cancellationToken),
                 retryCount,
                 sleepDuration);
         }
 
         public static Task<IRestApiResult<TResult>> GetAsync<TResult>(this IRestApiClient apiClient, Priority priority,
-            string path, int retryCount, Func<int, TimeSpan> sleepDurationProvider,
+            string path,
+            int retryCount,
+            Func<int, TimeSpan> sleepDurationProvider,
+            IList<KeyValuePair<string, string>> headers = null,
+            IHttpResponseResolver httpResponseResolver = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             return PollyDecorator(
-                () => apiClient.GetAsync<TResult>(priority, path, cancellationToken),
+                () => apiClient.GetAsync<TResult>(priority, path, headers, httpResponseResolver, cancellationToken),
                 retryCount,
                 sleepDurationProvider);
         }
 
         public static Task<IRestApiResult<TResult>> PostAsync<TContent, TResult>(this IRestApiClient apiClient,
-            Priority priority, string path, int retryCount, int sleepDuration, TContent content = default(TContent),
-            IHttpContentResolver contentResolver = null,
+            Priority priority,
+            string path,
+            int retryCount,
+            int sleepDuration,
+            TContent content = default(TContent),
+            IList<KeyValuePair<string, string>> headers = null,
+            IHttpContentResolver httpContentResolver = null,
+            IHttpResponseResolver httpResponseResolver = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             return PollyDecorator(
-                () => apiClient.PostAsync<TContent, TResult>(priority, path, cancellationToken: cancellationToken),
+                () => apiClient.PostAsync<TContent, TResult>(priority, path, content, headers, httpContentResolver, httpResponseResolver, cancellationToken),
                 retryCount,
                 sleepDuration);
         }
 
         public static Task<IRestApiResult<TResult>> PostAsync<TContent, TResult>(this IRestApiClient apiClient,
-            Priority priority, string path, int retryCount, Func<int, TimeSpan> sleepDurationProvider,
-            TContent content = default(TContent), IHttpContentResolver contentResolver = null,
+            Priority priority,
+            string path,
+            int retryCount,
+            Func<int, TimeSpan> sleepDurationProvider,
+            TContent content = default(TContent),
+            IList<KeyValuePair<string, string>> headers = null,
+            IHttpContentResolver httpContentResolver = null,
+            IHttpResponseResolver httpResponseResolver = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             return PollyDecorator(
-                () => apiClient.PostAsync<TContent, TResult>(priority, path, cancellationToken: cancellationToken),
+                () => apiClient.PostAsync<TContent, TResult>(priority, path, content, headers, httpContentResolver, httpResponseResolver, cancellationToken),
                 retryCount,
                 sleepDurationProvider);
         }
 
         public static Task<IRestApiResult<TResult>> PutAsync<TContent, TResult>(this IRestApiClient apiClient,
-            Priority priority, string path, int retryCount, int sleepDuration, TContent content = default(TContent),
-            IHttpContentResolver contentResolver = null,
+            Priority priority,
+            string path,
+            int retryCount,
+            int sleepDuration,
+            TContent content = default(TContent),
+            IList<KeyValuePair<string, string>> headers = null,
+            IHttpContentResolver httpContentResolver = null,
+            IHttpResponseResolver httpResponseResolver = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             return PollyDecorator(
-                () => apiClient.PutAsync<TContent, TResult>(priority, path, cancellationToken: cancellationToken),
+                () => apiClient.PutAsync<TContent, TResult>(priority, path, content, headers, httpContentResolver, httpResponseResolver, cancellationToken),
                 retryCount,
                 sleepDuration);
         }
 
         public static Task<IRestApiResult<TResult>> PutAsync<TContent, TResult>(this IRestApiClient apiClient,
-            Priority priority, string path, int retryCount, Func<int, TimeSpan> sleepDurationProvider,
-            TContent content = default(TContent), IHttpContentResolver contentResolver = null,
+            Priority priority,
+            string path,
+            int retryCount,
+            Func<int, TimeSpan> sleepDurationProvider,
+            TContent content = default(TContent),
+            IList<KeyValuePair<string, string>> headers = null,
+            IHttpContentResolver httpContentResolver = null,
+            IHttpResponseResolver httpResponseResolver = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             return PollyDecorator(
-                () => apiClient.PutAsync<TContent, TResult>(priority, path, cancellationToken: cancellationToken),
+                () => apiClient.PutAsync<TContent, TResult>(priority, path, content, headers, httpContentResolver, httpResponseResolver, cancellationToken),
                 retryCount,
                 sleepDurationProvider);
         }
 
         public static Task<IRestApiResult<TResult>> DeleteAsync<TResult>(this IRestApiClient apiClient,
-            Priority priority, string path, int retryCount, int sleepDuration,
+            Priority priority,
+            string path,
+            int retryCount,
+            int sleepDuration,
+            IList<KeyValuePair<string, string>> headers = null,
+            IHttpResponseResolver httpResponseResolver = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             return PollyDecorator(
-                () => apiClient.DeleteAsync<TResult>(priority, path, cancellationToken),
+                () => apiClient.DeleteAsync<TResult>(priority, path, headers, httpResponseResolver, cancellationToken),
                 retryCount,
                 sleepDuration);
         }
 
         public static Task<IRestApiResult<TResult>> DeleteAsync<TResult>(this IRestApiClient apiClient,
-            Priority priority, string path, int retryCount, Func<int, TimeSpan> sleepDurationProvider,
+            Priority priority,
+            string path,
+            int retryCount,
+            Func<int, TimeSpan> sleepDurationProvider,
+            IList<KeyValuePair<string, string>> headers = null,
+            IHttpResponseResolver httpResponseResolver = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
             return PollyDecorator(
-                () => apiClient.DeleteAsync<TResult>(priority, path, cancellationToken),
+                () => apiClient.DeleteAsync<TResult>(priority, path, headers, httpResponseResolver, cancellationToken),
                 retryCount,
                 sleepDurationProvider);
         }

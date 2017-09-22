@@ -1,0 +1,60 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Fusillade;
+using Xablu.WebApiClient.HttpContentExtensions;
+using Xablu.WebApiClient.HttpExtensions;
+
+namespace Xablu.WebApiClient
+{
+    public class RestApiProgressClient
+        : RestApiClient
+    {
+        public RestApiProgressClient()
+            : base()
+        {
+        }
+
+        public RestApiProgressClient(string apiBaseAddress)
+            : base(apiBaseAddress)
+        {
+        }
+
+        public RestApiProgressClient(Func<HttpMessageHandler> handler)
+            : base(handler)
+        {
+        }
+
+        public RestApiProgressClient(string apiBaseAddress, Func<HttpMessageHandler> handler)
+            : base(apiBaseAddress, handler)
+        {
+        }
+
+        public virtual async Task<IRestApiResult<TResult>> PostAsync<TContent, TResult>(
+            Priority priority,
+            string path,
+            TContent content = default(TContent),
+            ProgressDelegate progressDelegate = null,
+            IList<KeyValuePair<string, string>> headers = null,
+            IHttpContentResolver httpContentResolver = null,
+            IHttpResponseResolver httpResponseResolver = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var httpContent = ResolveHttpContent(content);
+            var stream = await httpContent.ReadAsStreamAsync();
+            var progressContent = new ProgressStreamContent(httpContent.Headers, stream, cancellationToken)
+            {
+                Progress = progressDelegate
+            };
+
+            var httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), path)
+            {
+                Content = progressContent
+            };
+
+            return await SendAsync<TResult>(priority, httpRequestMessage, headers, httpResponseResolver, cancellationToken);
+        }
+    }
+}
