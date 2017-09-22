@@ -120,7 +120,7 @@ namespace Xablu.WebApiClient
             set => _defaultHttpResponseResolver = value;
         }
 
-        public virtual string DefaultAcceptHeader => "application/json";
+        public virtual string DefaultAcceptHeader { get; set; } = "application/json";
         public virtual string AuthorizeToken { get; set; }
 
         public virtual async Task<IRestApiResult<TResult>> GetAsync<TResult>(

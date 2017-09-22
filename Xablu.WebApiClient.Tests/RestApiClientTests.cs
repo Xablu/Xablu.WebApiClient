@@ -1,99 +1,86 @@
 ﻿using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using Fusillade;
-using Xablu.WebApiClient.Resolvers;
-using Xablu.WebApiClient.UnitTests.Builders;
 using Xablu.WebApiClient.UnitTests.Fakes;
 using Xunit;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Xablu.WebApiClient.UnitTests
 {
     public class RestApiClientTests
     {
+        private class RestApiClientAccessor : RestApiClient
+        {
+            public void SetHttpRequestHeadersAccessor(HttpRequestMessage message, IList<KeyValuePair<string, string>> headers)
+            {
+                base.SetHttpRequestHeaders(message, headers);
+            }
+        }
+
         [Fact]
         public void SetHttpRequestHeaders_DefaultAcceptHeader_ApplicationJson()
         {
-            var httpClient = new HttpClient();
-            var restClient = new RestApiClient(() => new FakeMessageHandler());
-            
-            restClient.SetHttpRequestHeaders(httpClient);
+            var restClient = new RestApiClientAccessor();
+            var httpRequestMessage = new HttpRequestMessage();
 
-            Assert.Equal(1, httpClient.DefaultRequestHeaders.Accept.Count);
-            Assert.True(httpClient.DefaultRequestHeaders.Accept.Contains(new MediaTypeWithQualityHeaderValue("application/json")));
+            restClient.SetHttpRequestHeadersAccessor(httpRequestMessage, null);
+
+            Assert.Equal(1, httpRequestMessage.Headers.Accept.Count);
+            Assert.True(httpRequestMessage.Headers.Accept.Contains(new MediaTypeWithQualityHeaderValue("application/json")));
         }
 
         [Fact]
         public void SetHttpRequestHeaders_OverrideAcceptHeader_AcceptHeaderMatchedWithTheValueSet()
         {
             const string acceptHeader = "plain/text";
-            var httpClient = new HttpClient();
-            var restClient = new RestApiClient(() => new FakeMessageHandler()) { AcceptHeader =  acceptHeader };
-            
-            restClient.SetHttpRequestHeaders(httpClient);
+            var restClient = new RestApiClientAccessor { DefaultAcceptHeader = acceptHeader };
+            var httpRequestMessage = new HttpRequestMessage();
 
-            Assert.Equal(1, httpClient.DefaultRequestHeaders.Accept.Count);
-            Assert.True(httpClient.DefaultRequestHeaders.Accept.Contains(new MediaTypeWithQualityHeaderValue(acceptHeader)));
+            restClient.SetHttpRequestHeadersAccessor(httpRequestMessage, null);
+
+            Assert.Equal(1, httpRequestMessage.Headers.Accept.Count);
+            Assert.True(httpRequestMessage.Headers.Accept.Contains(new MediaTypeWithQualityHeaderValue(acceptHeader)));
         }
 
         [Fact]
         public void SetHttpRequestHeaders_MultipleAcceptHeaders_AcceptHeaderMatchedWithTheValuesSet()
         {
-            var restClient = new RestApiClient(() => new FakeMessageHandler());
-            restClient.Headers.Add("Accept", "plain/text");
-            var httpClient = new HttpClient();
+            const string acceptHeader = "plain/text";
+            var restClient = new RestApiClientAccessor();
+            var headers = new List<KeyValuePair<string, string>> { { "Accept", acceptHeader } };
+            var httpRequestMessage = new HttpRequestMessage();
 
-            restClient.SetHttpRequestHeaders(httpClient);
+            restClient.SetHttpRequestHeadersAccessor(httpRequestMessage, headers);
 
-            Assert.Equal(2, httpClient.DefaultRequestHeaders.Accept.Count);
-            Assert.True(httpClient.DefaultRequestHeaders.Accept.Contains(new MediaTypeWithQualityHeaderValue("application/json")));
-            Assert.True(httpClient.DefaultRequestHeaders.Accept.Contains(new MediaTypeWithQualityHeaderValue("plain/text")));
+            Assert.Equal(2, httpRequestMessage.Headers.Accept.Count);
+            Assert.True(httpRequestMessage.Headers.Accept.Contains(new MediaTypeWithQualityHeaderValue("application/json")));
+            Assert.True(httpRequestMessage.Headers.Accept.Contains(new MediaTypeWithQualityHeaderValue("plain/text")));
         }
 
         [Fact]
         public void SetHttpRequestHeaders_DefaultAcceptEncoding_Gzip()
         {
-            var httpClient = new HttpClient();
-            var restClient = new RestApiClient(() => new FakeMessageHandler());
-            
-            restClient.SetHttpRequestHeaders(httpClient);
+            var restClient = new RestApiClientAccessor();
+            var httpRequestMessage = new HttpRequestMessage();
 
-            Assert.Equal(1, httpClient.DefaultRequestHeaders.AcceptEncoding.Count);
-            Assert.True(httpClient.DefaultRequestHeaders.AcceptEncoding.Contains(new StringWithQualityHeaderValue("gzip")));
+            restClient.SetHttpRequestHeadersAccessor(httpRequestMessage, null);
+
+            Assert.Equal(1, httpRequestMessage.Headers.AcceptEncoding.Count);
+            Assert.True(httpRequestMessage.Headers.AcceptEncoding.Contains(new StringWithQualityHeaderValue("gzip")));
         }
 
         [Fact]
         public void SetHttpRequestHeaders_CustomHeadersConfigure_CustomHeadersAreAddedToHttpClient()
         {
-            var httpClient = new HttpClient();
-            var restClient = new RestApiClient(() => new FakeMessageHandler());
-            restClient.Headers.Add("X-CustomHeader-1", "Value 1");
-            restClient.Headers.Add("X-CustomHeader-2", "Value 2");
+            var restClient = new RestApiClientAccessor();
+            var headers = new List<KeyValuePair<string, string>> { { "X-CustomHeader-1", "Value 1" }, { "X-CustomHeader-2", "Value 2" } };
+            var httpRequestMessage = new HttpRequestMessage();
 
-            restClient.SetHttpRequestHeaders(httpClient);
+            restClient.SetHttpRequestHeadersAccessor(httpRequestMessage, headers);
 
-            Assert.True(httpClient.DefaultRequestHeaders.Contains("X-CustomHeader-1"));
-            Assert.True(httpClient.DefaultRequestHeaders.Contains("X-CustomHeader-2"));
-        }
-
-        [Fact]
-        public void SetHttpRequestHeaders_HeadersAlreadySetAndCleared_OnlyDefaultHeadersAreSet()
-        {
-            var httpClient = new HttpClient();
-            var restClient = new RestApiClient(() => new FakeMessageHandler());
-            restClient.Headers.Add("X-CustomHeader-1", "Value 1");
-            restClient.Headers.Add("X-CustomHeader-2", "Value 2");
-
-            restClient.SetHttpRequestHeaders(httpClient);
-            restClient.Headers.Clear();
-            restClient.SetHttpRequestHeaders(httpClient);
-
-            // Note that the default Accept and AcceptEncoding headers always set
-            Assert.Equal(2, httpClient.DefaultRequestHeaders.Count());
-            Assert.True(httpClient.DefaultRequestHeaders.Accept.Contains(new MediaTypeWithQualityHeaderValue("application/json")));
-            Assert.True(httpClient.DefaultRequestHeaders.AcceptEncoding.Contains(new StringWithQualityHeaderValue("gzip")));
+            Assert.True(httpRequestMessage.Headers.Contains("X-CustomHeader-1"));
+            Assert.True(httpRequestMessage.Headers.Contains("X-CustomHeader-2"));
         }
     }
 }

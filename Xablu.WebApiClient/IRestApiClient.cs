@@ -8,6 +8,9 @@ namespace Xablu.WebApiClient
 {
     public interface IRestApiClient : IDisposable
     {
+        string DefaultAcceptHeader { get; set; }
+        string AuthorizeToken { get; set; }
+
         void SetBaseAddress(string apiBaseAddress);
 
         Task<IRestApiResult<TResult>> GetAsync<TResult>(
