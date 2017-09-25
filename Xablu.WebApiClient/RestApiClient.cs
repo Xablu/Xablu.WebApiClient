@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
@@ -212,6 +212,14 @@ namespace Xablu.WebApiClient
         {
             if (!string.IsNullOrEmpty(AuthorizeToken))
                 message.Headers.Add("Authorize", $"Bearer {AuthorizeToken}");
+
+            if (_restApiClientOptions.DefaultHeaders != null)
+            {
+                foreach (var defaultHeader in _restApiClientOptions.DefaultHeaders)
+                {
+                    message.Headers.Add(defaultHeader.Key, defaultHeader.Value);
+                }
+            }
 
             if (headers == null) return;
 
