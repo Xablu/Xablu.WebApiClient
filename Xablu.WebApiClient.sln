@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{C36D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Droid", "Samples\Sample.Droid\Sample.Droid.csproj", "{DD284682-DD1E-411B-A35A-26BB5EACEEA5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.iOS", "Samples\Sample.Droid\Sample.iOS\Sample.iOS.csproj", "{FCC5B31A-11AF-4C75-9126-1D92EE32EBC0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.iOS", "Samples\Sample.iOS\Sample.iOS.csproj", "{FCC5B31A-11AF-4C75-9126-1D92EE32EBC0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Core", "Samples\Sample.Core\Sample.Core.csproj", "{B85FC59B-D88B-4E50-9852-82C8E48687F4}"
 EndProject

@@ -113,7 +113,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Sample.Core\Sample.Core.csproj">
+    <ProjectReference Include="..\Sample.Core\Sample.Core.csproj">
       <Project>{B85FC59B-D88B-4E50-9852-82C8E48687F4}</Project>
       <Name>Sample.Core</Name>
     </ProjectReference>
