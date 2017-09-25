@@ -12,23 +12,13 @@ namespace Xablu.WebApiClient
     public class RestApiProgressClient
         : RestApiClient
     {
-        public RestApiProgressClient()
-            : base()
-        {
-        }
-
         public RestApiProgressClient(string apiBaseAddress)
             : base(apiBaseAddress)
         {
         }
 
-        public RestApiProgressClient(Func<HttpMessageHandler> handler)
-            : base(handler)
-        {
-        }
-
-        public RestApiProgressClient(string apiBaseAddress, Func<HttpMessageHandler> handler)
-            : base(apiBaseAddress, handler)
+        public RestApiProgressClient(RestApiClientOptions options)
+            : base(options)
         {
         }
 

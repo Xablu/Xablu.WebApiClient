@@ -1,64 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Fusillade;
 using Xablu.WebApiClient.Resolvers;
 using Xablu.WebApiClient.HttpExtensions;
-using Newtonsoft.Json;
-using System.Net;
 
 namespace Xablu.WebApiClient
 {
     public class RestApiClient
         : IRestApiClient
     {
-        private readonly Func<HttpMessageHandler> _httpHandler;
-        private readonly JsonSerializer _serializer = new JsonSerializer();
+        private readonly RestApiClientOptions _restApiClientOptions;
 
-        private string _apiBaseAddress;
-        private IHttpContentResolver _defaultHttpContentResolver;
-        private IHttpResponseResolver _defaultHttpResponseResolver;
         private bool _isDisposed;
         private Lazy<HttpClient> _explicit;
         private Lazy<HttpClient> _background;
         private Lazy<HttpClient> _userInitiated;
         private Lazy<HttpClient> _speculative;
 
-        public RestApiClient()
-        {
-            _httpHandler = () => new HttpClientHandler
-            {
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-            };
-        }
-
         public RestApiClient(string apiBaseAddress)
-            : this()
         {
-            SetBaseAddress(apiBaseAddress);
+            _restApiClientOptions = new RestApiClientOptions(apiBaseAddress);
+
+            Initialize();
         }
 
-        public RestApiClient(Func<HttpMessageHandler> handler)
+        public RestApiClient(RestApiClientOptions options)
         {
-            _httpHandler = handler ?? throw new ArgumentNullException(nameof(handler));
+            _restApiClientOptions = options ?? throw new ArgumentNullException(nameof(options));
+
+            Initialize();
         }
 
-        public RestApiClient(string apiBaseAddress, Func<HttpMessageHandler> handler)
-            : this(handler)
+        private void Initialize()
         {
-            SetBaseAddress(apiBaseAddress);
-        }
+            var apiBaseAddress = _restApiClientOptions.ApiBaseAddress;
+            var httpHandler = _restApiClientOptions.DefaultHttpMessageHandler;
 
-        public void SetBaseAddress(string apiBaseAddress)
-        {
-            if (apiBaseAddress == null)
-                throw new ArgumentNullException(nameof(apiBaseAddress));
-
-            if (_apiBaseAddress == apiBaseAddress) return;
-            _apiBaseAddress = apiBaseAddress;
+            if (string.IsNullOrEmpty(apiBaseAddress))
+                throw new InvalidOperationException("The 'RestApiClient' failed to initialize. Make sure you set a value for the 'ApiBaseAddress' option.");
 
             HttpClient CreateClient(HttpMessageHandler messageHandler) => new HttpClient(messageHandler)
             {
@@ -66,61 +48,18 @@ namespace Xablu.WebApiClient
             };
 
             _explicit = new Lazy<HttpClient>(() => CreateClient(
-                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Priority.Explicit)));
+                new RateLimitedHttpMessageHandler(httpHandler.Invoke(), Priority.Explicit)));
 
             _background = new Lazy<HttpClient>(() => CreateClient(
-                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Priority.Background)));
+                new RateLimitedHttpMessageHandler(httpHandler.Invoke(), Priority.Background)));
 
             _userInitiated = new Lazy<HttpClient>(() => CreateClient(
-                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Priority.UserInitiated)));
+                new RateLimitedHttpMessageHandler(httpHandler.Invoke(), Priority.UserInitiated)));
 
             _speculative = new Lazy<HttpClient>(() => CreateClient(
-                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Priority.Speculative)));
+                new RateLimitedHttpMessageHandler(httpHandler.Invoke(), Priority.Speculative)));
         }
 
-        /// <summary>
-        /// Gets or sets the default implementation of the <see cref="IHttpContentResolver"/> interface associated with the WebApiClient.
-        /// </summary>
-        /// <remarks>
-        /// The <see cref="IHttpContentResolver"/> implementation is responsible for serializing content which needs to be send to the server
-        /// using a HTTP POST, PUT or PATCH request.
-        /// 
-        /// This property can be used to override the default <see cref="IHttpContentResolver"/> that is used by the <see cref="RestApiClient"/>.
-        /// If no other value is supplied the <see cref="RestApiClient"/> by default uses the <see cref="SimpleJsonContentResolver"/>. This resolver will
-        /// try to serialize the content to a JSON message and returns the proper <see cref="System.Net.Http.HttpContent"/> instance.
-        /// 
-        /// NOTE: this property is not thread safe! You should only set this property when initializing the <see cref="RestApiClient"/>. If
-        /// you want to override the <see cref="IHttpContentResolver"/> for a particular request you should supply the appropiate <see cref="IHttpContentResolver"/>
-        /// with one of the <see cref="GetAsync"/>, <see cref="PostAsync"/>, <see cref="PutAsync"/>, <see cref="PatchAsync"/> or <see cref="DeleteAsync"/> methods.  
-        /// </remarks>
-        protected virtual IHttpContentResolver DefaultHttpContentResolver
-        {
-            get => _defaultHttpContentResolver ?? (_defaultHttpContentResolver = new SimpleJsonContentResolver(_serializer));
-            set => _defaultHttpContentResolver = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the default implementation of the <see cref="IHttpResponseResolver"/> interface associated with the RestApiClient.
-        /// </summary>
-        /// <remarks>
-        /// The <see cref="IHttpResponseResolver"/> implementation is responsible for deserialising the <see cref="System.Net.Http.HttpResponseMessage"/>
-        /// into the required result object.
-        /// 
-        /// This property can be used to override the default <see cref="IHttpResponseResolver"/> that is used by the <see cref="RestApiClient"/>.
-        /// If no other value is supplied the <see cref="RestApiClient"/> by default uses the <see cref="SimpleJsonResponseResolver"/>. This resolver will
-        /// assumes the response is a JSON message and tries to deserialize it into the required result object.
-        /// 
-        /// NOTE: this property is not thread safe! You should only set this property when initializing the <see cref="RestApiClient"/>. If
-        /// you want to override the <see cref="IHttpResponseResolver"/> for a particular request you should supply the appropiate <see cref="IHttpContentResolver"/>
-        /// with one of the <see cref="GetAsync"/>, <see cref="PostAsync"/>, <see cref="PutAsync"/>, <see cref="PatchAsync"/> or <see cref="DeleteAsync"/> methods.  
-        /// </remarks>
-        protected virtual IHttpResponseResolver DefaultHttpResponseResolver
-        {
-            get => _defaultHttpResponseResolver ?? (_defaultHttpResponseResolver = new SimpleJsonResponseResolver(_serializer));
-            set => _defaultHttpResponseResolver = value;
-        }
-
-        public virtual string DefaultAcceptHeader { get; set; } = "application/json";
         public virtual string AuthorizeToken { get; set; }
 
         public virtual async Task<IRestApiResult<TResult>> GetAsync<TResult>(
@@ -215,7 +154,7 @@ namespace Xablu.WebApiClient
             var response = await httpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
 
             if (httpResponseResolver == null)
-                httpResponseResolver = DefaultHttpResponseResolver;
+                httpResponseResolver = _restApiClientOptions.DefaultResponseResolver;
 
             return await response.BuildRestApiResult<TResult>(httpResponseResolver);
         }
@@ -244,7 +183,7 @@ namespace Xablu.WebApiClient
 
                         httpContent = contentAsDictionary != null
                             ? new DictionaryContentResolver().ResolveHttpContent(content as Dictionary<string, string>)
-                            : DefaultHttpContentResolver.ResolveHttpContent(content);
+                            : _restApiClientOptions.DefaultContentResolver.ResolveHttpContent(content);
                     }
                 }
             }
@@ -254,10 +193,6 @@ namespace Xablu.WebApiClient
 
         public virtual HttpClient GetRestApiClient(Priority prioriy)
         {
-            if (_apiBaseAddress == null)
-                throw new ArgumentNullException(nameof(_apiBaseAddress),
-                    "Api base adress is not set. Call SetBaseAddress() to initialize.");
-
             switch (prioriy)
             {
                 case Priority.UserInitiated:
@@ -275,9 +210,6 @@ namespace Xablu.WebApiClient
 
         protected virtual void SetHttpRequestHeaders(HttpRequestMessage message, IList<KeyValuePair<string, string>> headers)
         {
-            message.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(DefaultAcceptHeader));
-            message.Headers.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-
             if (!string.IsNullOrEmpty(AuthorizeToken))
                 message.Headers.Add("Authorize", $"Bearer {AuthorizeToken}");
 
