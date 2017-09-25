@@ -1,66 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Fusillade;
 using Xablu.WebApiClient.Resolvers;
 using Xablu.WebApiClient.HttpExtensions;
-using Newtonsoft.Json;
-using System.Net;
-using System.Collections.Concurrent;
 
 namespace Xablu.WebApiClient
 {
     public class RestApiClient
         : IRestApiClient
     {
-        private readonly Func<HttpMessageHandler> _httpHandler;
-        private readonly JsonSerializer _serializer = new JsonSerializer();
+        private readonly RestApiClientOptions _restApiClientOptions;
 
-        private object _lockObject = new object();
-        private string _apiBaseAddress;
-        private IHttpContentResolver _httpContentResolver;
-        private IHttpResponseResolver _httpResponseResolver;
         private bool _isDisposed;
         private Lazy<HttpClient> _explicit;
         private Lazy<HttpClient> _background;
         private Lazy<HttpClient> _userInitiated;
         private Lazy<HttpClient> _speculative;
 
-        public RestApiClient()
-        {
-            _httpHandler = () => new HttpClientHandler
-            {
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-            };
-        }
-
         public RestApiClient(string apiBaseAddress)
-            : this()
         {
-            SetBaseAddress(apiBaseAddress);
+            _restApiClientOptions = new RestApiClientOptions(apiBaseAddress);
+
+            Initialize();
         }
 
-        public RestApiClient(Func<HttpMessageHandler> handler)
+        public RestApiClient(RestApiClientOptions options)
         {
-            _httpHandler = handler ?? throw new ArgumentNullException(nameof(handler));
+            _restApiClientOptions = options ?? throw new ArgumentNullException(nameof(options));
+
+            Initialize();
         }
 
-        public RestApiClient(string apiBaseAddress, Func<HttpMessageHandler> handler)
-            : this(handler)
+        private void Initialize()
         {
-            SetBaseAddress(apiBaseAddress);
-        }
+            var apiBaseAddress = _restApiClientOptions.ApiBaseAddress;
+            var httpHandler = _restApiClientOptions.DefaultHttpMessageHandler;
 
-        public void SetBaseAddress(string apiBaseAddress)
-        {
-            if (apiBaseAddress == null)
-                throw new ArgumentNullException(nameof(apiBaseAddress));
-
-            if (_apiBaseAddress == apiBaseAddress) return;
-            _apiBaseAddress = apiBaseAddress;
+            if (string.IsNullOrEmpty(apiBaseAddress))
+                throw new InvalidOperationException("The 'RestApiClient' failed to initialize. Make sure you set a value for the 'ApiBaseAddress' option.");
 
             HttpClient CreateClient(HttpMessageHandler messageHandler) => new HttpClient(messageHandler)
             {
@@ -68,140 +48,120 @@ namespace Xablu.WebApiClient
             };
 
             _explicit = new Lazy<HttpClient>(() => CreateClient(
-                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Priority.Explicit)));
+                new RateLimitedHttpMessageHandler(httpHandler.Invoke(), Priority.Explicit)));
 
             _background = new Lazy<HttpClient>(() => CreateClient(
-                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Priority.Background)));
+                new RateLimitedHttpMessageHandler(httpHandler.Invoke(), Priority.Background)));
 
             _userInitiated = new Lazy<HttpClient>(() => CreateClient(
-                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Priority.UserInitiated)));
+                new RateLimitedHttpMessageHandler(httpHandler.Invoke(), Priority.UserInitiated)));
 
             _speculative = new Lazy<HttpClient>(() => CreateClient(
-                new RateLimitedHttpMessageHandler(_httpHandler.Invoke(), Priority.Speculative)));
+                new RateLimitedHttpMessageHandler(httpHandler.Invoke(), Priority.Speculative)));
         }
 
-        /// <summary>
-        /// Gets or sets the implementation of the <see cref="IHttpContentResolver"/> interface associated with the WebApiClient.
-        /// </summary>
-        /// <remarks>
-        /// The <see cref="IHttpContentResolver"/> implementation is responsible for serializing content which needs to be send to the server
-        /// using a HTTP POST or PUT request.
-        /// 
-        /// When no other value is supplied the <see cref="RestApiClient"/> by default uses the <see cref="SimpleJsonContentResolver"/>. This resolver will
-        /// try to serialize the content to a JSON message and returns the proper <see cref="System.Net.Http.HttpContent"/> instance.
-        /// </remarks>
-        public virtual IHttpContentResolver HttpContentResolver
-        {
-            get => _httpContentResolver ?? (_httpContentResolver = new SimpleJsonContentResolver(_serializer));
-            set => _httpContentResolver = value;
-        }
+        public virtual string AuthorizeToken { get; set; }
 
-        /// <summary>
-        /// Gets or sets the implementation of the <see cref="IHttpResponseResolver"/> interface associated with the WebApiClient.
-        /// </summary>
-        /// <remarks>
-        /// The <see cref="IHttpResponseResolver"/> implementation is responsible for deserialising the <see cref="System.Net.Http.HttpResponseMessage"/>
-        /// into the required result object.
-        /// 
-        /// When no other value is supplied the <see cref="RestApiClient"/> by default uses the <see cref="SimpleJsonResponseResolver"/>. This resolver will
-        /// assumes the response is a JSON message and tries to deserialize it into the required result object.
-        /// </remarks>
-        public virtual IHttpResponseResolver HttpResponseResolver
-        {
-            get => _httpResponseResolver ?? (_httpResponseResolver = new SimpleJsonResponseResolver(_serializer));
-            set => _httpResponseResolver = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the accept header of the HTTP request. Default the accept header is set to "appliction/json".
-        /// </summary>
-        public virtual string AcceptHeader { get; set; } = "application/json";
-
-        public virtual IDictionary<string, string> Headers { get; } = new ConcurrentDictionary<string, string>();
-
-        public virtual async Task<IRestApiResult<TResult>> GetAsync<TResult>(Priority priority, string path,
+        public virtual async Task<IRestApiResult<TResult>> GetAsync<TResult>(
+            Priority priority,
+            string path,
+            IList<KeyValuePair<string, string>> headers = null,
+            IHttpResponseResolver httpResponseResolver = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var httpClient = GetRestApiClient(priority);
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, path);
 
-            SetHttpRequestHeaders(httpClient);
-
-            var httpRequest = new HttpRequestMessage(HttpMethod.Get, path);
-
-            var response = await httpClient
-                .SendAsync(httpRequest, cancellationToken)
-                .ConfigureAwait(false);
-
-            return await response.BuildRestApiResult<TResult>(HttpResponseResolver);
+            return await SendAsync<TResult>(priority, httpRequestMessage, headers, httpResponseResolver, cancellationToken);
         }
 
-        public virtual async Task<IRestApiResult<TResult>> PatchAsync<TContent, TResult>(Priority priority, string path,
-            TContent content = default(TContent), IHttpContentResolver contentResolver = null,
+        public virtual async Task<IRestApiResult<TResult>> PatchAsync<TContent, TResult>(
+            Priority priority,
+            string path,
+            TContent content = default(TContent),
+            IList<KeyValuePair<string, string>> headers = null,
+            IHttpContentResolver httpContentResolver = null,
+            IHttpResponseResolver httpResponseResolver = null,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var httpClient = GetRestApiClient(priority);
-
-            SetHttpRequestHeaders(httpClient);
-
-            var httpContent = ResolveHttpContent(content, contentResolver);
+            var httpContent = ResolveHttpContent(content, httpContentResolver);
             var httpRequestMessage = new HttpRequestMessage(new HttpMethod("PATCH"), path)
             {
                 Content = httpContent
             };
 
-            var response = await httpClient
-                .SendAsync(httpRequestMessage, cancellationToken)
-                .ConfigureAwait(false);
-
-            return await response.BuildRestApiResult<TResult>(HttpResponseResolver);
+            return await SendAsync<TResult>(priority, httpRequestMessage, headers, httpResponseResolver, cancellationToken);
         }
 
-        public virtual async Task<IRestApiResult<TResult>> PostAsync<TContent, TResult>(Priority priority, string path,
-            TContent content = default(TContent), IHttpContentResolver contentResolver = null,
+        public virtual async Task<IRestApiResult<TResult>> PostAsync<TContent, TResult>(
+            Priority priority,
+            string path,
+            TContent content = default(TContent),
+            IList<KeyValuePair<string, string>> headers = null,
+            IHttpContentResolver httpContentResolver = null,
+            IHttpResponseResolver httpResponseResolver = null,
             CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var httpContent = ResolveHttpContent(content, httpContentResolver);
+            var httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), path)
+            {
+                Content = httpContent
+            };
+
+            return await SendAsync<TResult>(priority, httpRequestMessage, headers, httpResponseResolver, cancellationToken);
+        }
+
+        public virtual async Task<IRestApiResult<TResult>> PutAsync<TContent, TResult>(
+            Priority priority,
+            string path,
+            TContent content = default(TContent),
+            IList<KeyValuePair<string, string>> headers = null,
+            IHttpContentResolver httpContentResolver = null,
+            IHttpResponseResolver httpResponseResolver = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var httpContent = ResolveHttpContent(content, httpContentResolver);
+            var httpRequestMessage = new HttpRequestMessage(new HttpMethod("PUT"), path)
+            {
+                Content = httpContent
+            };
+
+            return await SendAsync<TResult>(priority, httpRequestMessage, headers, httpResponseResolver, cancellationToken);
+        }
+
+        public virtual async Task<IRestApiResult<TResult>> DeleteAsync<TResult>(
+            Priority priority,
+            string path,
+            IList<KeyValuePair<string, string>> headers = null,
+            IHttpResponseResolver httpResponseResolver = null,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var httpRequestMessage = new HttpRequestMessage(new HttpMethod("DELETE"), path);
+
+            return await SendAsync<TResult>(priority, httpRequestMessage, headers, httpResponseResolver, cancellationToken);
+        }
+
+        protected virtual async Task<IRestApiResult<TResult>> SendAsync<TResult>(
+            Priority priority,
+            HttpRequestMessage httpRequestMessage,
+            IList<KeyValuePair<string, string>> headers,
+            IHttpResponseResolver httpResponseResolver,
+            CancellationToken cancellationToken)
         {
             var httpClient = GetRestApiClient(priority);
 
-            SetHttpRequestHeaders(httpClient);
+            SetHttpRequestHeaders(httpRequestMessage, headers);
 
-            var httpContent = ResolveHttpContent(content, contentResolver);
-            var response = await httpClient
-                .PostAsync(path, httpContent, cancellationToken)
-                .ConfigureAwait(false);
+            var response = await httpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
 
-            return await response.BuildRestApiResult<TResult>(HttpResponseResolver);
+            if (httpResponseResolver == null)
+                httpResponseResolver = _restApiClientOptions.DefaultResponseResolver;
+
+            return await response.BuildRestApiResult<TResult>(httpResponseResolver);
         }
 
-        public virtual async Task<IRestApiResult<TResult>> PutAsync<TContent, TResult>(Priority priority, string path,
-            TContent content = default(TContent), IHttpContentResolver contentResolver = null,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var httpClient = GetRestApiClient(priority);
-
-            SetHttpRequestHeaders(httpClient);
-
-            var httpContent = ResolveHttpContent(content, contentResolver);
-            var response = await httpClient
-                .PutAsync(path, httpContent, cancellationToken)
-                .ConfigureAwait(false);
-
-            return await response.BuildRestApiResult<TResult>(HttpResponseResolver);
-        }
-
-        public virtual async Task<IRestApiResult<TResult>> DeleteAsync<TResult>(Priority priority, string path,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var httpClient = GetRestApiClient(priority);
-
-            SetHttpRequestHeaders(httpClient);
-
-            var response = await httpClient.DeleteAsync(path, cancellationToken).ConfigureAwait(false);
-
-            return await response.BuildRestApiResult<TResult>(HttpResponseResolver);
-        }
-
-        public virtual HttpContent ResolveHttpContent<TContent>(TContent content,
-            IHttpContentResolver contentResolver = null)
+        protected virtual HttpContent ResolveHttpContent<TContent>(
+            TContent content,
+            IHttpContentResolver httpContentResolver = null)
         {
             HttpContent httpContent = null;
 
@@ -213,9 +173,9 @@ namespace Xablu.WebApiClient
                 }
                 else
                 {
-                    if (contentResolver != null)
+                    if (httpContentResolver != null)
                     {
-                        httpContent = contentResolver.ResolveHttpContent(content);
+                        httpContent = httpContentResolver.ResolveHttpContent(content);
                     }
                     else
                     {
@@ -223,19 +183,16 @@ namespace Xablu.WebApiClient
 
                         httpContent = contentAsDictionary != null
                             ? new DictionaryContentResolver().ResolveHttpContent(content as Dictionary<string, string>)
-                            : HttpContentResolver.ResolveHttpContent(content);
+                            : _restApiClientOptions.DefaultContentResolver.ResolveHttpContent(content);
                     }
                 }
             }
+
             return httpContent;
         }
 
         public virtual HttpClient GetRestApiClient(Priority prioriy)
         {
-            if (_apiBaseAddress == null)
-                throw new ArgumentNullException(nameof(_apiBaseAddress),
-                    "Api base adress is not set. Call SetBaseAddress() to initialize.");
-
             switch (prioriy)
             {
                 case Priority.UserInitiated:
@@ -251,20 +208,16 @@ namespace Xablu.WebApiClient
             }
         }
 
-        public virtual void SetHttpRequestHeaders(HttpClient client)
+        protected virtual void SetHttpRequestHeaders(HttpRequestMessage message, IList<KeyValuePair<string, string>> headers)
         {
-            lock (_lockObject)
+            if (!string.IsNullOrEmpty(AuthorizeToken))
+                message.Headers.Add("Authorize", $"Bearer {AuthorizeToken}");
+
+            if (headers == null) return;
+
+            foreach (var header in headers)
             {
-                client.DefaultRequestHeaders.Clear();
-
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(AcceptHeader));
-                client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-
-                foreach (var header in Headers)
-                {
-                    if (!client.DefaultRequestHeaders.Contains(header.Key))
-                        client.DefaultRequestHeaders.Add(header.Key, header.Value);
-                }
+                message.Headers.Add(header.Key, header.Value);
             }
         }
 
