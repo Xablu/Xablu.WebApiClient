@@ -18,35 +18,43 @@ The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of 
 
 Create a new singleton of WebApiClient and use it to do REST operations.
 ```c#
-var webApiClient = new WebApiClient("http://baseurl.com/");
+var restApiClient = new RestApiClient("http://baseurl.com/");
 ```
 
 ### MvvmCross
 
-If you want to use the standard HTTP client handlers, just register `IWebApiClient` with a base url. You can set the type of native handler in your csproj settings.
+If you want to use the standard HTTP client handlers, just register `IRestApiClient` with a base url. You can set the type of native handler in your csproj settings.
 
 ```c#
-Mvx.RegisterSingleton<IWebApiClient>(new WebApiClient(Constants.ApiBaseUrl));
+Mvx.RegisterSingleton<IRestApiClient>(new RestApiClient(Constants.ApiBaseUrl));
 ```
 
 When using custom HTTP handler, register a custom iOS Handler
 
 ```c#
-Mvx.RegisterSingleton<IWebApiClient>(new WebApiClient(Constants.ApiBaseUrl, () => new NSUrlSessionHandler()));
+var options = new RestApiClientOptions(Constants.ApiBaseUrl) 
+{
+    DefaultHttpMessageHandler = () => new NSUrlSessionHandler();
+};
+Mvx.RegisterSingleton<IRestApiClient>(new RestApiClient(options));
 ```
 
 Register the custom handler in Android
 
 ```c#
-Mvx.RegisterSingleton<IWebApiClient>(new WebApiClient(Constants.ApiBaseUrl, () => new AndroidClientHandler()));
+var options = new RestApiClientOptions(Constants.ApiBaseUrl) 
+{
+    DefaultHttpMessageHandler = () => new AndroidClientHandler();
+};
+Mvx.RegisterSingleton<IRestApiClient>(new RestApiClient(options));
 ```
 
 Create a client to handle Http traffic
 
 ```c#
-public class AuthenticationClient : BaseClient, IAuthenticationClient
+public class AuthenticationClient : IAuthenticationClient
 {
-   public AuthenticationClient(IWebApiClient apiClient) : base(apiClient)
+   public AuthenticationClient(IRestApiClient apiClient) : base(apiClient)
    {
    }
 
