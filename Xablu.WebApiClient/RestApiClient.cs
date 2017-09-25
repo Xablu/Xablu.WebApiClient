@@ -211,7 +211,7 @@ namespace Xablu.WebApiClient
         protected virtual void SetHttpRequestHeaders(HttpRequestMessage message, IList<KeyValuePair<string, string>> headers)
         {
             if (!string.IsNullOrEmpty(AuthorizeToken))
-                message.Headers.Add("Authorize", $"Bearer {AuthorizeToken}");
+                message.Headers.Add("Authorization", $"Bearer {AuthorizeToken}");
 
             if (_restApiClientOptions.DefaultHeaders != null)
             {
