@@ -13,9 +13,61 @@ namespace Xablu.WebApiClient
             ApiBaseAddress = apiBaseAddress;
         }
 
+        /// <summary>
+        /// Gets the base address of the API to which the <see cref="RestApiClient"/> will send the HTTP requests.
+        /// </summary>
+        /// <remarks>
+        /// The base address must only contain the HTTP-scheme (http or https) and the domain / ip-address to connect to. 
+        /// An example could be "https://www.xablu.com". The base address will be appended in front of the 'path' value which
+        /// is supplied with every HTTP request. 
+        /// </remarks>
         public string ApiBaseAddress { get; }
+
+        /// <summary>
+        /// Gets or sets a delegate which will instantiate an instance of <see cref="HttpMessageHandler"/> class used to process the HTTP requests.
+        /// </summary>
+        /// <remarks>
+        /// The <see cref="RestApiClient"/> will (lazily) create an instance of the <see cref="HttpClient"/> object for each of the different priorities.
+        /// The delegate supplied to the <see cref="DefaultHttpMessageHandler"/> property is called to supply the <see cref="HttpClient"/> with an implementation
+        /// of the <see cref="HttpMessageHandler"/> class. 
+        /// 
+        /// You can supply a different delegate to create a platform specific implementation of the <see cref="HttpMessageHander"/> class. For example you might want 
+        /// to supply one of the following:
+        /// 
+        /// <code>
+        /// // To use the NSUrlSessionHandler (on iOS devices) use:
+        /// () => new NSUrlSessionHandler();
+        /// 
+        /// // To use the AndroidClientHandler (on Android devices) use:
+        /// () => new AndroidClientHandler();
+        /// </code> 
+        /// 
+        /// By default the delegate will create an instance of the <see cref="HttpClientHandler"/> (standard .NET implementation).   
+        /// </remarks>
         public Func<HttpMessageHandler> DefaultHttpMessageHandler { get; set; } = () => new HttpClientHandler { AutomaticDecompression = System.Net.DecompressionMethods.GZip };
-        public IList<KeyValuePair<string, string>> DefaultHeaders { get; set; } = new List<KeyValuePair<string, string>> { { "Accept", "application/json" }, { "Accept-Enconding", "gzip" } };
+
+        /// <summary>
+        /// Gets or sets a list of default headers which will be used with every HTTP request made by the <see cref="RestApiClient"/>.
+        /// </summary>
+        /// <remarks>
+        /// The headers specified in this list will be added to every HTTP request made by the <see cref="RestApiClient"/>. The following headers
+        /// are already pre-configured:
+        /// <list type="table">  
+        ///    <listheader>  
+        ///        <term>Key</term>  
+        ///        <description>Value</description>  
+        ///    </listheader>  
+        ///    <item>  
+        ///        <term>Accept</term>  
+        ///        <description>application/json</description>  
+        ///    </item>  
+        ///    <item>  
+        ///        <term>Accept-Encoding</term>  
+        ///        <description>gzip</description>  
+        ///    </item>  
+        /// </list>  
+        /// </remarks>
+        public IList<KeyValuePair<string, string>> DefaultHeaders { get; set; } = new List<KeyValuePair<string, string>> { { "Accept", "application/json" }, { "Accept-Encoding", "gzip" } };
 
         /// <summary>
         /// Gets or sets the default implementation of the <see cref="IHttpContentResolver"/> interface associated with the WebApiClient.
