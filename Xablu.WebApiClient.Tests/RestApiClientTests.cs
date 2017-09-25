@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Xablu.WebApiClient.UnitTests.Fakes;
@@ -10,8 +10,20 @@ namespace Xablu.WebApiClient.UnitTests
 {
     public class RestApiClientTests
     {
+        private const string BaseApiAddress = "https://test.xablu.com";
+
         private class RestApiClientAccessor : RestApiClient
         {
+            public RestApiClientAccessor(string apiBaseAddress)
+                : base(apiBaseAddress)
+            {
+            }
+
+            public RestApiClientAccessor(RestApiClientOptions options)
+                : base(options)
+            {
+            }
+
             public void SetHttpRequestHeadersAccessor(HttpRequestMessage message, IList<KeyValuePair<string, string>> headers)
             {
                 base.SetHttpRequestHeaders(message, headers);
@@ -21,7 +33,7 @@ namespace Xablu.WebApiClient.UnitTests
         [Fact]
         public void SetHttpRequestHeaders_DefaultAcceptHeader_ApplicationJson()
         {
-            var restClient = new RestApiClientAccessor();
+            var restClient = new RestApiClientAccessor(BaseApiAddress);
             var httpRequestMessage = new HttpRequestMessage();
 
             restClient.SetHttpRequestHeadersAccessor(httpRequestMessage, null);
@@ -31,27 +43,32 @@ namespace Xablu.WebApiClient.UnitTests
         }
 
         [Fact]
-        public void SetHttpRequestHeaders_OverrideAcceptHeader_AcceptHeaderMatchedWithTheValueSet()
+        public void SetHttpRequestHeaders_OverrideAcceptHeader_PlainText()
         {
-            const string acceptHeader = "plain/text";
-            var restClient = new RestApiClientAccessor { DefaultAcceptHeader = acceptHeader };
+            var acceptHeader = "plain/text";
+            var options = new RestApiClientOptions(BaseApiAddress)
+            {
+                DefaultHeaders = new List<KeyValuePair<string, string>> { { "Accept", acceptHeader } }
+            };
+            var restClient = new RestApiClientAccessor(options);
             var httpRequestMessage = new HttpRequestMessage();
 
             restClient.SetHttpRequestHeadersAccessor(httpRequestMessage, null);
 
             Assert.Equal(1, httpRequestMessage.Headers.Accept.Count);
-            Assert.True(httpRequestMessage.Headers.Accept.Contains(new MediaTypeWithQualityHeaderValue(acceptHeader)));
+            Assert.True(httpRequestMessage.Headers.Accept.Contains(new MediaTypeWithQualityHeaderValue("plain/text")));
         }
 
         [Fact]
         public void SetHttpRequestHeaders_MultipleAcceptHeaders_AcceptHeaderMatchedWithTheValuesSet()
         {
             const string acceptHeader = "plain/text";
-            var restClient = new RestApiClientAccessor();
-            var headers = new List<KeyValuePair<string, string>> { { "Accept", acceptHeader } };
+            var options = new RestApiClientOptions(BaseApiAddress);
+            options.DefaultHeaders.Add(new KeyValuePair<string, string>("Accept", acceptHeader));
+            var restClient = new RestApiClientAccessor(options);
             var httpRequestMessage = new HttpRequestMessage();
 
-            restClient.SetHttpRequestHeadersAccessor(httpRequestMessage, headers);
+            restClient.SetHttpRequestHeadersAccessor(httpRequestMessage, null);
 
             Assert.Equal(2, httpRequestMessage.Headers.Accept.Count);
             Assert.True(httpRequestMessage.Headers.Accept.Contains(new MediaTypeWithQualityHeaderValue("application/json")));
@@ -61,7 +78,7 @@ namespace Xablu.WebApiClient.UnitTests
         [Fact]
         public void SetHttpRequestHeaders_DefaultAcceptEncoding_Gzip()
         {
-            var restClient = new RestApiClientAccessor();
+            var restClient = new RestApiClientAccessor(BaseApiAddress);
             var httpRequestMessage = new HttpRequestMessage();
 
             restClient.SetHttpRequestHeadersAccessor(httpRequestMessage, null);
@@ -73,11 +90,16 @@ namespace Xablu.WebApiClient.UnitTests
         [Fact]
         public void SetHttpRequestHeaders_CustomHeadersConfigure_CustomHeadersAreAddedToHttpClient()
         {
-            var restClient = new RestApiClientAccessor();
             var headers = new List<KeyValuePair<string, string>> { { "X-CustomHeader-1", "Value 1" }, { "X-CustomHeader-2", "Value 2" } };
+            var options = new RestApiClientOptions(BaseApiAddress)
+            {
+                DefaultHeaders = headers
+            };
+            var restClient = new RestApiClientAccessor(options);
+            
             var httpRequestMessage = new HttpRequestMessage();
 
-            restClient.SetHttpRequestHeadersAccessor(httpRequestMessage, headers);
+            restClient.SetHttpRequestHeadersAccessor(httpRequestMessage, null);
 
             Assert.True(httpRequestMessage.Headers.Contains("X-CustomHeader-1"));
             Assert.True(httpRequestMessage.Headers.Contains("X-CustomHeader-2"));
