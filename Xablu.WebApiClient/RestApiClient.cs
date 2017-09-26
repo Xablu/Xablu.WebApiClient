@@ -71,7 +71,8 @@ namespace Xablu.WebApiClient
         {
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, path);
 
-            return await SendAsync<TResult>(priority, httpRequestMessage, headers, httpResponseResolver, cancellationToken);
+            return await SendAsync<TResult>(priority, httpRequestMessage, headers, httpResponseResolver, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         public virtual async Task<IRestApiResult<TResult>> PatchAsync<TContent, TResult>(
@@ -89,7 +90,8 @@ namespace Xablu.WebApiClient
                 Content = httpContent
             };
 
-            return await SendAsync<TResult>(priority, httpRequestMessage, headers, httpResponseResolver, cancellationToken);
+            return await SendAsync<TResult>(priority, httpRequestMessage, headers, httpResponseResolver, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         public virtual async Task<IRestApiResult<TResult>> PostAsync<TContent, TResult>(
@@ -107,7 +109,8 @@ namespace Xablu.WebApiClient
                 Content = httpContent
             };
 
-            return await SendAsync<TResult>(priority, httpRequestMessage, headers, httpResponseResolver, cancellationToken);
+            return await SendAsync<TResult>(priority, httpRequestMessage, headers, httpResponseResolver, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         public virtual async Task<IRestApiResult<TResult>> PutAsync<TContent, TResult>(
@@ -125,7 +128,8 @@ namespace Xablu.WebApiClient
                 Content = httpContent
             };
 
-            return await SendAsync<TResult>(priority, httpRequestMessage, headers, httpResponseResolver, cancellationToken);
+            return await SendAsync<TResult>(priority, httpRequestMessage, headers, httpResponseResolver, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         public virtual async Task<IRestApiResult<TResult>> DeleteAsync<TResult>(
@@ -137,7 +141,8 @@ namespace Xablu.WebApiClient
         {
             var httpRequestMessage = new HttpRequestMessage(new HttpMethod("DELETE"), path);
 
-            return await SendAsync<TResult>(priority, httpRequestMessage, headers, httpResponseResolver, cancellationToken);
+            return await SendAsync<TResult>(priority, httpRequestMessage, headers, httpResponseResolver, cancellationToken)
+                .ConfigureAwait(false);
         }
 
         protected virtual async Task<IRestApiResult<TResult>> SendAsync<TResult>(
@@ -151,12 +156,16 @@ namespace Xablu.WebApiClient
 
             SetHttpRequestHeaders(httpRequestMessage, headers);
 
-            var response = await httpClient.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
+            var response = await httpClient
+                .SendAsync(httpRequestMessage, cancellationToken)
+                .ConfigureAwait(false);
 
             if (httpResponseResolver == null)
                 httpResponseResolver = _restApiClientOptions.DefaultResponseResolver;
 
-            return await response.BuildRestApiResult<TResult>(httpResponseResolver);
+            return await response
+                .BuildRestApiResult<TResult>(httpResponseResolver)
+                .ConfigureAwait(false);
         }
 
         protected virtual HttpContent ResolveHttpContent<TContent>(
