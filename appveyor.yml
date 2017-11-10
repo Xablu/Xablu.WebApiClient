@@ -7,7 +7,7 @@
   install:
   - cmd: appveyor downloadfile https://dist.nuget.org/win-x86-commandline/v4.3.0/nuget.exe
   before_build:
-  - cmd: ./nuget restore
+  - cmd: nuget restore
   environment:
     NUGET_SOURCE: https://www.nuget.org/api/v2/package
     NUGET_APIKEY:
@@ -24,7 +24,7 @@
   install:
   - cmd: appveyor downloadfile https://dist.nuget.org/win-x86-commandline/v4.3.0/nuget.exe
   before_build:
-  - cmd: ./nuget restore
+  - cmd: nuget restore
   environment:
     NUGET_SOURCE: https://www.myget.org/F/xabluhq/api/v2/package
     NUGET_APIKEY:
