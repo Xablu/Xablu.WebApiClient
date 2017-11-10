@@ -54,7 +54,7 @@ Task("Restore")
  .IsDependentOn("ResolveBuildTools")
  .Does(() => {
  NuGetRestore(sln, new NuGetRestoreSettings {
-     ToolPath = "tools/nuget.exe",
+     ToolPath = "./nuget.exe",
      Verbosity = NuGetVerbosity.Quiet
  });
  // MSBuild(sln, settings => settings.WithTarget("Restore"));
