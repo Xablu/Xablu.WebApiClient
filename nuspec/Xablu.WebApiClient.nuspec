@@ -20,7 +20,7 @@
         </dependencies>
     </metadata>
     <files>
-        <file src="..\Xablu.WebApiClient\bin\Release\Xablu.WebApiClient.dll" target="lib\netstandard2.0\Xablu.WebApiClient.dll" />
-        <file src="..\Xablu.WebApiClient\bin\Release\Xablu.WebApiClient.pdb" target="lib\netstandard2.0\Xablu.WebApiClient.pdb" />
+        <file src="..\Xablu.WebApiClient\bin\Release\netstandard2.0\Xablu.WebApiClient.dll" target="lib\netstandard2.0\Xablu.WebApiClient.dll" />
+        <file src="..\Xablu.WebApiClient\bin\Release\netstandard2.0\Xablu.WebApiClient.pdb" target="lib\netstandard2.0\Xablu.WebApiClient.pdb" />
     </files>
 </package>
