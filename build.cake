@@ -2,10 +2,10 @@
 #tool nuget:?package=gitlink&version=2.4.0
 #tool nuget:?package=vswhere
 #tool nuget:?package=NUnit.ConsoleRunner
-#addin nuget:?package=Cake.Incubator
-#addin nuget:?package=Cake.Git
+#addin nuget:?package=Cake.Incubator&version=1.6.0
+#addin nuget:?package=Cake.Git&version=0.16.1
 
-var sln = new FilePath("src/Xablu.WebApiClient.sln");
+var sln = new FilePath("Xablu.WebApiClient.sln");
 var repoPath = new DirectoryPath("./");
 var outputDir = new DirectoryPath("artifacts");
 var nuspecDir = new DirectoryPath("nuspec");
@@ -17,23 +17,23 @@ Task("Clean").Does(() =>
 {
     CleanDirectories("./**/bin");
     CleanDirectories("./**/obj");
-	CleanDirectories(outputDir.FullPath);
+ CleanDirectories(outputDir.FullPath);
 
-	EnsureDirectoryExists(outputDir);
+ EnsureDirectoryExists(outputDir);
 });
 
 GitVersion versionInfo = null;
 Task("Version").Does(() => {
-	versionInfo = GitVersion(new GitVersionSettings {
-		UpdateAssemblyInfo = true,
-		OutputType = GitVersionOutput.Json
-	});
+ versionInfo = GitVersion(new GitVersionSettings {
+     UpdateAssemblyInfo = true,
+     OutputType = GitVersionOutput.Json
+ });
 
-	Information("GitVersion -> {0}", versionInfo.Dump());
+ Information("GitVersion -> {0}", versionInfo.Dump());
 });
 
 Task("UpdateAppVeyorBuildNumber")
-	.IsDependentOn("Version")
+ .IsDependentOn("Version")
     .WithCriteria(() => isRunningOnAppVeyor)
     .Does(() =>
 {
@@ -42,59 +42,59 @@ Task("UpdateAppVeyorBuildNumber")
 
 FilePath msBuildPath;
 Task("ResolveBuildTools")
-	.Does(() => 
+ .Does(() => 
 {
-	var vsLatest = VSWhereLatest();
-	msBuildPath = (vsLatest == null)
-		? null
-		: vsLatest.CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
+ var vsLatest = VSWhereLatest();
+ msBuildPath = (vsLatest == null)
+     ? null
+     : vsLatest.CombineWithFilePath("./MSBuild/15.0/Bin/MSBuild.exe");
 });
 
 Task("Restore")
-	.IsDependentOn("ResolveBuildTools")
-	.Does(() => {
-	NuGetRestore(sln, new NuGetRestoreSettings {
-		ToolPath = "tools/nuget.exe",
-		Verbosity = NuGetVerbosity.Quiet
-	});
-	// MSBuild(sln, settings => settings.WithTarget("Restore"));
+ .IsDependentOn("ResolveBuildTools")
+ .Does(() => {
+ NuGetRestore(sln, new NuGetRestoreSettings {
+     ToolPath = "tools/nuget.exe",
+     Verbosity = NuGetVerbosity.Quiet
+ });
+ // MSBuild(sln, settings => settings.WithTarget("Restore"));
 });
 
 Task("Build")
-	.IsDependentOn("ResolveBuildTools")
-	.IsDependentOn("Clean")
-	.IsDependentOn("UpdateAppVeyorBuildNumber")
-	.IsDependentOn("Restore")
-	.Does(() =>  {
+ .IsDependentOn("ResolveBuildTools")
+ .IsDependentOn("Clean")
+ .IsDependentOn("UpdateAppVeyorBuildNumber")
+ .IsDependentOn("Restore")
+ .Does(() =>  {
 
-	var settings = new MSBuildSettings 
-	{
-		Configuration = "Release",
-		ToolPath = msBuildPath,
-		Verbosity = Verbosity.Minimal
-	};
+ var settings = new MSBuildSettings 
+ {
+     Configuration = "Release",
+     ToolPath = msBuildPath,
+     Verbosity = Verbosity.Minimal
+ };
 
-	settings.Properties.Add("DebugSymbols", new List<string> { "True" });
-	settings.Properties.Add("DebugType", new List<string> { "Full" });
+ settings.Properties.Add("DebugSymbols", new List<string> { "True" });
+ settings.Properties.Add("DebugType", new List<string> { "Full" });
 
-	MSBuild(sln, settings);
+ MSBuild(sln, settings);
 });
 
 Task("UnitTest")
-	.IsDependentOn("Build")
-	.Does(() =>
+ .IsDependentOn("Build")
+ .Does(() =>
 {
-	// var testPaths = new List<string> {
-	// 	new FilePath("./src/Tests/Xablu.WebApiClient.UnitTests/bin/Release/Xablu.WebApiClient.UnitTests.dll").FullPath
-	// };
+ // var testPaths = new List<string> {
+ //  new FilePath("./src/Tests/Xablu.WebApiClient.UnitTests/bin/Release/Xablu.WebApiClient.UnitTests.dll").FullPath
+ // };
 
     // var testResultsPath = new FilePath(outputDir + "/NUnitTestResult.xml");
 
-	// NUnit3(testPaths, new NUnit3Settings {
-	// 	Timeout = 30000,
-	// 	OutputFile = new FilePath(outputDir + "/NUnitOutput.txt"),
-	// 	Results = testResultsPath
-	// });
+ // NUnit3(testPaths, new NUnit3Settings {
+ //  Timeout = 30000,
+ //  OutputFile = new FilePath(outputDir + "/NUnitOutput.txt"),
+ //  Results = testResultsPath
+ // });
 
     // if (isRunningOnAppVeyor)
     // {
@@ -103,36 +103,36 @@ Task("UnitTest")
 });
 
 Task("GitLink")
-	.IsDependentOn("UnitTest")
-	//pdbstr.exe and costura are not xplat currently
-	.WithCriteria(() => IsRunningOnWindows())
-	.WithCriteria(() => 
-		StringComparer.OrdinalIgnoreCase.Equals(versionInfo.BranchName, "develop") || 
-		IsMasterOrReleases())
-	.Does(() => 
+ .IsDependentOn("UnitTest")
+ //pdbstr.exe and costura are not xplat currently
+ .WithCriteria(() => IsRunningOnWindows())
+ .WithCriteria(() => 
+     StringComparer.OrdinalIgnoreCase.Equals(versionInfo.BranchName, "develop") || 
+     IsMasterOrReleases())
+ .Does(() => 
 {
-	var projectsToIgnore = new string[] {
-		"apiclient.sample"
-	};
+ var projectsToIgnore = new string[] {
+     "apiclient.sample"
+ };
 
-	GitLink("./", 
-		new GitLinkSettings {
-			RepositoryUrl = "https://github.com/Xablu/Xablu.WebApiClient",
-			Configuration = "Release",
-			SolutionFileName = "src/Xablu.WebApiClient.sln",
-			ArgumentCustomization = args => args.Append("-ignore " + string.Join(",", projectsToIgnore))
-		});
+ GitLink("./", 
+     new GitLinkSettings {
+         RepositoryUrl = "https://github.com/Xablu/Xablu.WebApiClient",
+         Configuration = "Release",
+         SolutionFileName = "Xablu.WebApiClient.sln",
+         ArgumentCustomization = args => args.Append("-ignore " + string.Join(",", projectsToIgnore))
+     });
 });
 
 Task("Package")
-	.IsDependentOn("GitLink")
-	.WithCriteria(() => 
-		StringComparer.OrdinalIgnoreCase.Equals(versionInfo.BranchName, "develop") || 
-		IsMasterOrReleases())
-	.Does(() => 
+ .IsDependentOn("GitLink")
+ .WithCriteria(() => 
+     StringComparer.OrdinalIgnoreCase.Equals(versionInfo.BranchName, "develop") || 
+     IsMasterOrReleases())
+ .Does(() => 
 {
-	var nugetSettings = new NuGetPackSettings {
-		Authors = new [] { "Xablu" },
+ var nugetSettings = new NuGetPackSettings {
+     Authors = new [] { "Xablu" },
         Owners = new [] { "Xablu" },
         IconUrl = new Uri("https://raw.githubusercontent.com/Xablu/Xablu.WebApiClient/master/icon_xablu.png"),
         ProjectUrl = new Uri("https://github.com/Xablu/Xablu.WebApiClient"),
@@ -145,16 +145,16 @@ Task("Package")
         OutputDirectory = outputDir,
         Verbosity = NuGetVerbosity.Detailed,
         BasePath = "./nuspec"
-	};
+ };
 
-	var nuspecs = new List<string> {
-		"Xablu.WebApiClient.nuspec"
-	};
+ var nuspecs = new List<string> {
+     "Xablu.WebApiClient.nuspec"
+ };
 
-	foreach(var nuspec in nuspecs)
-	{
-		NuGetPack(nuspecDir + "/" + nuspec, nugetSettings);
-	}
+ foreach(var nuspec in nuspecs)
+ {
+     NuGetPack(nuspecDir + "/" + nuspec, nugetSettings);
+ }
 });
 
 Task("PublishPackages")
@@ -162,50 +162,50 @@ Task("PublishPackages")
     .WithCriteria(() => !BuildSystem.IsLocalBuild)
     .WithCriteria(() => IsRepository("Xablu/Xablu.WebApiClient"))
     .WithCriteria(() => 
-		StringComparer.OrdinalIgnoreCase.Equals(versionInfo.BranchName, "develop") || 
-		IsMasterOrReleases())
+     StringComparer.OrdinalIgnoreCase.Equals(versionInfo.BranchName, "develop") || 
+     IsMasterOrReleases())
     .Does (() =>
 {
-	if (StringComparer.OrdinalIgnoreCase.Equals(versionInfo.BranchName, "master") && !IsTagged())
+ if (StringComparer.OrdinalIgnoreCase.Equals(versionInfo.BranchName, "master") && !IsTagged())
     {
         Information("Packages will not be published as this release has not been tagged.");
         return;
     }
 
-	// Resolve the API key.
-	var nugetKeySource = GetNugetKeyAndSource();
-	var apiKey = nugetKeySource.Item1;
-	var source = nugetKeySource.Item2;
+ // Resolve the API key.
+ var nugetKeySource = GetNugetKeyAndSource();
+ var apiKey = nugetKeySource.Item1;
+ var source = nugetKeySource.Item2;
 
-	var nugetFiles = GetFiles(outputDir + "/*.nupkg");
+ var nugetFiles = GetFiles(outputDir + "/*.nupkg");
 
-	foreach(var nugetFile in nugetFiles)
-	{
-    	NuGetPush(nugetFile, new NuGetPushSettings {
+ foreach(var nugetFile in nugetFiles)
+ {
+     NuGetPush(nugetFile, new NuGetPushSettings {
             Source = source,
             ApiKey = apiKey
         });
-	}
+ }
 });
 
 Task("UploadAppVeyorArtifact")
-	.IsDependentOn("Package")
-	.WithCriteria(() => !AppVeyor.Environment.PullRequest.IsPullRequest)
-	.WithCriteria(() => isRunningOnAppVeyor)
-	.Does(() => {
+ .IsDependentOn("Package")
+ .WithCriteria(() => !AppVeyor.Environment.PullRequest.IsPullRequest)
+ .WithCriteria(() => isRunningOnAppVeyor)
+ .Does(() => {
 
-	Information("Artifacts Dir: {0}", outputDir.FullPath);
+ Information("Artifacts Dir: {0}", outputDir.FullPath);
 
-	foreach(var file in GetFiles(outputDir.FullPath + "/*")) {
-		Information("Uploading {0}", file.FullPath);
-		AppVeyor.UploadArtifact(file.FullPath);
-	}
+ foreach(var file in GetFiles(outputDir.FullPath + "/*")) {
+     Information("Uploading {0}", file.FullPath);
+     AppVeyor.UploadArtifact(file.FullPath);
+ }
 });
 
 Task("Default")
-	.IsDependentOn("PublishPackages")
-	.IsDependentOn("UploadAppVeyorArtifact")
-	.Does(() => 
+ .IsDependentOn("PublishPackages")
+ .IsDependentOn("UploadAppVeyorArtifact")
+ .Does(() => 
 {
 });
 
@@ -213,94 +213,94 @@ RunTarget(target);
 
 bool IsMasterOrReleases()
 {
-	if (StringComparer.OrdinalIgnoreCase.Equals(versionInfo.BranchName, "master"))
-		return true;
+ if (StringComparer.OrdinalIgnoreCase.Equals(versionInfo.BranchName, "master"))
+     return true;
 
-	if (versionInfo.BranchName.Contains("releases/"))
-		return true;
+ if (versionInfo.BranchName.Contains("releases/"))
+     return true;
 
-	return false;
+ return false;
 }
 
 bool IsRepository(string repoName)
 {
-	if (isRunningOnAppVeyor)
-	{
-		var buildEnvRepoName = AppVeyor.Environment.Repository.Name;
-		Information("Checking repo name: {0} against build repo name: {1}", repoName, buildEnvRepoName);
-		return StringComparer.OrdinalIgnoreCase.Equals(repoName, buildEnvRepoName);
-	}
-	else
-	{
-		try
-		{
-			var path = MakeAbsolute(repoPath).FullPath;
-			using (var repo = new LibGit2Sharp.Repository(path))
-			{
-				var origin = repo.Network.Remotes.FirstOrDefault(
-					r => r.Name.ToLowerInvariant() == "origin");
-				return origin.Url.ToLowerInvariant() == 
-					"https://github.com/" + repoName.ToLowerInvariant();
-			}
-		}
-		catch(Exception ex)
-		{
-			Information("Failed to lookup repository: {0}", ex);
-			return false;
-		}
-	}
+ if (isRunningOnAppVeyor)
+ {
+     var buildEnvRepoName = AppVeyor.Environment.Repository.Name;
+     Information("Checking repo name: {0} against build repo name: {1}", repoName, buildEnvRepoName);
+     return StringComparer.OrdinalIgnoreCase.Equals(repoName, buildEnvRepoName);
+ }
+ else
+ {
+     try
+     {
+         var path = MakeAbsolute(repoPath).FullPath;
+         using (var repo = new LibGit2Sharp.Repository(path))
+         {
+             var origin = repo.Network.Remotes.FirstOrDefault(
+                 r => r.Name.ToLowerInvariant() == "origin");
+             return origin.Url.ToLowerInvariant() == 
+                 "https://github.com/" + repoName.ToLowerInvariant();
+         }
+     }
+     catch(Exception ex)
+     {
+         Information("Failed to lookup repository: {0}", ex);
+         return false;
+     }
+ }
 }
 
 bool IsTagged()
 {
-	var path = MakeAbsolute(repoPath).FullPath;
-	using (var repo = new LibGit2Sharp.Repository(path))
-	{
-		var head = repo.Head;
-		var headSha = head.Tip.Sha;
-		
-		var tag = repo.Tags.FirstOrDefault(t => t.Target.Sha == headSha);
-		if (tag == null)
-		{
-			Information("HEAD is not tagged");
-			return false;
-		}
+ var path = MakeAbsolute(repoPath).FullPath;
+ using (var repo = new LibGit2Sharp.Repository(path))
+ {
+     var head = repo.Head;
+     var headSha = head.Tip.Sha;
+     
+     var tag = repo.Tags.FirstOrDefault(t => t.Target.Sha == headSha);
+     if (tag == null)
+     {
+         Information("HEAD is not tagged");
+         return false;
+     }
 
-		Information("HEAD is tagged: {0}", tag.FriendlyName);
-		return true;
-	}
+     Information("HEAD is tagged: {0}", tag.FriendlyName);
+     return true;
+ }
 }
 
 Tuple<string, string> GetNugetKeyAndSource()
 {
-	var apiKeyKey = string.Empty;
-	var sourceKey = string.Empty;
-	if (isRunningOnAppVeyor)
-	{
-		apiKeyKey = "NUGET_APIKEY";
-		sourceKey = "NUGET_SOURCE";
-	}
-	else
-	{
-		if (StringComparer.OrdinalIgnoreCase.Equals(versionInfo.BranchName, "develop"))
-		{
-			apiKeyKey = "NUGET_APIKEY_DEVELOP";
-			sourceKey = "NUGET_SOURCE_DEVELOP";
-		}
-		else if (IsMasterOrReleases())
-		{
-			apiKeyKey = "NUGET_APIKEY_MASTER";
-			sourceKey = "NUGET_SOURCE_MASTER";
-		}
-	}
+ var apiKeyKey = string.Empty;
+ var sourceKey = string.Empty;
+ if (isRunningOnAppVeyor)
+ {
+     apiKeyKey = "NUGET_APIKEY";
+     sourceKey = "NUGET_SOURCE";
+ }
+ else
+ {
+     if (StringComparer.OrdinalIgnoreCase.Equals(versionInfo.BranchName, "develop"))
+     {
+         apiKeyKey = "NUGET_APIKEY_DEVELOP";
+         sourceKey = "NUGET_SOURCE_DEVELOP";
+     }
+     else if (IsMasterOrReleases())
+     {
+         apiKeyKey = "NUGET_APIKEY_MASTER";
+         sourceKey = "NUGET_SOURCE_MASTER";
+     }
+ }
 
-	var apiKey = EnvironmentVariable(apiKeyKey);
-	if (string.IsNullOrEmpty(apiKey))
-		throw new Exception(string.Format("The {0} environment variable is not defined.", apiKeyKey));
+ var apiKey = EnvironmentVariable(apiKeyKey);
+ if (string.IsNullOrEmpty(apiKey))
+     throw new Exception(string.Format("The {0} environment variable is not defined.", apiKeyKey));
 
-	var source = EnvironmentVariable(sourceKey);
-	if (string.IsNullOrEmpty(source))
-		throw new Exception(string.Format("The {0} environment variable is not defined.", sourceKey));
+ var source = EnvironmentVariable(sourceKey);
+ if (string.IsNullOrEmpty(source))
+     throw new Exception(string.Format("The {0} environment variable is not defined.", sourceKey));
 
-	return Tuple.Create(apiKey, source);
+ return Tuple.Create(apiKey, source);
 }
