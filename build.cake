@@ -2,8 +2,8 @@
 #tool nuget:?package=gitlink&version=2.4.0
 #tool nuget:?package=vswhere
 #tool nuget:?package=NUnit.ConsoleRunner
-#addin nuget:?package=Cake.Incubator&version=1.6.0
-#addin nuget:?package=Cake.Git&version=0.16.1
+#addin nuget:?package=Cake.Incubator&version=1.5.0
+#addin nuget:?package=Cake.Git&version=0.16.0
 
 var sln = new FilePath("Xablu.WebApiClient.sln");
 var repoPath = new DirectoryPath("./");
@@ -54,7 +54,7 @@ Task("Restore")
  .IsDependentOn("ResolveBuildTools")
  .Does(() => {
  NuGetRestore(sln, new NuGetRestoreSettings {
-     ToolPath = "tools/nuget.exe",
+     ToolPath = "./nuget.exe",
      Verbosity = NuGetVerbosity.Quiet
  });
  // MSBuild(sln, settings => settings.WithTarget("Restore"));
