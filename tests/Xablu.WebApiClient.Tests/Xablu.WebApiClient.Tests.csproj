@@ -10,6 +10,6 @@
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\Xablu.WebApiClient\Xablu.WebApiClient.csproj" />
+	  <ProjectReference Include="..\..\src\Xablu.WebApiClient\Xablu.WebApiClient.csproj" />
 	</ItemGroup>
 </Project>
