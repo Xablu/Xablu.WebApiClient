@@ -1,6 +1,7 @@
-﻿using System.Net.Http;
+using System.Net.Http;
 using System.Text;
 using Newtonsoft.Json;
+using Xablu.WebApiClient.Abstractions;
 
 namespace Xablu.WebApiClient.Resolvers
 {

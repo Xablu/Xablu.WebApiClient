@@ -1,4 +1,5 @@
-﻿using System.Net;
+using System.Net;
+using Xablu.WebApiClient.Abstractions;
 
 namespace Xablu.WebApiClient.HttpExtensions
 {

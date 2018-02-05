@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Fusillade;
 using Xablu.WebApiClient.Resolvers;
 using Xablu.WebApiClient.HttpExtensions;
+using Xablu.WebApiClient.Abstractions;
 
 namespace Xablu.WebApiClient
 {

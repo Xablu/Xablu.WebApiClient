@@ -1,6 +1,6 @@
-﻿using System.Net;
+using System.Net;
 
-namespace Xablu.WebApiClient
+namespace Xablu.WebApiClient.Abstractions
 {
     public interface IRestApiResult<out TResult>
     {

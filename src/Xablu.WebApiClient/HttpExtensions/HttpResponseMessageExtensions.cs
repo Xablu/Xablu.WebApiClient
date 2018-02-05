@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net;
 using Xablu.WebApiClient.Exceptions;
+using Xablu.WebApiClient.Abstractions;
 
 namespace Xablu.WebApiClient.HttpExtensions
 {

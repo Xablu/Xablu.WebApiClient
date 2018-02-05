@@ -1,7 +1,8 @@
-﻿using Xablu.WebApiClient.HttpExtensions;
+using Xablu.WebApiClient.HttpExtensions;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using Xablu.WebApiClient.Abstractions;
 
 namespace Xablu.WebApiClient.Resolvers
 {

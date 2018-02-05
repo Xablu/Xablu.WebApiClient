@@ -1,11 +1,10 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Fusillade;
+using Xablu.WebApiClient.Abstractions;
 using Xablu.WebApiClient.HttpContentExtensions;
-using Xablu.WebApiClient.HttpExtensions;
 
 namespace Xablu.WebApiClient
 {

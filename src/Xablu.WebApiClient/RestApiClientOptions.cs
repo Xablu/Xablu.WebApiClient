@@ -1,8 +1,9 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using Xablu.WebApiClient.Resolvers;
 using System.Net.Http;
 using System;
+using Xablu.WebApiClient.Abstractions;
 
 namespace Xablu.WebApiClient
 {

@@ -1,10 +1,10 @@
-﻿using System;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
+using Xablu.WebApiClient.Abstractions;
 
 namespace Xablu.WebApiClient.Resolvers
 {
