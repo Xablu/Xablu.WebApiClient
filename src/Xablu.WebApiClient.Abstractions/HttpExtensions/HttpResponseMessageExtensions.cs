@@ -1,10 +1,9 @@
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net;
-using Xablu.WebApiClient.Exceptions;
-using Xablu.WebApiClient.Abstractions;
+using Xablu.WebApiClient.Abstractions.Exceptions;
 
-namespace Xablu.WebApiClient.HttpExtensions
+namespace Xablu.WebApiClient.Abstractions.HttpExtensions
 {
     public static class HttpResponseMessageExtensions
     {

@@ -1,8 +1,7 @@
 using System.Net;
 using System.Text.RegularExpressions;
-using Xablu.WebApiClient.Abstractions;
 
-namespace Xablu.WebApiClient
+namespace Xablu.WebApiClient.Abstractions
 {
     public class RestApiResult<TResult>
         : IRestApiResult<TResult>

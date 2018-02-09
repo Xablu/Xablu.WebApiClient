@@ -5,13 +5,21 @@ VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xablu.WebApiClient", "Xablu.WebApiClient\Xablu.WebApiClient.csproj", "{E483FD4E-1575-4F90-91ED-5138FF401EE4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xablu.WebApiClient.Abstractions", "Xablu.WebApiClient.Abstractions\Xablu.WebApiClient.Abstractions.csproj", "{3C9D6707-1859-427D-BF9D-5A1864CBACBC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xablu.WebApiClient.Abstractions", "Xablu.WebApiClient.Abstractions\Xablu.WebApiClient.Abstractions.csproj", "{3C9D6707-1859-427D-BF9D-5A1864CBACBC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xablu.WebApiClient.iOS", "Xablu.WebApiClient.iOS\Xablu.WebApiClient.iOS.csproj", "{E23A7C7D-40D3-4BD6-86BB-1295A6D0B1DD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xablu.WebApiClient.Droid", "Xablu.WebApiClient.Droid\Xablu.WebApiClient.Droid.csproj", "{DEF3BF4B-7FE5-44AE-8E70-5EAAB0CF9672}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xablu.WebApiClient.UWP", "Xablu.WebApiClient.UWP\Xablu.WebApiClient.UWP.csproj", "{EE606717-8755-40AF-8B02-815197585940}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F0E7A280-B62D-4850-A34F-1AAB55C0CD4B}"
+	ProjectSection(SolutionItems) = preProject
+		..\appveyor.yml = ..\appveyor.yml
+		..\build.cake = ..\build.cake
+		..\nuget\Plugin.nuspec = ..\nuget\Plugin.nuspec
+		..\nuget\readme.txt = ..\nuget\readme.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

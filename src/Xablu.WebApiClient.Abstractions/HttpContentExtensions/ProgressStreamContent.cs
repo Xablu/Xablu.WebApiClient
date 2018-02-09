@@ -6,7 +6,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Xablu.WebApiClient.HttpContentExtensions
+namespace Xablu.WebApiClient.Abstractions.HttpContentExtensions
 {
     public delegate void ProgressDelegate(long bytes, long totalBytes, long totalBytesExpected);
 

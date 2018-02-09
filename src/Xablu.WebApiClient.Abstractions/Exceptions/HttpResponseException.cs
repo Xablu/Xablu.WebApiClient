@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Net;
 
-namespace Xablu.WebApiClient.Exceptions
+namespace Xablu.WebApiClient.Abstractions.Exceptions
 {
     public class HttpResponseException : Exception
     {

@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 
-namespace Xablu.WebApiClient.HttpExtensions
+namespace Xablu.WebApiClient.Abstractions.HttpExtensions
 {
     /// <summary>
     /// A replacement implementation of the <see cref="FormUrlEncodedContent"/> to handle large data requests.

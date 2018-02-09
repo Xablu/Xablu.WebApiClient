@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Xablu.WebApiClient
+namespace Xablu.WebApiClient.Abstractions
 {
     public static class InitializerExtensions
     {

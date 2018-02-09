@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Xablu.WebApiClient.Exceptions
+namespace Xablu.WebApiClient.Abstractions.Exceptions
 {
     public class NoSessionException : Exception
     {

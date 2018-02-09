@@ -5,9 +5,8 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Xablu.WebApiClient.Abstractions;
 
-namespace Xablu.WebApiClient.HttpExtensions
+namespace Xablu.WebApiClient.Abstractions.HttpExtensions
 {
     public static class RestApiClientPollyExtensions
     {

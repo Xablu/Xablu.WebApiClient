@@ -1,7 +1,7 @@
 using System.Net;
 using Xablu.WebApiClient.Abstractions;
 
-namespace Xablu.WebApiClient.HttpExtensions
+namespace Xablu.WebApiClient.Abstractions.HttpExtensions
 {
     public delegate void OnSuccessAction<TResult>(TResult result);
 

@@ -4,13 +4,12 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Fusillade;
-using Xablu.WebApiClient.Resolvers;
-using Xablu.WebApiClient.HttpExtensions;
-using Xablu.WebApiClient.Abstractions;
+using Xablu.WebApiClient.Abstractions.Resolvers;
+using Xablu.WebApiClient.Abstractions.HttpExtensions;
 
-namespace Xablu.WebApiClient
+namespace Xablu.WebApiClient.Abstractions
 {
-    public class RestApiClient
+    public abstract class RestApiClient
         : IRestApiClient
     {
         private readonly RestApiClientOptions _restApiClientOptions;
@@ -23,7 +22,7 @@ namespace Xablu.WebApiClient
 
         public RestApiClient(string apiBaseAddress)
         {
-            _restApiClientOptions = new RestApiClientOptions(apiBaseAddress);
+            _restApiClientOptions = new RestApiClientOptions();
 
             Initialize();
         }
@@ -38,7 +37,7 @@ namespace Xablu.WebApiClient
         private void Initialize()
         {
             var apiBaseAddress = _restApiClientOptions.ApiBaseAddress;
-            var httpHandler = _restApiClientOptions.DefaultHttpMessageHandler;
+            var httpHandler = HttpMessageHandlerBuilder;
 
             if (string.IsNullOrEmpty(apiBaseAddress))
                 throw new InvalidOperationException("The 'RestApiClient' failed to initialize. Make sure you set a value for the 'ApiBaseAddress' option.");
@@ -60,6 +59,21 @@ namespace Xablu.WebApiClient
             _speculative = new Lazy<HttpClient>(() => CreateClient(
                 new RateLimitedHttpMessageHandler(httpHandler.Invoke(), Priority.Speculative)));
         }
+
+        /// <summary>
+        /// Gets or sets a delegate which will instantiate an instance of <see cref="HttpMessageHandler"/> class used to process the HTTP requests.
+        /// </summary>
+        /// <remarks>
+        /// The <see cref="RestApiClient"/> will (lazily) create an instance of the <see cref="HttpClient"/> object for each of the different priorities.
+        /// The delegate supplied to the <see cref="HttpMessageHandlerBuilder"/> property is called to supply the <see cref="HttpClient"/> with an implementation
+        /// of the <see cref="HttpMessageHandler"/> class. 
+        /// 
+        /// You can supply a different delegate to create a platform specific implementation of the <see cref="HttpMessageHander"/> class by overriding the property
+        /// and returning your <see cref="HttpMessageHander"/> implementation.
+        ///
+        /// By default the delegate will create an instance of the <see cref="HttpClientHandler"/> (standard .NET implementation).   
+        /// </remarks>
+        protected virtual Func<HttpMessageHandler> HttpMessageHandlerBuilder { get; } = () => new HttpClientHandler { AutomaticDecompression = System.Net.DecompressionMethods.GZip };
 
         public virtual string AuthorizeToken { get; set; }
 

@@ -3,7 +3,7 @@ using System.Text;
 using Newtonsoft.Json;
 using Xablu.WebApiClient.Abstractions;
 
-namespace Xablu.WebApiClient.Resolvers
+namespace Xablu.WebApiClient.Abstractions.Resolvers
 {
     public class SimpleJsonContentResolver
         : IHttpContentResolver

@@ -6,7 +6,7 @@ using System.IO;
 using System.Diagnostics;
 using Xablu.WebApiClient.Abstractions;
 
-namespace Xablu.WebApiClient.Resolvers
+namespace Xablu.WebApiClient.Abstractions.Resolvers
 {
     internal class DefaultHttpResponseResolver
         : IHttpResponseResolver

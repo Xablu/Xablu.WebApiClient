@@ -3,10 +3,9 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Fusillade;
-using Xablu.WebApiClient.Abstractions;
-using Xablu.WebApiClient.HttpContentExtensions;
+using Xablu.WebApiClient.Abstractions.HttpContentExtensions;
 
-namespace Xablu.WebApiClient
+namespace Xablu.WebApiClient.Abstractions
 {
     public class RestApiProgressClient
         : RestApiClient

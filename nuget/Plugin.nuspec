@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata minClientVersion="2.8.1">
+    <id>Xablu.WebApiClient</id>
+    <version>$version$</version>
+    <title>Web API client by Xablu</title>
+    <authors>Xablu</authors>
+    <owners>Xablu</owners>
+    <licenseUrl>https://github.com/Xablu/Xablu.WebApiClient/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/Xablu/Xablu.WebApiClient</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/Xablu/Xablu.WebApiClient/master/icon_xablu.png</iconUrl>
+
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of Web API services in .NET projects.</description>
+    <summary>C# HTTP library to simplify Web API consumption</summary>
+    <tags>xamarin, monodroid, C#, xamarin.android, android, ios, uwp, Windows, tvOS, Mac, MacOS, Xablu, Web API, REST, ASP.NET, .NET</tags>
+    <dependencies>
+      <group>
+        <dependency id="fusillade" version="1.0.0" />
+        <dependency id="Newtonsoft.Json" version="10.0.3" />
+        <dependency id="Polly" version="5.8.0" />
+      </group>
+      <group targetFramework="net">
+      </group>
+      <group targetFramework="win">
+      </group>
+      <group targetFramework="wp">
+      </group>
+      <group targetFramework="wpa">
+      </group>
+      <group targetFramework="netstandard1.0">
+        <dependency id="NETStandard.Library" version="1.6.1" />
+        <dependency id="System.Net.Requests" version="4.3.0" />
+      </group>
+      <group targetFramework="MonoAndroid10">
+      </group>
+      <group targetFramework="Xamarin.iOS10">
+      </group>
+      <group targetFramework="Xamarin.Mac20">
+      </group>
+      <group targetFramework="portable-net45+win+wpa81+wp80">
+      </group>
+      <group targetFramework="uap">
+      </group>
+      <group targetFramework="dotnet">
+        <dependency id="System.Net.Requests" version="4.3.0" />
+      </group>
+      <group targetFramework="xamarintvos">
+      </group>
+      <group targetFramework="xamarinwatchos">
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="nuget\readme.txt" target="readme.txt" />
+    
+    <!--Core-->
+    <file src="src\Xablu.WebApiClient\bin\Release\netstandard2.0\Xablu.WebApiClient.*" target="lib\netstandard1.0" />
+
+    <!--Xamarin.Android-->
+    <file src="src\Xablu.WebApiClient.Droid\bin\Release\Xablu.WebApiClient.*" target="lib\MonoAndroid10" />
+
+    <!--Xamarin.iOS-->
+    <file src="src\Xablu.WebApiClient.iOS\bin\iPhone\Release\Xablu.WebApiClient.*" target="lib\Xamarin.iOS10" />
+
+    <!--UWP-->
+    <file src="src\Xablu.WebApiClient.UWP\bin\Release\Xablu.WebApiClient.*" target="lib\UAP10" />
+  </files>
+</package>

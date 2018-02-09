@@ -1,19 +1,11 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using Xablu.WebApiClient.Resolvers;
-using System.Net.Http;
-using System;
-using Xablu.WebApiClient.Abstractions;
+using Xablu.WebApiClient.Abstractions.Resolvers;
 
-namespace Xablu.WebApiClient
+namespace Xablu.WebApiClient.Abstractions
 {
     public class RestApiClientOptions
     {
-        public RestApiClientOptions(string apiBaseAddress)
-        {
-            ApiBaseAddress = apiBaseAddress;
-        }
-
         /// <summary>
         /// Gets the base address of the API to which the <see cref="RestApiClient"/> will send the HTTP requests.
         /// </summary>
@@ -22,30 +14,7 @@ namespace Xablu.WebApiClient
         /// An example could be "https://www.xablu.com". The base address will be appended in front of the 'path' value which
         /// is supplied with every HTTP request. 
         /// </remarks>
-        public string ApiBaseAddress { get; }
-
-        /// <summary>
-        /// Gets or sets a delegate which will instantiate an instance of <see cref="HttpMessageHandler"/> class used to process the HTTP requests.
-        /// </summary>
-        /// <remarks>
-        /// The <see cref="RestApiClient"/> will (lazily) create an instance of the <see cref="HttpClient"/> object for each of the different priorities.
-        /// The delegate supplied to the <see cref="DefaultHttpMessageHandler"/> property is called to supply the <see cref="HttpClient"/> with an implementation
-        /// of the <see cref="HttpMessageHandler"/> class. 
-        /// 
-        /// You can supply a different delegate to create a platform specific implementation of the <see cref="HttpMessageHander"/> class. For example you might want 
-        /// to supply one of the following:
-        /// 
-        /// <code>
-        /// // To use the NSUrlSessionHandler (on iOS devices) use:
-        /// () => new NSUrlSessionHandler();
-        /// 
-        /// // To use the AndroidClientHandler (on Android devices) use:
-        /// () => new AndroidClientHandler();
-        /// </code> 
-        /// 
-        /// By default the delegate will create an instance of the <see cref="HttpClientHandler"/> (standard .NET implementation).   
-        /// </remarks>
-        public Func<HttpMessageHandler> DefaultHttpMessageHandler { get; set; } = () => new HttpClientHandler { AutomaticDecompression = System.Net.DecompressionMethods.GZip };
+        public string ApiBaseAddress { get; set; }
 
         /// <summary>
         /// Gets or sets a list of default headers which will be used with every HTTP request made by the <see cref="RestApiClient"/>.

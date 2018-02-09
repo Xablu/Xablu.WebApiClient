@@ -1,10 +1,9 @@
-using Xablu.WebApiClient.HttpExtensions;
+using Xablu.WebApiClient.Abstractions.HttpExtensions;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using Xablu.WebApiClient.Abstractions;
 
-namespace Xablu.WebApiClient.Resolvers
+namespace Xablu.WebApiClient.Abstractions.Resolvers
 {
     public class FormUrlEncodedContentResolver
         : IHttpContentResolver

@@ -1,7 +1,7 @@
 using System.Net.Http;
 using System.Collections.Generic;
 
-namespace Xablu.WebApiClient.Resolvers
+namespace Xablu.WebApiClient.Abstractions.Resolvers
 {
     public class DictionaryContentResolver
     {

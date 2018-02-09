@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xablu.WebApiClient.Abstractions;
 
-namespace Xablu.WebApiClient.Resolvers
+namespace Xablu.WebApiClient.Abstractions.Resolvers
 {
     public class SimpleStringResponseResolver
         : IHttpResponseResolver
