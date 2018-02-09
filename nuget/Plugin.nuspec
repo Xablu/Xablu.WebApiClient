@@ -61,7 +61,7 @@
     <file src="src\Xablu.WebApiClient.Droid\bin\Release\Xablu.WebApiClient.*" target="lib\MonoAndroid10" />
 
     <!--Xamarin.iOS-->
-    <file src="src\Xablu.WebApiClient.iOS\bin\iPhone\Release\Xablu.WebApiClient.*" target="lib\Xamarin.iOS10" />
+    <file src="src\Xablu.WebApiClient.iOS\bin\Release\Xablu.WebApiClient.*" target="lib\Xamarin.iOS10" />
 
     <!--UWP-->
     <file src="src\Xablu.WebApiClient.UWP\bin\Release\Xablu.WebApiClient.*" target="lib\UAP10" />
