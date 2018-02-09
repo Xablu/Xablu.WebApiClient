@@ -1,7 +1,7 @@
 var TARGET = Argument ("target", Argument ("t", "Default"));
 var VERSION = EnvironmentVariable ("APPVEYOR_BUILD_VERSION") ?? Argument("version", "0.0.9999");
 var CONFIG = Argument("configuration", EnvironmentVariable ("CONFIGURATION") ?? "Release");
-var SLN = "./src/DeviceInfo.sln";
+var SLN = "./src/Xablu.WebApiClient.sln";
 
 Task("Libraries").Does(()=>
 {
