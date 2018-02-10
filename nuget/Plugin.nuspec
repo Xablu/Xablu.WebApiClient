@@ -31,6 +31,9 @@
         <dependency id="Polly" version="5.8.0" />
       </group>
       <group targetFramework="MonoAndroid10">
+        <dependency id="fusillade" version="1.0.0" />
+        <dependency id="Newtonsoft.Json" version="10.0.3" />
+        <dependency id="Polly" version="5.8.0" />
       </group>
       <group targetFramework="Xamarin.iOS10">
       </group>
@@ -39,6 +42,9 @@
       <group targetFramework="portable-net45+win+wpa81+wp80">
       </group>
       <group targetFramework="uap">
+        <dependency id="fusillade" version="1.0.0" />
+        <dependency id="Newtonsoft.Json" version="10.0.3" />
+        <dependency id="Polly" version="5.8.0" />
       </group>
       <group targetFramework="dotnet">
         <dependency id="System.Net.Requests" version="4.3.0" />
