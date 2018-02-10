@@ -15,11 +15,6 @@
     <summary>C# HTTP library to simplify Web API consumption</summary>
     <tags>xamarin, monodroid, C#, xamarin.android, android, ios, uwp, Windows, tvOS, Mac, MacOS, Xablu, Web API, REST, ASP.NET, .NET</tags>
     <dependencies>
-      <group>
-        <dependency id="fusillade" version="1.0.0" />
-        <dependency id="Newtonsoft.Json" version="10.0.3" />
-        <dependency id="Polly" version="5.8.0" />
-      </group>
       <group targetFramework="net">
       </group>
       <group targetFramework="win">
@@ -31,6 +26,9 @@
       <group targetFramework="netstandard1.0">
         <dependency id="NETStandard.Library" version="1.6.1" />
         <dependency id="System.Net.Requests" version="4.3.0" />
+        <dependency id="fusillade" version="1.0.0" />
+        <dependency id="Newtonsoft.Json" version="10.0.3" />
+        <dependency id="Polly" version="5.8.0" />
       </group>
       <group targetFramework="MonoAndroid10">
       </group>
