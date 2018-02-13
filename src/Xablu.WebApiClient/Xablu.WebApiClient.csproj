@@ -3,38 +3,8 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard1.4;netcoreapp1.0;net461;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70;uap10.0</TargetFrameworks>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <GeneratePackageOnBuild Condition=" '$(Configuration)' == 'Release' and '$(IsTestProject)' != 'true'">true</GeneratePackageOnBuild>
     <DefaultLanguage>en-US</DefaultLanguage>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)' == 'uap10.0'">
-    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
-    <NugetTargetMoniker>UAP,Version=v10.0</NugetTargetMoniker>
-    <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
-    <TargetFrameworkIdentifier>.NETCore</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
-    <DefineConstants>$(DefineConstants);WINDOWS_UWP</DefineConstants>
-    <LanguageTargets>$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets</LanguageTargets>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)' == 'Xamarin.iOS10'">
-    <TargetFrameworkIdentifier>Xamarin.iOS</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
-    <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <DefineConstants>$(DefineConstants);IOS1_0</DefineConstants>
-    <DebugType>full</DebugType>
-    <LanguageTargets>$(MSBuildProgramFiles32)\MSBuild\Xamarin\iOS\Xamarin.iOS.CSharp.targets</LanguageTargets>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)' == 'MonoAndroid70'">
-    <TargetFrameworkIdentifier>MonoAndroid</TargetFrameworkIdentifier>
-    <TargetFrameworkVersion>v7.0</TargetFrameworkVersion>
-    <AndroidUseLatestPlatformSdk>False</AndroidUseLatestPlatformSdk>
-    <DebugType>full</DebugType>
-    <DefineConstants>$(DefineConstants);MONOANDROID7_0</DefineConstants>
-    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
-    <LanguageTargets>$(MSBuildProgramFiles32)\MSBuild\Xamarin\Android\Xamarin.Android.CSharp.targets</LanguageTargets>
   </PropertyGroup>
 
   <!-- Assembly information -->
@@ -55,7 +25,6 @@
     <PackageLicenseUrl>https://github.com/Xablu/Xablu.WebApiClient/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/Xablu/Xablu.WebApiClient</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/Xablu/Xablu.WebApiClient/master/icon_xablu.png</PackageIconUrl>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <RepositoryUrl>https://github.com/Xablu/Xablu.WebApiClient</RepositoryUrl>
   </PropertyGroup>
 
