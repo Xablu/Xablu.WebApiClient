@@ -13,7 +13,7 @@
   
   build_script:
     - cmd: msbuild src/Xablu.WebApiClient.sln /t:restore
-    - cmd: msbuild src/Xablu.WebApiClient.sln /t:pack /p:Configuration=Release /p:PackageOutputPath=%APPVEYOR_BUILD_FOLDER%
+    - cmd: msbuild src/Xablu.WebApiClient.sln /t:pack /p:Configuration=Release /p:VersionNumber=%version% /p:PackageOutputPath=%APPVEYOR_BUILD_FOLDER%
   
   artifacts:
     - path: 'Xablu.WebApiClient.*.nupkg'
@@ -39,7 +39,7 @@
   
   build_script:
     - cmd: msbuild src/Xablu.WebApiClient.sln /t:restore
-    - cmd: msbuild src/Xablu.WebApiClient.sln /t:pack /p:PackageOutputPath=%APPVEYOR_BUILD_FOLDER%
+    - cmd: msbuild src/Xablu.WebApiClient.sln /t:pack /p:VersionNumber=%version% /p:PackageOutputPath=%APPVEYOR_BUILD_FOLDER%
   
   artifacts:
     - path: 'Xablu.WebApiClient.*.nupkg'
