@@ -31,6 +31,8 @@
   <ItemGroup>
     <None Include="Platforms\**\*.cs" />
     <Compile Remove="Platforms\**\*.cs" />
+    <None Remove="readme.txt" />
+    <Content Include="README.txt" />
 
     <PackageReference Include="fusillade" Version="1.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />

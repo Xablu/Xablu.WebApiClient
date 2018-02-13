@@ -1,21 +1,19 @@
-version: 1.1.0.{build}-beta
 image: Visual Studio 2017
-configuration: Release
-assembly_info:
-  patch: true
-  file: '**\AssemblyInfo.*'
-  assembly_version: '{version}'
-  assembly_file_version: '{version}'
-  assembly_informational_version: '{version}'
-install: 
-  - echo y | "C:\Program Files (x86)\Android\android-sdk\tools\android.bat" update sdk -u -a -t tools
-  - echo y | "C:\Program Files (x86)\Android\android-sdk\tools\android.bat" update sdk -u -a -t platform-tools
-  - echo y | "C:\Program Files (x86)\Android\android-sdk\tools\android.bat" update sdk -u -a -t build-tools-25.0.6
-  - echo y | "C:\Program Files (x86)\Android\android-sdk\tools\android.bat" update sdk -u -a -t android-25
-  - echo y | "C:\Program Files (x86)\Android\android-sdk\tools\android.bat" update sdk -u -a -t android-15
+
+skip_commits:
+  files:
+    - '**/*.md'
+
 build_script:
-- cmd: >-
-    powershell .\build.ps1 -Target Default -Verbosity diagnostic
+  - cmd: msbuild /t:restore
+  - cmd: msbuild /t:pack /p:PackageOutputPath=%APPVEYOR_BUILD_FOLDER%
+
 artifacts:
-- path: ./Build/nuget/*.nupkg
-  name: NuGet
+  - path: 'MSBuild.Sdk.Extras.*.nupkg'
+
+deploy:
+  provider: NuGet
+  server: https://www.myget.org/F/xabluhq/api/v2/package
+  api_key:
+    secure: Ln3idOZxx941W5Hdj52B/FtCjABI78wXBFJrqKZ0i9oiVn0e30sq4AB+XFYys611gncTC9UKFVlpep06kXuJcIUYtfFl64aVG96L9+xHnMQ=
+  artifact: /.*\.nupkg/
