@@ -1,6 +1,5 @@
 using System;
-using Xablu.WebApiClient.Abstractions;
-using Xablu.WebApiClient.Abstractions.Exceptions;
+using Xablu.WebApiClient.Exceptions;
 
 namespace Xablu.WebApiClient
 {
@@ -34,7 +33,7 @@ namespace Xablu.WebApiClient
 #if NETSTANDARD2_0
 			return null;
 #else
-            if(_configureRestApiClient == null)
+            if (_configureRestApiClient == null)
                 throw NotConfiguredException();
 
             var options = new RestApiClientOptions();

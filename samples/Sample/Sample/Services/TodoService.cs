@@ -1,11 +1,11 @@
 using Fusillade;
+using Newtonsoft.Json;
 using Sample.Models;
+using Sample.Resolvers;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Xablu.WebApiClient;
-using Xablu.WebApiClient.Abstractions;
 
 namespace Sample.Services
 {
@@ -22,7 +22,10 @@ namespace Sample.Services
         {
             var url = "todos";
 
-            var result = await _restApiClient.GetAsync<IEnumerable<TodoItem>>(Priority.UserInitiated, url).ConfigureAwait(false);
+            var result = await _restApiClient.GetAsync<IEnumerable<TodoItem>>(
+                Priority.UserInitiated,
+                url,
+                httpResponseResolver: new TestResolver(new JsonSerializer())).ConfigureAwait(false);
 
             return result.Content;
         }
