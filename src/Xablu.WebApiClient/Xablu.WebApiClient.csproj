@@ -19,7 +19,7 @@
   <!-- Package information -->
   <PropertyGroup>
     <PackageId>Xablu.WebApiClient</PackageId>
-    <PackageVersion>1.1.0-beta</PackageVersion>
+    <PackageVersion>$(Version)</PackageVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>&gt;xamarin, monodroid, C#, xamarin.android, android, ios, uwp, Windows, tvOS, Mac, MacOS, Xablu, Web API, REST, ASP.NET, .NET</PackageTags>
     <PackageLicenseUrl>https://github.com/Xablu/Xablu.WebApiClient/blob/master/LICENSE</PackageLicenseUrl>
@@ -31,8 +31,11 @@
   <ItemGroup>
     <None Include="Platforms\**\*.cs" />
     <Compile Remove="Platforms\**\*.cs" />
-    <None Remove="readme.txt" />
-    <Content Include="README.txt" />
+
+    <Content Include="README.txt">
+      <Pack>true</Pack>
+      <PackagePath>README.txt</PackagePath>
+    </Content>
 
     <PackageReference Include="fusillade" Version="1.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
