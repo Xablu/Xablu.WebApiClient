@@ -5,11 +5,11 @@ skip_commits:
     - '**/*.md'
 
 build_script:
-  - cmd: msbuild /t:restore
-  - cmd: msbuild /t:pack /p:PackageOutputPath=%APPVEYOR_BUILD_FOLDER%
+  - cmd: msbuild src/Xablu.WebApiClient.sln /t:restore
+  - cmd: msbuild src/Xablu.WebApiClient.sln /t:pack /p:PackageOutputPath=%APPVEYOR_BUILD_FOLDER%
 
 artifacts:
-  - path: 'MSBuild.Sdk.Extras.*.nupkg'
+  - path: 'Xablu.WebApiClient.*.nupkg'
 
 deploy:
   provider: NuGet
