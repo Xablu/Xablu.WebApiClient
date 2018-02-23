@@ -22,7 +22,7 @@ namespace Xablu.WebApiClient
 
         public RestApiClient(string apiBaseAddress)
         {
-            _restApiClientOptions = new RestApiClientOptions();
+            _restApiClientOptions = new RestApiClientOptions { ApiBaseAddress = apiBaseAddress };
 
             Initialize();
         }
