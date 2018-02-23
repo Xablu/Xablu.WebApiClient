@@ -8,8 +8,6 @@ namespace Xablu.WebApiClient
         private static Action<RestApiClientOptions> _configureRestApiClient;
         private static Lazy<IRestApiClient> _restApiClientImplementation = new Lazy<IRestApiClient>(() => CreateRestApiClient(), System.Threading.LazyThreadSafetyMode.PublicationOnly);
 
-        public static bool IsSupported => _restApiClientImplementation.Value == null ? false : true;
-
         public static void Configure(Action<RestApiClientOptions> options)
         {
             _configureRestApiClient = options;
@@ -30,16 +28,12 @@ namespace Xablu.WebApiClient
 
         private static IRestApiClient CreateRestApiClient()
         {
-#if NETSTANDARD2_0
-			return null;
-#else
             if (_configureRestApiClient == null)
                 throw NotConfiguredException();
 
             var options = new RestApiClientOptions();
             _configureRestApiClient.Invoke(options);
             return new RestApiClientImplementation(options);
-#endif
         }
 
         internal static Exception NotImplementedInReferenceAssembly() =>
