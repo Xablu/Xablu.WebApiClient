@@ -1,121 +1,45 @@
 # Xablu.WebApiClient
 The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of Web API services in .NET projects.
 
-### Setup & Usage
-* Available on NuGet: https://www.nuget.org/packages/Xablu.WebApiClient/
-* Install into each project that utilizes the WebApiClient
+## Setup
+The Xablu.WebApiClient is written according to the Xamarin Plugin philosophy. Meaning you can simply add the Xablu.WebApiClient package through 
+[NuGet](https://www.nuget.org/packages/Xablu.WebApiClient/Install). Install the NuGet package into your shared .NET Standard project and ALL Client projects.
 
-### Build Status: 
+* NuGet: [Xablu.WebApiClient](https://www.nuget.org/packages/Xablu.WebApiClient/Install)
+* `PM> Install-Package Xablu.WebApiClient`
+* Namespace: using Xablu.WebApiClient
+
+## Build Status: 
 [![Build status](https://ci.appveyor.com/api/projects/status/5ey0sq4fn01t9o56?svg=true
 )](https://ci.appveyor.com/project/Xablu/xablu-webapiclient)
 ![GitHub tag](https://img.shields.io/github/tag/Xablu/Xablu.WebApiClient.svg)
 [![NuGet](https://img.shields.io/nuget/v/Xablu.WebApiClient.svg?label=NuGet)](https://www.nuget.org/packages/Xablu.WebApiClient/)
 [![MyGet](https://img.shields.io/myget/xabluhq/v/Xablu.WebApiClient.svg)](https://www.myget.org/F/Xablu.WebApiClient/api/v2)
 
-# Usage
+## Usage
 
-### Standard
+Before using the Xablu.WebApiClient plugin (via `CrossRestApiClient.Current`) make sure you configure the Xablu.WebApiClient plugin with at least the base address of the API you want to connect to.
+Failing to do so will result in a `NotConfiguredException` when using the plugin.
 
-Create a new singleton of WebApiClient and use it to do REST operations.
-```c#
-var restApiClient = new RestApiClient("http://baseurl.com/");
+> Note: it is no longer needed to supply a platform specific `HttpMessageHandler`, this is now build in into the plugin. This means that the configuration (as shown below) can all be done in 
+> your shared code.
+
+Configuration is done through the `CrossRestApiClient.Configure` method, like this:
+
+```
+CrossRestApiClient.Configure((opt) => opt.ApiBaseAddress = "https://api.mybackend.com");
 ```
 
-### MvvmCross
+Once you have configured the Xablu.WebApiClient plugin you can start using it through the static `CrossRestApiClient.Current` property, like this:
 
-If you want to use the standard HTTP client handlers, just register `IRestApiClient` with a base url. You can set the type of native handler in your csproj settings.
-
-```c#
-Mvx.RegisterSingleton<IRestApiClient>(new RestApiClient(Constants.ApiBaseUrl));
 ```
+var client = CrossRestApiClient.Current;
+var result = await client.GetAsync<IEnumerable<TodoItem>>(Priority.UserInitiated, "mypath").ConfigureAwait(false);
 
-When using custom HTTP handler, register a custom iOS Handler
-
-```c#
-var options = new RestApiClientOptions(Constants.ApiBaseUrl) 
+if(!result.IsSuccessStatusCode)
 {
-    DefaultHttpMessageHandler = () => new NSUrlSessionHandler();
-};
-Mvx.RegisterSingleton<IRestApiClient>(new RestApiClient(options));
-```
-
-Register the custom handler in Android
-
-```c#
-var options = new RestApiClientOptions(Constants.ApiBaseUrl) 
-{
-    DefaultHttpMessageHandler = () => new AndroidClientHandler();
-};
-Mvx.RegisterSingleton<IRestApiClient>(new RestApiClient(options));
-```
-
-Create a client to handle Http traffic
-
-```c#
-public class AuthenticationClient : IAuthenticationClient
-{
-   public AuthenticationClient(IRestApiClient apiClient) : base(apiClient)
-   {
-   }
-
-   public Task<int> AuthenticateWithCredentials(string username, string password)
-   {
-      var uri = new UriTemplate("user/logon");
-
-      var content = new MultipartFormDataContent();
-      content.Add(new StringContent(username), "username");
-      content.Add(new StringContent(password), "password");
-
-      return ExecuteRemoteRequest(async () => await apiClient.PostAsync<MultipartFormDataContent, int>(Priority.UserInitiated, uri.Resolve(), content).ConfigureAwait(false));
-   }
+  // Handle error response...
 }
+
+return result.Content;
 ```
-	
-Add a Service to change and handle user logic
-
-```c#
-public class AuthenticationService : IAuthenticationService
-{
-   private IBlobCache cache;
-   private IAuthenticationClient authClient;
-
-   public AuthenticationService(IAuthenticationClient authClient, IBlobCache cache = null)
-      : base()
-   {
-      this.cache = (cache ?? BlobCache.Secure);
-      this.authClient = authClient;
-   }
-
-   public async Task<bool> Login(string username, string password)
-   {
-      var userId = await authClient.AuthenticateWithCredentials(username, password).ConfigureAwait(false);
-
-      if (userId != default(int))
-      {
-         await this.cache.InsertObject(Settings.UserIdCacheKey, userId);
-	 return true;
-      }
-
-      return false;
-   }
-
-   public async Task<bool> IsAuthenticated()
-   {
-      try
-      {
-         var userId = await cache.GetObject<int>(Settings.UserIdCacheKey).ToTask().ConfigureAwait(false);
-	 return true;
-      }
-      catch (KeyNotFoundException)
-      {
-         return false;
-      }
-   }
-
-   public async Task Logout()
-   {
-      await cache.InvalidateAll().ToTask().ConfigureAwait(false);
-   }
-}
-```
-

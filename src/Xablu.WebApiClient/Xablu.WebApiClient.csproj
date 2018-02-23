@@ -1,0 +1,96 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard1.4;netcoreapp1.0;net461;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70;uap10.0</TargetFrameworks>
+    <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <GeneratePackageOnBuild Condition=" '$(Configuration)' == 'Release' and '$(IsTestProject)' != 'true'">true</GeneratePackageOnBuild>
+    <DefaultLanguage>en-US</DefaultLanguage>
+  </PropertyGroup>
+
+  <!-- Assembly information -->
+  <PropertyGroup>
+    <Version>1.1.0.0</Version>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Authors>Xablu</Authors>
+    <Description>The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of Web API services in .NET projects.</Description>
+    <Copyright>Copyright (c) 2016 Xablu</Copyright>
+  </PropertyGroup>
+
+  <!-- Package information -->
+  <PropertyGroup>
+    <PackageId>Xablu.WebApiClient</PackageId>
+    <PackageVersion>$(Version)</PackageVersion>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>&gt;xamarin, monodroid, C#, xamarin.android, android, ios, uwp, Windows, tvOS, Mac, MacOS, Xablu, Web API, REST, ASP.NET, .NET</PackageTags>
+    <PackageLicenseUrl>https://github.com/Xablu/Xablu.WebApiClient/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Xablu/Xablu.WebApiClient</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/Xablu/Xablu.WebApiClient/master/icon_xablu.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/Xablu/Xablu.WebApiClient</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="Platforms\**\*.cs" />
+    <Compile Remove="Platforms\**\*.cs" />
+
+    <Content Include="README.txt">
+      <Pack>true</Pack>
+      <PackagePath>README.txt</PackagePath>
+    </Content>
+
+    <PackageReference Include="fusillade" Version="1.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Polly" Version="5.8.0" />
+    <PackageReference Include="MSBuild.Sdk.Extras" Version="1.2.1" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.4' ">
+    <Compile Include="Platforms\windows-common\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">
+    <Compile Include="Platforms\windows-common\**\*.cs" />
+    <Compile Include="Platforms\netcoreapp1.0\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.4' Or '$(TargetFramework)' == 'netcoreapp1.0' ">
+    <PackageReference Include="System.ComponentModel" Version="4.3.0" />
+    <PackageReference Include="System.Diagnostics.Contracts" Version="4.3.0" />
+    <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Net.Requests" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
+    <Compile Include="Platforms\windows-common\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'!='netstandard1.4' And '$(TargetFramework)'!='netcoreapp1.0' ">
+    <Compile Include="Platforms\shared\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
+    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="5.4.0" />
+    <Compile Include="Platforms\windows-common\**\*.cs" />
+    <Compile Include="Platforms\uap10.0\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.iOS10' ">
+    <Compile Include="Platforms\apple-common\**\*.cs" />
+    <Compile Include="Platforms\ios\**\*.cs" />
+    <Compile Include="Platforms\xamarin-common\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.Mac20' ">
+    <Reference Include="System.Runtime.Serialization" />
+    <Compile Include="Platforms\apple-common\**\*.cs" />
+    <Compile Include="Platforms\mac\**\*.cs" />
+    <Compile Include="Platforms\xamarin-common\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'MonoAndroid70' ">
+    <Compile Include="Platforms\android\**\*.cs" />
+    <Compile Include="Platforms\xamarin-common\**\*.cs" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
+</Project>
