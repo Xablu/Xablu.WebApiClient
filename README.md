@@ -3,9 +3,9 @@ The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of 
 
 ## Setup
 The Xablu.WebApiClient is written according to the Xamarin Plugin philosophy. Meaning you can simply add the Xablu.WebApiClient package through 
-[NuGet](https://www.nuget.org/packages/Xablu.WebApiClient/Install). Install the NuGet package into your shared .NET Standard project and ALL Client projects.
+[NuGet](https://www.nuget.org/packages/Xablu.WebApiClient). Install the NuGet package into your shared .NET Standard project and ALL Client projects.
 
-* NuGet: [Xablu.WebApiClient](https://www.nuget.org/packages/Xablu.WebApiClient/Install)
+* NuGet: [Xablu.WebApiClient](https://www.nuget.org/packages/Xablu.WebApiClient)
 * `PM> Install-Package Xablu.WebApiClient`
 * Namespace: using Xablu.WebApiClient
 
