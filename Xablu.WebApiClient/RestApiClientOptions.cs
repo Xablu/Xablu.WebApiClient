@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using Xablu.WebApiClient.Resolvers;
 using System.Net.Http;
@@ -21,7 +21,7 @@ namespace Xablu.WebApiClient
         /// An example could be "https://www.xablu.com". The base address will be appended in front of the 'path' value which
         /// is supplied with every HTTP request. 
         /// </remarks>
-        public string ApiBaseAddress { get; }
+        public string ApiBaseAddress { get; set; }
 
         /// <summary>
         /// Gets or sets a delegate which will instantiate an instance of <see cref="HttpMessageHandler"/> class used to process the HTTP requests.

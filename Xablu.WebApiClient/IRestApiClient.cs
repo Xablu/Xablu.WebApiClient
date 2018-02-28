@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -49,5 +49,8 @@ namespace Xablu.WebApiClient
             IList<KeyValuePair<string, string>> headers = null,
             IHttpResponseResolver httpResponseResolver = null,
             CancellationToken cancellationToken = default(CancellationToken));
+
+        void ConfigureOptions(RestApiClientOptions options);
+        void ChangeBaseAddress(string newBaseAdress);
     }
 }

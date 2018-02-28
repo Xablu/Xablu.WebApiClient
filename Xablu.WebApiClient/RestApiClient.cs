@@ -12,7 +12,7 @@ namespace Xablu.WebApiClient
     public class RestApiClient
         : IRestApiClient
     {
-        private readonly RestApiClientOptions _restApiClientOptions;
+        private RestApiClientOptions _restApiClientOptions;
 
         private bool _isDisposed;
         private Lazy<HttpClient> _explicit;
@@ -23,15 +23,23 @@ namespace Xablu.WebApiClient
         public RestApiClient(string apiBaseAddress)
         {
             _restApiClientOptions = new RestApiClientOptions(apiBaseAddress);
-
             Initialize();
         }
 
         public RestApiClient(RestApiClientOptions options)
         {
             _restApiClientOptions = options ?? throw new ArgumentNullException(nameof(options));
-
             Initialize();
+        }
+
+        public void ConfigureOptions(RestApiClientOptions options)
+        {
+            _restApiClientOptions = options;
+        }
+
+        public void ChangeBaseAddress(string newBaseAdress)
+        {
+            _restApiClientOptions.ApiBaseAddress = newBaseAdress;
         }
 
         private void Initialize()
