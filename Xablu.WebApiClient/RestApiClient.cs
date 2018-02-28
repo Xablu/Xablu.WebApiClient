@@ -35,11 +35,13 @@ namespace Xablu.WebApiClient
         public void ConfigureOptions(RestApiClientOptions options)
         {
             _restApiClientOptions = options;
+            Initialize();
         }
 
         public void ChangeBaseAddress(string newBaseAdress)
         {
             _restApiClientOptions.ApiBaseAddress = newBaseAdress;
+            Initialize();
         }
 
         private void Initialize()
