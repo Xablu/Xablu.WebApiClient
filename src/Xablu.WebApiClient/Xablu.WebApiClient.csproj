@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.4;netcoreapp1.0;net461;Xamarin.iOS10;Xamarin.Mac20;MonoAndroid70;uap10.0</TargetFrameworks>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <GeneratePackageOnBuild Condition=" '$(Configuration)' == 'Release' and '$(IsTestProject)' != 'true'">true</GeneratePackageOnBuild>
-    <DefaultLanguage>en-US</DefaultLanguage>
+    <DefaultLanguage>en-US</DefaultLanguage> 
   </PropertyGroup>
 
   <!-- Assembly information -->
@@ -29,8 +29,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Platforms\**\*.cs" />
-
+    
     <Content Include="README.txt">
       <Pack>true</Pack>
       <PackagePath>README.txt</PackagePath>
@@ -41,66 +40,16 @@
     <PackageReference Include="Polly" Version="5.8.0" />
     <PackageReference Include="MSBuild.Sdk.Extras" Version="1.2.1" PrivateAssets="All" />
     <PackageReference Include="Refit" Version="4.7.9" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">
-    <Compile Include="Platforms\netcoreapp1.0\**\*.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.4' Or '$(TargetFramework)' == 'netcoreapp1.0' ">
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.Diagnostics.Contracts" Version="4.3.0" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Net.Requests" Version="4.3.0" />
   </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)'!='netstandard1.4' And '$(TargetFramework)'!='netcoreapp1.0' ">
-    <Compile Include="Platforms\shared\**\*.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'uap10.0' ">
-    <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="5.4.0" />
-    <Compile Include="Platforms\windows-common\**\*.cs" />
-    <Compile Include="Platforms\uap10.0\**\*.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.iOS10' ">
-    <Compile Include="Platforms\ios\**\*.cs" />
-    <Compile Include="Platforms\xamarin-common\**\*.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'Xamarin.Mac20' ">
-    <Reference Include="System.Runtime.Serialization" />
-    <Compile Include="Platforms\apple-common\**\*.cs" />
-    <Compile Include="Platforms\mac\**\*.cs" />
-    <Compile Include="Platforms\xamarin-common\**\*.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'MonoAndroid70' ">
-    <Compile Include="Platforms\android\**\*.cs" />
-    <Compile Include="Platforms\xamarin-common\**\*.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Platforms\android\RestApiClientImplementation.cs" />
-    <None Remove="Platforms\apple-common\RestApiClientImplementation.cs" />
-  </ItemGroup>
   <ItemGroup>
     <Folder Include="Client\" />
     <Folder Include="Client\Result\" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
-    <PackageReference Include="Splat" Version="8.2.4" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'MonoAndroid70'">
-    <PackageReference Include="Splat" Version="8.2.4" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'Xamarin.iOS10'">
-    <PackageReference Include="Splat" Version="8.2.4" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'Xamarin.Mac20'">
-    <PackageReference Include="Splat" Version="8.2.4" />
-  </ItemGroup>
+    <Folder Include="Platforms\windows-common\" />
+  </ItemGroup> 
   <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
 </Project>
