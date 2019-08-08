@@ -4,7 +4,6 @@ using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
-using Xablu.WebApiClient;
 
 namespace Xablu.WebApiClient.Resolvers
 {
