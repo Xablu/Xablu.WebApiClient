@@ -1,14 +1,17 @@
 using System;
 using System.Net.Http;
 using Fusillade;
-using Refit;
-using Splat;
+using Refit; 
 
 namespace Xablu.WebApiClient.Client
 {
     public class RefitService<T> : IRefitService<T>
     {
         public const string ApiBaseAddress = "";
+
+        private readonly Lazy<T> _background;
+        private readonly Lazy<T> _userInitiated;
+        private readonly Lazy<T> _speculative;
 
         public RefitService(string apiBaseAddress = null)
         {
@@ -22,33 +25,17 @@ namespace Xablu.WebApiClient.Client
                 return RestService.For<T>(client);
             };
 
-            _background = new Lazy<T>(() => createClient(
-                new RateLimitedHttpMessageHandler(new NativeMessageHandler(), Priority.Background)));
+            _background = new Lazy<T>(() => createClient(NetCache.Background));
 
-            _userInitiated = new Lazy<T>(() => createClient(
-                new RateLimitedHttpMessageHandler(new NativeMessageHandler(), Priority.UserInitiated)));
+            _userInitiated = new Lazy<T>(() => createClient(NetCache.UserInitiated));
 
-            _speculative = new Lazy<T>(() => createClient(
-                new RateLimitedHttpMessageHandler(new NativeMessageHandler(), Priority.Speculative)));
+            _speculative = new Lazy<T>(() => createClient(NetCache.Speculative));
         }
 
-        private readonly Lazy<T> _background;
-        private readonly Lazy<T> _userInitiated;
-        private readonly Lazy<T> _speculative;
+        public T Background => _background.Value;
 
-        public T Background
-        {
-            get { return _background.Value; }
-        }
+        public T UserInitiated => _userInitiated.Value;
 
-        public T UserInitiated
-        {
-            get { return _userInitiated.Value; }
-        }
-
-        public T Speculative
-        {
-            get { return _speculative.Value; }
-        }
+        public T Speculative => _speculative.Value;
     }
 }
