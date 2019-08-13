@@ -1,15 +1,16 @@
 ﻿using System;
 
 using TestApp.Models;
+using TestApp.Models.StarWarsAPI;
 
 namespace TestApp.ViewModels
 {
     public class ItemDetailViewModel : BaseViewModel
     {
-        public Item Item { get; set; }
-        public ItemDetailViewModel(Item item = null)
+        public Starships Item { get; set; }
+        public ItemDetailViewModel(Starships item = null)
         {
-            Title = item?.Text;
+            Title = item?.name;
             Item = item;
         }
     }

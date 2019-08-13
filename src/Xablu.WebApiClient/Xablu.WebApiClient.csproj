@@ -48,8 +48,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Client\" />
-    <Folder Include="Client\Result\" />
     <Folder Include="Platforms\windows-common\" />
   </ItemGroup> 
+  <ItemGroup>
+    <Reference Include="mscorlib">
+      <HintPath>..\..\..\..\..\Library\Frameworks\Xamarin.Android.framework\Versions\9.4.1.0\lib\xamarin.android\xbuild-frameworks\MonoAndroid\v1.0\mscorlib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
 </Project>

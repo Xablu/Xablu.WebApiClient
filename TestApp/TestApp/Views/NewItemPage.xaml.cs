@@ -13,13 +13,13 @@ namespace TestApp.Views
     [DesignTimeVisible(false)]
     public partial class NewItemPage : ContentPage
     {
-        public Item Item { get; set; }
+        public StarShips Item { get; set; }
 
         public NewItemPage()
         {
             InitializeComponent();
 
-            Item = new Item
+            Item = new StarShips
             {
                 Text = "Item name",
                 Description = "This is an item description."

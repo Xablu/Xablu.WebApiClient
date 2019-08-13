@@ -26,7 +26,7 @@ namespace TestApp.Views
         {
             InitializeComponent();
 
-            var item = new Item
+            var item = new StarShips
             {
                 Text = "Item 1",
                 Description = "This is an item description."

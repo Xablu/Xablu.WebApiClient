@@ -7,12 +7,14 @@ using Xamarin.Forms;
 
 using TestApp.Models;
 using TestApp.Services;
+using TestApp.Models.StarWarsAPI;
+using Xablu.WebApiClient.Client;
 
 namespace TestApp.ViewModels
 {
     public class BaseViewModel : INotifyPropertyChanged
     {
-        public IDataStore<Item> DataStore => DependencyService.Get<IDataStore<Item>>() ?? new MockDataStore();
+        public IDataStore<Starships> DataStore => DependencyService.Get<IDataStore<Starships>>() ?? new MockDataStore();
 
         bool isBusy = false;
         public bool IsBusy

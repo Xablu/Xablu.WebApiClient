@@ -29,7 +29,7 @@ namespace TestApp.Views
 
         async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
         {
-            var item = args.SelectedItem as Item;
+            var item = args.SelectedItem as StarShips;
             if (item == null)
                 return;
 
