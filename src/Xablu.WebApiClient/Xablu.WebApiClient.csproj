@@ -49,6 +49,7 @@
   <ItemGroup>
     <Folder Include="Client\" />
     <Folder Include="Platforms\windows-common\" />
+    <Folder Include="Enums\" />
   </ItemGroup> 
   <ItemGroup>
     <Reference Include="mscorlib">

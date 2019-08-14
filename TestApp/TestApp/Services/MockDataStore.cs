@@ -11,8 +11,8 @@ namespace TestApp.Services
     public class MockDataStore : IDataStore<Starships>
     {
         List<Starships> items;
-        public IRefitClient refitClient = new RefitClient("https://swapi.co/api/");
-        public IRefitService<IStarwarsApi> refitService = new RefitService<IStarwarsApi>("https://swapi.co/api/");
+        public IRefitClient refitClient = new RefitClient("https://swapi.co/api");
+        public IWebApiClient<IStarwarsApi> _webApiClient = new WebApiClient<IStarwarsApi>("https://swapi.co/api");
 
         public MockDataStore()
         {
@@ -64,8 +64,15 @@ namespace TestApp.Services
 
         public async Task<IEnumerable<Starships>> GetItemsAsync(bool forceRefresh = false)
         {
-            var clientResult = refitClient.RefitService.UserInitiated.GetTask("starships/");
-            var serviceResult = refitService.UserInitiated.GetTask();
+            await _webApiClient.Call(
+                Xablu.WebApiClient.Enums.Priority.UserInitiated,
+                (service) => service.GetTask());
+
+            var result = await _webApiClient.Call<ApiResponse<List<Starships>>>(
+                Xablu.WebApiClient.Enums.Priority.UserInitiated,
+                (service) => service.GetStarships());
+
+            var clientResult = refitClient.RefitService.UserInitiated.GetTask("/starships");
 
             //give either result back with own refit interface and endpoints or either give endpoint and let our package handle it for you
 

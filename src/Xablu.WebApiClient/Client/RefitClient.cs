@@ -3,12 +3,11 @@ namespace Xablu.WebApiClient.Client
 {
     public class RefitClient : IRefitClient
     {
-        private RefitService<IRefit> refitService;
-        public RefitService<IRefit> RefitService => refitService;
+        public RefitService<IRefit> RefitService { get; }
 
         public RefitClient(string BaseApi)
         {
-            refitService = new RefitService<IRefit>(BaseApi);
+            RefitService = new RefitService<IRefit>(BaseApi);
         }
     }
 }

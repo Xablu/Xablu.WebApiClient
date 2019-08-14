@@ -5,6 +5,7 @@ using Xamarin.Forms.Xaml;
 
 using TestApp.Models;
 using TestApp.ViewModels;
+using TestApp.Models.StarWarsAPI;
 
 namespace TestApp.Views
 {
@@ -26,10 +27,10 @@ namespace TestApp.Views
         {
             InitializeComponent();
 
-            var item = new StarShips
+            var item = new Starships
             {
-                Text = "Item 1",
-                Description = "This is an item description."
+                //Text = "Item 1",
+                //Description = "This is an item description."
             };
 
             viewModel = new ItemDetailViewModel(item);

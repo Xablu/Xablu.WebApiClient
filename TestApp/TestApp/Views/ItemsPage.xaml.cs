@@ -10,6 +10,7 @@ using Xamarin.Forms.Xaml;
 using TestApp.Models;
 using TestApp.Views;
 using TestApp.ViewModels;
+using TestApp.Models.StarWarsAPI;
 
 namespace TestApp.Views
 {
@@ -29,7 +30,7 @@ namespace TestApp.Views
 
         async void OnItemSelected(object sender, SelectedItemChangedEventArgs args)
         {
-            var item = args.SelectedItem as StarShips;
+            var item = args.SelectedItem as Starships;
             if (item == null)
                 return;
 

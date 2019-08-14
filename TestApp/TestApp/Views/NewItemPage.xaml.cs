@@ -5,6 +5,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 using TestApp.Models;
+using TestApp.Models.StarWarsAPI;
 
 namespace TestApp.Views
 {
@@ -13,16 +14,16 @@ namespace TestApp.Views
     [DesignTimeVisible(false)]
     public partial class NewItemPage : ContentPage
     {
-        public StarShips Item { get; set; }
+        public Starships Item { get; set; }
 
         public NewItemPage()
         {
             InitializeComponent();
 
-            Item = new StarShips
+            Item = new Starships
             {
-                Text = "Item name",
-                Description = "This is an item description."
+                //Text = "Item name",
+                //Description = "This is an item description."
             };
 
             BindingContext = this;
