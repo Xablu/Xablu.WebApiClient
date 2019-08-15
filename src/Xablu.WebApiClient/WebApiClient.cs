@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Xablu.WebApiClient.Client;
 using Xablu.WebApiClient.Enums;
@@ -9,9 +10,9 @@ namespace Xablu.WebApiClient
     {
         private readonly RefitService<T> _refitService;
 
-        public WebApiClient(string baseUrl = "")
+        public WebApiClient(string baseUrl = "", Func<DelegatingHandler> delegatingHandler = null)
         {
-            _refitService = new RefitService<T>(baseUrl);
+            _refitService = new RefitService<T>(baseUrl, delegatingHandler);
         }
 
         public async Task Call(Priority priority, Func<T, Task> operation)

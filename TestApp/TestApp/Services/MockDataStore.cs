@@ -12,7 +12,7 @@ namespace TestApp.Services
     {
         List<Starships> items;
         public IRefitClient refitClient = new RefitClient("https://swapi.co/api");
-        public IWebApiClient<IStarwarsApi> _webApiClient = new WebApiClient<IStarwarsApi>("https://swapi.co/api");
+        public IWebApiClient<IStarwarsApi> _webApiClient = new WebApiClient<IStarwarsApi>("https://swapi.co/api", () => new SampleHttpClientHandler());
 
         public MockDataStore()
         {

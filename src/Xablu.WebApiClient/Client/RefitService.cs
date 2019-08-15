@@ -10,15 +10,22 @@ namespace Xablu.WebApiClient.Client
     {
         public const string ApiBaseAddress = "";
 
+        private readonly Func<DelegatingHandler> _delegatingHandler;
+
         private readonly Lazy<T> _background;
         private readonly Lazy<T> _userInitiated;
         private readonly Lazy<T> _speculative;
 
-        public RefitService(string apiBaseAddress = null)
+        public RefitService(string apiBaseAddress = null, Func<DelegatingHandler> delegatingHandler = null)
         {
+            _delegatingHandler = delegatingHandler;
+
             Func<HttpMessageHandler, T> createClient = messageHandler =>
             {
-                var client = new HttpClient(messageHandler)
+                var delegatingHandlerInstance = delegatingHandler.Invoke();
+                delegatingHandlerInstance.InnerHandler = messageHandler;
+
+                var client = new HttpClient(delegatingHandlerInstance)
                 {
                     BaseAddress = new Uri(apiBaseAddress ?? ApiBaseAddress)
                 };
