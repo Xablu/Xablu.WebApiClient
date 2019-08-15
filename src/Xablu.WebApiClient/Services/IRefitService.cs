@@ -1,5 +1,5 @@
 using System;
-namespace Xablu.WebApiClient.Client
+namespace Xablu.WebApiClient.Services
 {
     public interface IRefitService<T>
     {

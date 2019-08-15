@@ -13,18 +13,23 @@ namespace Xablu.WebApiClient.Client
     public interface IRefit
     {
         [Get("{path}")]
+        [Headers("Authorization: Bearer")]
         Task GetTask(string path);
 
         [Post("{path}")]
+        [Headers("Authorization: Bearer")]
         Task PostTask(string path);
 
         [Put("{path}")]
+        [Headers("Authorization: Bearer")]
         Task PutTask(string path);
 
         [Patch("{path}")]
+        [Headers("Authorization: Bearer")]
         Task PatchTask(string path);
 
         [Delete("{path}")]
+        [Headers("Authorization: Bearer")]
         Task DeleteTask(string path);
     }
 

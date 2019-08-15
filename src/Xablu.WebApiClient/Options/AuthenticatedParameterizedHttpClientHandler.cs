@@ -4,13 +4,13 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TestApp.Services
+namespace Xablu.WebApiClient.Options
 {
-    class SampleHttpClientHandler : DelegatingHandler
+    public class AuthenticatedParameterizedHttpClientHandler
     {
-        readonly Func<HttpRequestMessage, string> getToken;
+        readonly Func<HttpRequestMessage, Task<string>> getToken;
 
-        public SampleHttpClientHandler(Func<HttpRequestMessage, string> getToken)
+        public AuthenticatedParameterizedHttpClientHandler(Func<HttpRequestMessage, Task<string>> getToken, HttpMessageHandler innerHandler = null)
         {
             this.getToken = getToken ?? throw new ArgumentNullException(nameof(getToken));
         }
@@ -21,7 +21,7 @@ namespace TestApp.Services
             var auth = request.Headers.Authorization;
             if (auth != null)
             {
-                var token = getToken(request);
+                var token = await getToken(request).ConfigureAwait(false);
                 request.Headers.Authorization = new AuthenticationHeaderValue(auth.Scheme, token);
             }
 

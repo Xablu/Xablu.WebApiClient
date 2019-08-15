@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Fusillade;
 using Refit; 
 
-namespace Xablu.WebApiClient.Client
+namespace Xablu.WebApiClient.Services
 {
     public class RefitService<T> : IRefitService<T>
     {

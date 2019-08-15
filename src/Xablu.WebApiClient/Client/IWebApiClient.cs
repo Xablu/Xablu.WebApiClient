@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Xablu.WebApiClient.Enums;
 
-namespace Xablu.WebApiClient
+namespace Xablu.WebApiClient.Client
 {
     public interface IWebApiClient<T>
     {

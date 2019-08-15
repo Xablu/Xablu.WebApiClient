@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TestApp.Models.StarWarsAPI;
+using Xablu.Client.WebApiClient.Client;
 using Xablu.WebApiClient;
 using Xablu.WebApiClient.Client;
 
@@ -10,9 +11,9 @@ namespace TestApp.Services
 {
     public class MockDataStore : IDataStore<Starships>
     {
-        List<Starships> items;
-        public IRefitClient refitClient = new RefitClient("https://swapi.co/api");
-        public IWebApiClient<IStarwarsApi> _webApiClient = new WebApiClient<IStarwarsApi>("https://swapi.co/api", () => new SampleHttpClientHandler());
+        List<Starships> items; 
+        //public IWebApiClient<IStarwarsApi> _webApiClient = new WebApiClient<IStarwarsApi>("https://swapi.co/api", () => new SampleHttpClientHandler((request) => "db359d5b42cb47f1a33f2b1a4728be4b"));
+        public IWebApiClient<IStarwarsApi> _newsWebApiClient = new WebApiClient<IStarwarsApi>("https://newsapi.org", () => new SampleHttpClientHandler((request) => "db359d5b42cb47f1a33f2b1a4728be4b"));
 
         public MockDataStore()
         {
@@ -64,15 +65,15 @@ namespace TestApp.Services
 
         public async Task<IEnumerable<Starships>> GetItemsAsync(bool forceRefresh = false)
         {
-            await _webApiClient.Call(
+            await _newsWebApiClient.Call(
                 Xablu.WebApiClient.Enums.Priority.UserInitiated,
                 (service) => service.GetTask());
 
-            var result = await _webApiClient.Call<ApiResponse<List<Starships>>>(
+            var result = await _newsWebApiClient.Call<ApiResponse<List<Starships>>>(
                 Xablu.WebApiClient.Enums.Priority.UserInitiated,
                 (service) => service.GetStarships());
 
-            var clientResult = refitClient.RefitService.UserInitiated.GetTask("/starships");
+            //var clientResult = _webApiClient.RefitService.UserInitiated.GetTask("/starships");
 
             //give either result back with own refit interface and endpoints or either give endpoint and let our package handle it for you
 
