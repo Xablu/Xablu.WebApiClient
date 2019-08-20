@@ -45,12 +45,14 @@
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Net.Requests" Version="4.3.0" />
+    <PackageReference Include="GraphQL.Client" Version="2.0.0-alpha.3" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Client\" />
     <Folder Include="Enums\" />
     <Folder Include="Services\" />
     <Folder Include="Options\" />
+    <Folder Include="Services\GraphQL\" />
   </ItemGroup> 
   <ItemGroup>
     <Reference Include="mscorlib">

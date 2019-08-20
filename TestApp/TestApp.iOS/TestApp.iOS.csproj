@@ -134,7 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TestApp\TestApp.csproj">
-      <Project>{5420A62F-771E-4627-93AA-A12BF800CDD6}</Project>
+      <Project>{9B025323-1C9F-42EC-B26B-5C1739BDF748}</Project>
       <Name>TestApp</Name>
     </ProjectReference>
   </ItemGroup>
