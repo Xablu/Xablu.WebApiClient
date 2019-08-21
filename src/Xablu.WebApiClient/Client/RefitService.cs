@@ -22,7 +22,7 @@ namespace Xablu.WebApiClient.Client
 
             Func<HttpMessageHandler, T> createClient = messageHandler =>
             {
-                var delegatingHandlerInstance = delegatingHandler.Invoke();
+                var delegatingHandlerInstance = _delegatingHandler.Invoke();
                 delegatingHandlerInstance.InnerHandler = messageHandler;
 
                 var client = new HttpClient(delegatingHandlerInstance)
