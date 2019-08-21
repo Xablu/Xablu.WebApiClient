@@ -65,12 +65,18 @@ namespace TestApp.Services
         public async Task<IEnumerable<Starships>> GetItemsAsync(bool forceRefresh = false)
         {
             await _webApiClient.Call(
-                Xablu.WebApiClient.Enums.Priority.UserInitiated,
-                (service) => service.GetTask());
+                    (service) => service.GetTask(),
+                    Xablu.WebApiClient.Enums.Priority.UserInitiated,
+                    2,
+                    (ex) => true,
+                    60);
 
             var result = await _webApiClient.Call<ApiResponse<List<Starships>>>(
-                Xablu.WebApiClient.Enums.Priority.UserInitiated,
-                (service) => service.GetStarships());
+                    (service) => service.GetStarships(),
+                    Xablu.WebApiClient.Enums.Priority.UserInitiated,
+                    2,
+                    (ex) => true,
+                    60);
 
             //var clientResult = refitClient.RefitService.UserInitiated.GetTask("/starships");
 
