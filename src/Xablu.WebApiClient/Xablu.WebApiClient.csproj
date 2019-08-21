@@ -48,33 +48,13 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Client\" />
+    <Folder Include="Platforms\windows-common\" />
     <Folder Include="Enums\" />
-    <Folder Include="Services\" />
-    <Folder Include="Options\" />
   </ItemGroup> 
   <ItemGroup>
     <Reference Include="mscorlib">
       <HintPath>..\..\..\..\..\Library\Frameworks\Xamarin.Android.framework\Versions\9.4.1.0\lib\xamarin.android\xbuild-frameworks\MonoAndroid\v1.0\mscorlib.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="HttpContentExtensions\ProgressStreamContent.cs" />
-    <Compile Remove="HttpExtensions\HttpResponseMessageExtensions.cs" />
-    <Compile Remove="HttpExtensions\InitializerExtensions.cs" />
-    <Compile Remove="HttpExtensions\RestApiResultExtensions.cs" />
-    <Compile Remove="Platforms\android\RestApiClientImplementation.cs" />
-    <Compile Remove="Platforms\windows-common\RestApiClientImplementation.cs" />
-    <Compile Remove="Resolvers\SimpleStringResponseResolver.cs" />
-    <Compile Remove="Resolvers\SimpleJsonContentResolver.cs" />
-    <Compile Remove="Resolvers\DefaultHttpResponseResolver.cs" />
-    <Compile Remove="Resolvers\SimpleJsonResponseResolver.cs" />
-    <Compile Remove="Resolvers\FormUrlEncodedContentResolver.cs" />
-    <Compile Remove="Resolvers\DictionaryContentResolver.cs" />
-    <Compile Remove="Client\IRefitClient.cs" />
-    <Compile Remove="Client\RefitClient.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Platforms\.DS_Store" />
   </ItemGroup>
   <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
 </Project>

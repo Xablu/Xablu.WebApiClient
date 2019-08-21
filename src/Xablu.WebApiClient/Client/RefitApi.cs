@@ -1,45 +1,44 @@
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Xablu.WebApiClient.Enums;
-using Xablu.WebApiClient.Services;
 
 namespace Xablu.WebApiClient.Client
 {
     public class RefitApi<T> : IRefitApi<T>
     {
-        private readonly RefitService<T> _refitService;
-
-        public RefitApi(string baseUrl = "", Func<DelegatingHandler> delegatingHandler = null)
+        public async Task<T> GetAsync(string path)
         {
-            _refitService = new RefitService<T>(baseUrl, delegatingHandler);
-        }
-        public async Task Call(string path, Priority priority, Func<T, Task> operation)
-        {
-            var service = GetServiceByPriority(priority);
-
-            await operation.Invoke(service);
+            var result = await IRefit.GetTask(path);
+            return result;
         }
 
-        public async Task<TResult> Call<TResult>(string path, Priority priority, Func<T, Task<TResult>> operation)
+        public Task<T> PatchAsync(string path)
         {
-            var service = GetServiceByPriority(priority);
-
-            return await operation.Invoke(service);
+            var result = await IRefit.PatchTask(path);
+            return result;
         }
 
-        private T GetServiceByPriority(Priority priority)
+        public async Task<T> PostAsync(string path)
         {
-            switch (priority)
-            {
-                case Priority.Background:
-                    return _refitService.Background;
-                case Priority.Speculative:
-                    return _refitService.Speculative;
-                case Priority.UserInitiated:
-                default:
-                    return _refitService.UserInitiated;
-            }
+            var result = await IRefit.PostTask(path);
+            return result;
+        }
+
+        public async Task<T> PutAsync(string path)
+        {
+            var result = await IRefit.PutTask(path);
+            return result;
+        }
+
+        public async Task<T> UpdateAsync(string path)
+        {
+            var result = await IRefit.UpdateTask(path);
+            return result;
+        }
+
+        public async Task<T> DeleteTask(string path)
+        {
+            var result = await IRefit.DeleteTask(path);
+            return result;
         }
     }
 }

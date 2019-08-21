@@ -1,12 +1,15 @@
 using System;
 using System.Threading.Tasks;
-using Xablu.WebApiClient.Enums;
 
 namespace Xablu.WebApiClient.Client
 {
     public interface IRefitApi<T>
     {
-        Task Call(string path, Priority priority, Func<T, Task> operation);
-        Task<TResult> Call<TResult>(string path, Priority priority, Func<T, Task<TResult>> operation);
+        Task<T> GetAsync(string path);
+        Task<T> PutAsync(string path);
+        Task<T> PatchAsync(string path);
+        Task<T> PostAsync(string path);
+        Task<T> UpdateAsync(string path);
+        Task<T> DeleteTask(string path);
     }
 }
