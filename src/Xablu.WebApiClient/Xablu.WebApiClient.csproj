@@ -35,26 +35,12 @@
       <PackagePath>README.txt</PackagePath>
     </Content>
 
-    <PackageReference Include="fusillade" Version="1.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="Polly" Version="5.8.0" />
-    <PackageReference Include="MSBuild.Sdk.Extras" Version="1.2.1" PrivateAssets="All" />
-    <PackageReference Include="Refit" Version="4.7.9" />
-    <PackageReference Include="System.ComponentModel" Version="4.3.0" />
-    <PackageReference Include="System.Diagnostics.Contracts" Version="4.3.0" />
-    <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
-    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.Net.Requests" Version="4.3.0" />
+    <PackageReference Include="fusillade" Version="2.0.5" />
+    <PackageReference Include="Polly" Version="7.1.0" />
+    <PackageReference Include="Refit" Version="4.7.51" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Client\" />
-    <Folder Include="Platforms\windows-common\" />
     <Folder Include="Enums\" />
   </ItemGroup> 
-  <ItemGroup>
-    <Reference Include="mscorlib">
-      <HintPath>..\..\..\..\..\Library\Frameworks\Xamarin.Android.framework\Versions\9.4.1.0\lib\xamarin.android\xbuild-frameworks\MonoAndroid\v1.0\mscorlib.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <Import Project="$(MSBuildSDKExtrasTargets)" Condition="Exists('$(MSBuildSDKExtrasTargets)')" />
 </Project>
