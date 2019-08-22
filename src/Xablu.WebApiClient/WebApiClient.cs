@@ -17,6 +17,16 @@ namespace Xablu.WebApiClient
             _refitService = new RefitService<T>(baseUrl, delegatingHandler);
         }
 
+        public Task Call(Func<T, Task> operation)
+        {
+            return Call(operation, GetDefaultOptions());
+        }
+
+        public Task<TResult> Call<TResult>(Func<T, Task<TResult>> operation)
+        {
+            return Call<TResult>(operation, GetDefaultOptions());
+        }
+
         public async Task Call(Func<T, Task> operation, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout)
         {
             var service = GetServiceByPriority(priority);
@@ -76,6 +86,18 @@ namespace Xablu.WebApiClient
             var timeoutPolicy = Policy.TimeoutAsync<TResult>(timeout);
 
             return Policy.WrapAsync<TResult>(retryPolicy, timeoutPolicy);
+        }
+
+        private RequestOptions GetDefaultOptions()
+        {
+            return RequestOptions.DefaultRequestOptions
+                ?? new RequestOptions
+                {
+                    Priority = RequestOptions.DefaultPriority,
+                    RetryCount = RequestOptions.DefaultRetryCount,
+                    Timeout = RequestOptions.DefaultTimeout,
+                    ShouldRetry = RequestOptions.DefaultShouldRetry
+                };
         }
     }
 }

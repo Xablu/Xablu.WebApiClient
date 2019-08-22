@@ -64,6 +64,14 @@ namespace TestApp.Services
 
         public async Task<IEnumerable<Starships>> GetItemsAsync(bool forceRefresh = false)
         {
+            RequestOptions.DefaultRequestOptions = new RequestOptions
+            {
+                Timeout = 5
+            };
+
+            await _webApiClient.Call(
+                    (service) => service.GetTask());
+
             await _webApiClient.Call(
                     (service) => service.GetTask(),
                     Xablu.WebApiClient.Enums.Priority.UserInitiated,
