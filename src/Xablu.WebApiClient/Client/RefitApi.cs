@@ -1,45 +1,44 @@
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Xablu.WebApiClient.Enums;
-using Xablu.WebApiClient.Services;
+//using System;
+//using System.Threading.Tasks;
 
-namespace Xablu.WebApiClient.Client
-{
-    public class RefitApi<T> : IRefitApi<T>
-    {
-        private readonly RefitService<T> _refitService;
+//namespace Xablu.WebApiClient.Client
+//{
+//    public class RefitApi<T> : IRefitApi<T>
+//    {
+//        public async Task<T> GetAsync(string path)
+//        {
+//            var result = await IRefit.GetTask(path);
+//            return result;
+//        }
 
-        public RefitApi(string baseUrl = "", Func<DelegatingHandler> delegatingHandler = null)
-        {
-            _refitService = new RefitService<T>(baseUrl, delegatingHandler);
-        }
-        public async Task Call(string path, Priority priority, Func<T, Task> operation)
-        {
-            var service = GetServiceByPriority(priority);
+//        public Task<T> PatchAsync(string path)
+//        {
+//            var result = await IRefit.PatchTask(path);
+//            return result;
+//        }
 
-            await operation.Invoke(service);
-        }
+//        public async Task<T> PostAsync(string path)
+//        {
+//            var result = await IRefit.PostTask(path);
+//            return result;
+//        }
 
-        public async Task<TResult> Call<TResult>(string path, Priority priority, Func<T, Task<TResult>> operation)
-        {
-            var service = GetServiceByPriority(priority);
+//        public async Task<T> PutAsync(string path)
+//        {
+//            var result = await IRefit.PutTask(path);
+//            return result;
+//        }
 
-            return await operation.Invoke(service);
-        }
+//        public async Task<T> UpdateAsync(string path)
+//        {
+//            var result = await IRefit.UpdateTask(path);
+//            return result;
+//        }
 
-        private T GetServiceByPriority(Priority priority)
-        {
-            switch (priority)
-            {
-                case Priority.Background:
-                    return _refitService.Background;
-                case Priority.Speculative:
-                    return _refitService.Speculative;
-                case Priority.UserInitiated:
-                default:
-                    return _refitService.UserInitiated;
-            }
-        }
-    }
-}
+//        public async Task<T> DeleteTask(string path)
+//        {
+//            var result = await IRefit.DeleteTask(path);
+//            return result;
+//        }
+//    }
+//}

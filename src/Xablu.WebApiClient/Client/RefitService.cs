@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Fusillade;
 using Refit; 
 
-namespace Xablu.WebApiClient.Services
+namespace Xablu.WebApiClient.Client
 {
     public class RefitService<T> : IRefitService<T>
     {
@@ -22,7 +22,7 @@ namespace Xablu.WebApiClient.Services
 
             Func<HttpMessageHandler, T> createClient = messageHandler =>
             {
-                var delegatingHandlerInstance = delegatingHandler.Invoke();
+                var delegatingHandlerInstance = _delegatingHandler.Invoke();
                 delegatingHandlerInstance.InnerHandler = messageHandler;
 
                 var client = new HttpClient(delegatingHandlerInstance)

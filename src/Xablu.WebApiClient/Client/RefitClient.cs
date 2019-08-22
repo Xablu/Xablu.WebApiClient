@@ -1,13 +1,13 @@
-using System;
-namespace Xablu.WebApiClient.Client
-{
-    public class RefitClient : IRefitClient
-    {
-        public RefitService<IRefit> RefitService { get; }
+//using System;
+//namespace Xablu.WebApiClient.Client
+//{
+//    public class RefitClient : IRefitClient
+//    {
+//        public RefitService<IRefit> RefitService { get; }
 
-        public RefitClient(string BaseApi)
-        {
-            RefitService = new RefitService<IRefit>(BaseApi);
-        }
-    }
-}
+//        public RefitClient(string BaseApi)
+//        {
+//            RefitService = new RefitService<IRefit>(BaseApi);
+//        }
+//    }
+//}
