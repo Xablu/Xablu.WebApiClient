@@ -1,6 +1,5 @@
 using System;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Fusillade;
 using Refit; 
 
@@ -8,26 +7,39 @@ namespace Xablu.WebApiClient.Client
 {
     public class RefitService<T> : IRefitService<T>
     {
-        public const string ApiBaseAddress = "";
-
         private readonly Func<DelegatingHandler> _delegatingHandler;
 
         private readonly Lazy<T> _background;
         private readonly Lazy<T> _userInitiated;
         private readonly Lazy<T> _speculative;
 
-        public RefitService(string apiBaseAddress = null, Func<DelegatingHandler> delegatingHandler = null)
+        public RefitService(string apiBaseAddress, bool autoRedirectRequests, Func<DelegatingHandler> delegatingHandler = null)
         {
+            if (string.IsNullOrEmpty(apiBaseAddress))
+                throw new ArgumentNullException(nameof(apiBaseAddress));
+
             _delegatingHandler = delegatingHandler;
 
             Func<HttpMessageHandler, T> createClient = messageHandler =>
             {
-                var delegatingHandlerInstance = _delegatingHandler.Invoke();
-                delegatingHandlerInstance.InnerHandler = messageHandler;
-
-                var client = new HttpClient(delegatingHandlerInstance)
+                HttpMessageHandler handler;
+                if (_delegatingHandler != null)
                 {
-                    BaseAddress = new Uri(apiBaseAddress ?? ApiBaseAddress)
+                    var delegatingHandlerInstance = _delegatingHandler.Invoke();
+                    delegatingHandlerInstance.InnerHandler = messageHandler;
+                    handler = delegatingHandlerInstance;
+                }
+                else
+                {
+                    handler = messageHandler;
+                }
+
+                if(!autoRedirectRequests)
+                    DisableAutoRedirects(messageHandler);
+
+                var client = new HttpClient(handler)
+                {
+                    BaseAddress = new Uri(apiBaseAddress)
                 };
 
                 return RestService.For<T>(client);
@@ -38,6 +50,15 @@ namespace Xablu.WebApiClient.Client
             _userInitiated = new Lazy<T>(() => createClient(NetCache.UserInitiated));
 
             _speculative = new Lazy<T>(() => createClient(NetCache.Speculative));
+        }
+
+        protected virtual void DisableAutoRedirects(HttpMessageHandler messageHandler)
+        {
+            if(messageHandler is DelegatingHandler internalDelegate
+                && internalDelegate.InnerHandler is HttpClientHandler internalClientHandler)
+            {
+                internalClientHandler.AllowAutoRedirect = false;
+            }
         }
 
         public T Background => _background.Value;

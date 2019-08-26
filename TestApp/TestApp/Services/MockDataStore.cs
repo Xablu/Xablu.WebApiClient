@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using TestApp.Models.StarWarsAPI;
 using Xablu.WebApiClient;
-using Xablu.WebApiClient.Client;
 
 namespace TestApp.Services
 {
@@ -12,7 +11,7 @@ namespace TestApp.Services
     {
         List<Starships> items;
         //public IRefitClient refitClient = new RefitClient("https://swapi.co/api");
-        public IWebApiClient<IStarwarsApi> _webApiClient = new WebApiClient<IStarwarsApi>("https://swapi.co/api", () => new SampleHttpClientHandler());
+        public IWebApiClient<IStarwarsApi> _webApiClient = new WebApiClient<IStarwarsApi>("https://swapi.co/api", false, () => new SampleHttpClientHandler());
 
         public MockDataStore()
         {
@@ -64,11 +63,6 @@ namespace TestApp.Services
 
         public async Task<IEnumerable<Starships>> GetItemsAsync(bool forceRefresh = false)
         {
-            RequestOptions.DefaultRequestOptions = new RequestOptions
-            {
-                Timeout = 5
-            };
-
             await _webApiClient.Call(
                     (service) => service.GetTask());
 

@@ -30,7 +30,6 @@ namespace Xablu.WebApiClient
         /// </summary>
         public static Func<Exception, bool> DefaultShouldRetry { get; set; }
 
-
         public int RetryCount { get; set; } = DefaultRetryCount;
 
         public int Timeout { get; set; } = DefaultTimeout;

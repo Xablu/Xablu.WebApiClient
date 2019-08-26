@@ -12,9 +12,9 @@ namespace Xablu.WebApiClient
     {
         private readonly RefitService<T> _refitService;
 
-        public WebApiClient(string baseUrl = "", Func<DelegatingHandler> delegatingHandler = null)
+        public WebApiClient(string baseUrl, bool autoRedirectRequests = true, Func<DelegatingHandler> delegatingHandler = null)
         {
-            _refitService = new RefitService<T>(baseUrl, delegatingHandler);
+            _refitService = new RefitService<T>(baseUrl, autoRedirectRequests, delegatingHandler);
         }
 
         public Task Call(Func<T, Task> operation)

@@ -3,6 +3,7 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using TestApp.Services;
 using TestApp.Views;
+using Xablu.WebApiClient;
 
 namespace TestApp
 {
@@ -20,6 +21,10 @@ namespace TestApp
         protected override void OnStart()
         {
             // Handle when your app starts
+            RequestOptions.DefaultRequestOptions = new RequestOptions
+            {
+                Timeout = 5
+            };
         }
 
         protected override void OnSleep()
