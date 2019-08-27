@@ -45,8 +45,8 @@ namespace TestApp.Views
             // dict.Add("Authorization", "99f736dd263bc004ae9b11c99bf42ccb547e7311");
 
             var graphqlTest = new GraphQLService("https://api.github.com/graphql", null);
-            graphqlTest.Client.DefaultRequestHeaders.Add("User-Agent", "LukasThijs");
-            graphqlTest.Client.DefaultRequestHeaders.Add("Authorization", "Bearer be4b4108d37ee2e845aa6da4d19e4a7eb9995dd9");
+            graphqlTest.Client.DefaultRequestHeaders.Add("User-Agent", "");
+            graphqlTest.Client.DefaultRequestHeaders.Add("Authorization", "Bearer ");
 
 
             var query = "{ user {  createdAt   location   followers {  totalCount } }}";
