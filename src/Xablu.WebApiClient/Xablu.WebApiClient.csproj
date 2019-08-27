@@ -51,7 +51,5 @@
     <Folder Include="Client\" />
     <Folder Include="Enums\" />
     <Folder Include="Services\" />
-    <Folder Include="Options\" />
-    <Folder Include="Services\GraphQL\" />
   </ItemGroup> 
 </Project>

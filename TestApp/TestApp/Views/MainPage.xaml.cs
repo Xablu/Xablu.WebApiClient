@@ -6,6 +6,11 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 using TestApp.Models;
+using Xablu.WebApiClient.Services.GraphQL;
+using GraphQL.Common.Request;
+using GraphQL.Common.Response;
+using Newtonsoft.Json;
+using System.Linq;
 
 namespace TestApp.Views
 {
@@ -22,7 +27,44 @@ namespace TestApp.Views
             MasterBehavior = MasterBehavior.Popover;
 
             MenuPages.Add((int)MenuItemType.Browse, (NavigationPage)Detail);
+
+
+
+
+            Task.Run(async () => await GraphqlAsync());
+
+
         }
+
+        private async Task GraphqlAsync()
+        {
+            var dict = new Dictionary<string, string>() {
+                { "Authorization","Bearer 99f736dd263bc004ae9b11c99bf42ccb547e7311" }
+            };
+
+            // dict.Add("Authorization", "99f736dd263bc004ae9b11c99bf42ccb547e7311");
+
+            var graphqlTest = new GraphQLService("https://api.github.com/graphql", null);
+            graphqlTest.Client.DefaultRequestHeaders.Add("User-Agent", "LukasThijs");
+            graphqlTest.Client.DefaultRequestHeaders.Add("Authorization", "Bearer be4b4108d37ee2e845aa6da4d19e4a7eb9995dd9");
+
+
+            var query = "{ user {  createdAt   location   followers {  totalCount } }}";
+
+            var responseModel = new ResponseModel() { User = new User() };
+            //todo need help with request class
+            var request = new Request<ResponseModel>(query, responseModel);
+
+            var response = await graphqlTest.Client.SendQueryAsync(request);
+
+
+
+
+
+        }
+
+
+
 
         public async Task NavigateFromMenu(int id)
         {
