@@ -5,11 +5,14 @@ using Polly;
 using Polly.Wrap;
 using Xablu.WebApiClient.Client;
 using Xablu.WebApiClient.Enums;
+using Xablu.WebApiClient.Logging;
 
 namespace Xablu.WebApiClient
 {
     public class WebApiClient<T> : IWebApiClient<T>
     {
+        private static readonly ILog Logger = LogProvider.For<WebApiClient<T>>();
+
         private readonly RefitService<T> _refitService;
 
         public WebApiClient(string baseUrl, bool autoRedirectRequests = true, Func<DelegatingHandler> delegatingHandler = null)
@@ -33,6 +36,11 @@ namespace Xablu.WebApiClient
 
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
+            if(Logger.IsTraceEnabled())
+            {
+                Logger.Trace($"Operation running with parameters: Priority: {priority}, retryCount: {retryCount}, has should retry condition: {shouldRetry != null}, timeout: {timeout}");
+            }
+
             await policy.ExecuteAsync(() => operation.Invoke(service));
         }
 
@@ -41,6 +49,11 @@ namespace Xablu.WebApiClient
             var service = GetServiceByPriority(priority);
 
             var policy = GetWrappedPolicy<TResult>(retryCount, shouldRetry, timeout);
+
+            if (Logger.IsTraceEnabled())
+            {
+                Logger.Trace($"Operation running with parameters: Priority: {priority}, retryCount: {retryCount}, has should retry condition: {shouldRetry != null}, timeout: {timeout}");
+            }
 
             return await policy.ExecuteAsync(() => operation.Invoke(service));
         }

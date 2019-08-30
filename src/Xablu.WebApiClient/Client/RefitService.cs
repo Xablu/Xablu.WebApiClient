@@ -1,12 +1,15 @@
 using System;
 using System.Net.Http;
 using Fusillade;
-using Refit; 
+using Refit;
+using Xablu.WebApiClient.Logging;
 
 namespace Xablu.WebApiClient.Client
 {
     public class RefitService<T> : IRefitService<T>
     {
+        private static readonly ILog Logger = LogProvider.For<RefitService<T>>();
+
         private readonly Func<DelegatingHandler> _delegatingHandler;
 
         private readonly Lazy<T> _background;
@@ -20,18 +23,24 @@ namespace Xablu.WebApiClient.Client
 
             _delegatingHandler = delegatingHandler;
 
+            if (Logger.IsTraceEnabled())
+            {
+                Logger.Trace($"Base url set to: {apiBaseAddress} and delegatingHandler: {delegatingHandler != null}");
+            }
+
             Func<HttpMessageHandler, T> createClient = messageHandler =>
             {
                 HttpMessageHandler handler;
+
                 if (_delegatingHandler != null)
                 {
                     var delegatingHandlerInstance = _delegatingHandler.Invoke();
                     delegatingHandlerInstance.InnerHandler = messageHandler;
-                    handler = delegatingHandlerInstance;
+                    handler = delegatingHandlerInstance; 
                 }
                 else
                 {
-                    handler = messageHandler;
+                    handler = messageHandler; 
                 }
 
                 if(!autoRedirectRequests)
@@ -54,9 +63,13 @@ namespace Xablu.WebApiClient.Client
 
         protected virtual void DisableAutoRedirects(HttpMessageHandler messageHandler)
         {
-            if(messageHandler is DelegatingHandler internalDelegate
+            if (messageHandler is DelegatingHandler internalDelegate
                 && internalDelegate.InnerHandler is HttpClientHandler internalClientHandler)
             {
+                if (Logger.IsTraceEnabled())
+                {
+                    Logger.Trace("Disabling AutoRedirects");
+                }
                 internalClientHandler.AllowAutoRedirect = false;
             }
         }
