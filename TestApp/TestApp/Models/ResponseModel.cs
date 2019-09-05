@@ -10,7 +10,6 @@ namespace TestApp.Models
         public User User { get; set; }
     }
 
-
     public class User
     {
         [JsonProperty("createdAt")]

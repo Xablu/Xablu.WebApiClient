@@ -39,26 +39,27 @@ namespace TestApp.Views
         private async Task GraphqlAsync()
         {
             var dict = new Dictionary<string, string>() {
-                { "Authorization","Bearer 99f736dd263bc004ae9b11c99bf42ccb547e7311" }
+                { "Authorization","Bearer " }
             };
 
             // dict.Add("Authorization", "99f736dd263bc004ae9b11c99bf42ccb547e7311");
 
             var graphqlTest = new GraphQLService("https://api.github.com/graphql", null);
-            graphqlTest.Client.DefaultRequestHeaders.Add("User-Agent", "");
+            graphqlTest.Client.DefaultRequestHeaders.Add("User-Agent", "LukasThijs");
             graphqlTest.Client.DefaultRequestHeaders.Add("Authorization", "Bearer ");
 
 
             var query = "{ user {  createdAt   location   followers {  totalCount } }}";
+            var query2 = "{ viewer { login } }";
 
             var responseModel = new ResponseModel() { User = new User() };
             //todo need help with request class
             var request = new Request<ResponseModel>(query, responseModel);
+            var test = new GraphQLRequest();
+            //var response = await graphqlTest.Client.SendQueryAsync();
 
-            var response = await graphqlTest.Client.SendQueryAsync(request);
 
-
-
+            var response2 = await graphqlTest.Client.SendQueryAsync(query2);
 
 
         }
