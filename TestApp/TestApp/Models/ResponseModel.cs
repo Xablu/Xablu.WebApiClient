@@ -6,25 +6,13 @@ namespace TestApp.Models
 
     public class ResponseModel
     {
-        [JsonProperty("user")]
-        public User User { get; set; }
+        [JsonProperty("viewer")]
+        public Viewer Viewer { get; set; }
     }
 
-    public class User
+    public class Viewer
     {
-        [JsonProperty("createdAt")]
-        public DateTimeOffset CreatedAt { get; set; }
-
-        [JsonProperty("location")]
-        public object Location { get; set; }
-
-        [JsonProperty("followers")]
-        public Followers Followers { get; set; }
-    }
-
-    public class Followers
-    {
-        [JsonProperty("totalCount")]
-        public long TotalCount { get; set; }
+        [JsonProperty("login")]
+        public string Login { get; set; }
     }
 }

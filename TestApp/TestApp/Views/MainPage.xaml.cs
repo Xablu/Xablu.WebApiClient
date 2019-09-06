@@ -42,25 +42,14 @@ namespace TestApp.Views
                 { "Authorization","Bearer " }
             };
 
-            // dict.Add("Authorization", "99f736dd263bc004ae9b11c99bf42ccb547e7311");
 
             var graphqlTest = new GraphQLService("https://api.github.com/graphql", null);
             graphqlTest.Client.DefaultRequestHeaders.Add("User-Agent", "LukasThijs");
             graphqlTest.Client.DefaultRequestHeaders.Add("Authorization", "Bearer ");
 
-
-            var query = "{ user {  createdAt   location   followers {  totalCount } }}";
-            var query2 = "{ viewer { login } }";
-
-            var responseModel = new ResponseModel() { User = new User() };
-            //todo need help with request class
-            var request = new Request<ResponseModel>(query, responseModel);
-            var test = new GraphQLRequest();
-            //var response = await graphqlTest.Client.SendQueryAsync();
-
-
-            var response2 = await graphqlTest.Client.SendQueryAsync(query2);
-
+            var responseModel = new ResponseModel() { Viewer = new Viewer() };
+            var request = new Request<ResponseModel>(null, responseModel);
+            var response = await graphqlTest.Client.SendQueryAsync(request);
 
         }
 

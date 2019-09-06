@@ -11,6 +11,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
 {
     public class Request<T> : GraphQLRequest
     {
+        private List<Dictionary<string, object>> ObjectPropsList = new List<Dictionary<string, object>>();
 
         public Request(string query = "", object model = null)
         {
@@ -27,51 +28,32 @@ namespace Xablu.WebApiClient.Services.GraphQL
             }
             else
             {
-                base.Query = query;
+                Query = query;
             }
+            GraphQLQuery = Query;
         }
 
         private string GetQueryString(T obj)
         {
             //need help
             Type type = obj.GetType();
+            Iterate(type);
 
-            try
-            {
-                Iterate(type);
-            }
-            catch (Exception ex)
-            {
-
-            }
-
-
-            return null;
+            var result = CreateQuery();
+            return result;
         }
 
-        //private List<HashSet<string>> ObjectProps = new List<HashSet<string>>();
+        public string GraphQLQuery { get; set; }
 
-        private List<List<Dictionary<string, object>>> ObjectProps = new List<List<Dictionary<string, object>>>();
+        public T ResponseModel { get; set; }
 
         private void Iterate(Type type)
         {
 
-            //foreach (var listItemType in listOfType)
-            //{
-
-            //}
-            //if (!string.IsNullOrEmpty(listOfType[1].ToString())){
-
-            //}
-
-
-
-
-
             var props = new List<PropertyInfo>();
             var baseType = type;
             var propNames = new HashSet<object>();
-            var propDict = new List<Dictionary<string, object>>();
+            var propDict = new Dictionary<string, object>();
 
             while (baseType != typeof(object))
             {
@@ -90,20 +72,17 @@ namespace Xablu.WebApiClient.Services.GraphQL
                 baseType = ti.BaseType;
             }
 
-            foreach (var property in props)
+            foreach (PropertyInfo property in props)
             {
                 var propType = property.PropertyType;
 
 
                 propNames.Add(property.Name);
-                var newDict = new Dictionary<string, object>
-                {
-                    { property.Name, null }
-                };
-                propDict.Add(newDict);
+                propDict.Add(property.Name, null);
 
                 if (propType.IsClass)
                 {
+                    var test = propType.GetProperties();
                     var hasProperties = propType.GetProperties() != null && propType.GetProperties().Length > 0;
                     if (hasProperties)
                     {
@@ -111,56 +90,34 @@ namespace Xablu.WebApiClient.Services.GraphQL
                     }
                 }
             }
-
-            ObjectProps.Add(propDict);
-
-            // after done for loop through ObjectProps adding it to a string querystring += $"'{'{string}'}'"
+            if (propDict.Any())
+            {
+                ObjectPropsList.Add(propDict);
+            }
         }
 
-        //private void Iterate(Type type)
-        //{
-        //    var props = new List<PropertyInfo>();
-        //    var baseType = type;
-        //    var propNames = new HashSet<string>();
-        //    while (baseType != typeof(object))
-        //    {
-        //        var ti = baseType.GetTypeInfo();
-        //        var newProps = (
-        //            from p in ti.DeclaredProperties
-        //            where
-        //                !propNames.Contains(p.Name) &&
-        //                p.CanRead && p.CanWrite &&
-        //                (p.GetMethod != null) && (p.SetMethod != null) &&
-        //                (p.GetMethod.IsPublic && p.SetMethod.IsPublic) &&
-        //                (!p.GetMethod.IsStatic) && (!p.SetMethod.IsStatic)
-        //            select p).ToList();
+        private string CreateQuery()
+        {
+            string queryString = "";
 
-        //        props.AddRange(newProps);
-        //        baseType = ti.BaseType;
-        //    }
+            foreach (Dictionary<string, object> propDic in ObjectPropsList)
+            {
+                foreach (KeyValuePair<string, object> property in propDic.Reverse())
+                {
+                    if (queryString.Count() > 0)
+                    {
+                        queryString = queryString.Insert(0, property.Key.ToLower() + " ");
+                    }
+                    else
+                    {
+                        queryString = queryString.Insert(0, property.Key.ToLower());
+                    }
 
-        //    foreach (var property in props)
-        //    {
-        //        var propType = property.PropertyType;
-
-        //        propNames.Add(property.Name);
-
-        //        if (propType.IsClass)
-        //        {
-        //            var hasProperties = propType.GetProperties() != null && propType.GetProperties().Length > 0;
-        //            if (hasProperties)
-        //            {
-        //                Iterate(propType);
-        //            }
-        //        }
-        //    }
-
-        //    ObjectProps.Add(propNames);
-        //}
-
-
-        public string GraphQLQuery { get; set; }
-
-        public T ResponseModel { get; set; }
+                }
+                var afterEndIndex = queryString.Count() + 1;
+                queryString = queryString.Insert(0, "{").Insert(afterEndIndex, "}");
+            }
+            return queryString;
+        }
     }
 }
