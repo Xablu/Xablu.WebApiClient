@@ -55,5 +55,6 @@
     <Folder Include="Client\" />
     <Folder Include="Enums\" />
     <Folder Include="Services\" />
+    <Folder Include="Attributes\" />
   </ItemGroup> 
 </Project>

@@ -6,6 +6,7 @@ using System.Web;
 using GraphQL.Common.Request;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Xablu.WebApiClient.Attributes;
 
 namespace Xablu.WebApiClient.Services.GraphQL
 {
@@ -13,15 +14,23 @@ namespace Xablu.WebApiClient.Services.GraphQL
     {
         private List<Dictionary<string, object>> ObjectPropsList = new List<Dictionary<string, object>>();
 
-        public Request(string query = "", object model = null)
+        int attributeNumber;
+
+        public Request(string query = "", object model = null, string[] optionalParameters = null)
         {
             if (model != null)
             {
                 ResponseModel = (T)model;
                 if (ResponseModel != null)
                 {
+                    var QueryString = GetQueryString(ResponseModel);
 
-                    GraphQLQuery = GetQueryString(ResponseModel);
+                    if (optionalParameters != null)
+                    {
+                        QueryString = FormatQuery(QueryString, optionalParameters);
+                    }
+
+                    GraphQLQuery = QueryString;
                     Query = GraphQLQuery;
                 }
 
@@ -29,8 +38,8 @@ namespace Xablu.WebApiClient.Services.GraphQL
             else
             {
                 Query = query;
+                GraphQLQuery = Query;
             }
-            GraphQLQuery = Query;
         }
 
         private string GetQueryString(T obj)
@@ -55,9 +64,11 @@ namespace Xablu.WebApiClient.Services.GraphQL
             var propNames = new HashSet<object>();
             var propDict = new Dictionary<string, object>();
 
+
             while (baseType != typeof(object))
             {
                 var ti = baseType.GetTypeInfo();
+
                 var newProps = (
                     from p in ti.DeclaredProperties
                     where
@@ -75,10 +86,24 @@ namespace Xablu.WebApiClient.Services.GraphQL
             foreach (PropertyInfo property in props)
             {
                 var propType = property.PropertyType;
+                string propName = property.Name;
 
 
-                propNames.Add(property.Name);
-                propDict.Add(property.Name, null);
+                var HasAttribute = Attribute.IsDefined(property, typeof(QueryParameter));
+
+                if (HasAttribute)
+                {
+                    propNames.Add($"{property.Name}{{{attributeNumber}}}");
+                    propDict.Add($"{property.Name}{{{attributeNumber}}}", null);
+                    attributeNumber++;
+                }
+                else
+                {
+                    propNames.Add(property.Name);
+                    propDict.Add(property.Name, null);
+                }
+
+
 
                 if (propType.IsClass)
                 {
@@ -118,6 +143,20 @@ namespace Xablu.WebApiClient.Services.GraphQL
                 queryString = queryString.Insert(0, "{").Insert(afterEndIndex, "}");
             }
             return queryString;
+        }
+
+        private string FormatQuery(string query, string[] optionalParameters)
+        {
+            try
+            {
+                var formattedString = string.Format(query, optionalParameters);
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return "";
         }
     }
 }
