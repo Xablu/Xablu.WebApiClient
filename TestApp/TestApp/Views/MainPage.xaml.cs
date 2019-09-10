@@ -48,7 +48,7 @@ namespace TestApp.Views
             graphqlTest.Client.DefaultRequestHeaders.Add("Authorization", "Bearer ");
 
             var responseModel = new UserResponseModel() { User = new User() };
-            var request = new Request<UserResponseModel>(null, responseModel, new[] { "login(LukasThijs)" });
+            var request = new Request<UserResponseModel>(null, responseModel, new[] { "(login: LukasThijs)" });
             var response = await graphqlTest.Client.SendQueryAsync(request);
 
         }

@@ -93,8 +93,9 @@ namespace Xablu.WebApiClient.Services.GraphQL
 
                 if (HasAttribute)
                 {
-                    propNames.Add($"{property.Name}{{{attributeNumber}}}");
-                    propDict.Add($"{property.Name}{{{attributeNumber}}}", null);
+                    propNames.Add($"{property.Name}" + $"{{{attributeNumber.ToString()}}}");
+                    propDict.Add($"{property.Name}" + $"{{{attributeNumber.ToString()}}}", null);
+
                     attributeNumber++;
                 }
                 else
@@ -139,24 +140,17 @@ namespace Xablu.WebApiClient.Services.GraphQL
                     }
 
                 }
-                var afterEndIndex = queryString.Count() + 1;
-                queryString = queryString.Insert(0, "{").Insert(afterEndIndex, "}");
+
+                queryString = "{{" + $"{queryString}" + "}}";
             }
             return queryString;
         }
 
         private string FormatQuery(string query, string[] optionalParameters)
         {
-            try
-            {
-                var formattedString = string.Format(query, optionalParameters);
-            }
-            catch (Exception ex)
-            {
+            var formattedString = (string.Format(query, optionalParameters)).ToLower();
 
-            }
-
-            return "";
+            return formattedString.ToLower();
         }
     }
 }
