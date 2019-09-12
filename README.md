@@ -1,3 +1,6 @@
+# WIP :construction: :warning:
+We are currently working on a 2nd version of WebApiClient which will be based on Refit and will support GraphQL. Please look at the [issues](https://github.com/Xablu/Xablu.WebApiClient/issues) section for more details.
+
 # Xablu.WebApiClient
 The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of Web API services in .NET projects.
 
