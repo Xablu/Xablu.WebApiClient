@@ -11,15 +11,17 @@ using Xablu.WebApiClient.Attributes;
 namespace Xablu.WebApiClient.Services.GraphQL
 {
     public class Request<T> : GraphQLRequest
+        where T : class
     {
         private List<Dictionary<string, object>> PropertyDictList = new List<Dictionary<string, object>>();
 
         int attributeNumber;
 
-        public Request(string query = "", object model = null, string[] optionalParameters = null)
+        public Request(string query = "", T model = default, string[] optionalParameters = null)
         {
             OptionalParameters = optionalParameters;
             Query = query;
+            ResponseModel = model;
 
             CreateQuery(model);
         }
@@ -31,28 +33,19 @@ namespace Xablu.WebApiClient.Services.GraphQL
         public string[] OptionalParameters { get; set; }
 
 
-        public void CreateQuery(object model)
+        public void CreateQuery(T model)
         {
             if (model != null)
             {
-                //which one is prefered?
-                ResponseModel = model.GetType() is T ? (T)model : default;
-
-                ResponseModel = (T)model;
-
-                if (ResponseModel != null)
-                {
-                    var queryString = GetQuery(ResponseModel);
-                    GraphQLQuery = queryString;
-                    Query = GraphQLQuery;
-                }
+                var queryString = GetQuery(ResponseModel);
+                GraphQLQuery = queryString;
+                Query = GraphQLQuery;
             }
             else
             {
                 GraphQLQuery = Query;
             }
         }
-
 
         private string GetQuery(T obj)
         {
