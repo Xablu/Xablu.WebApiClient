@@ -24,7 +24,7 @@ namespace Xablu.WebApiClient.Tests
 
             // setup dependency mocks
             service.SetupGet(s => s.UserInitiated).Returns(mockedAPI.Object);
-            mockedAPI.Setup(api => api.Get()).Returns(Task.CompletedTask).Verifiable();
+            mockedAPI.Setup(api => api.Get()).Returns(Task.CompletedTask);
 
             var client = new WebApiClient<IStarwarsApi>(service.Object);
 
@@ -33,7 +33,6 @@ namespace Xablu.WebApiClient.Tests
 
             // make sure UserInitiated was called
             service.VerifyGet(s => s.UserInitiated);
-            mockedAPI.VerifyAll();
         }
 
         [Fact]
@@ -53,7 +52,7 @@ namespace Xablu.WebApiClient.Tests
             client.Call(api => api.Get());
 
             // make sure IStarwarsApi.Get was called
-            mockedAPI.VerifyAll();
+            mockedAPI.Verify(api => api.Get(), Times.Once);
         }
     }
 }
