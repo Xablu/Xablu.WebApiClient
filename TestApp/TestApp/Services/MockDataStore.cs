@@ -11,10 +11,11 @@ namespace TestApp.Services
     {
         List<Starships> items;
         //public IRefitClient refitClient = new RefitClient("https://swapi.co/api");
-        public IWebApiClient<IStarwarsApi> _webApiClient = new WebApiClient<IStarwarsApi>("https://swapi.co/api", false, () => new SampleHttpClientHandler());
+        private IWebApiClient<IStarwarsApi> _webApiClient;
 
         public MockDataStore()
         {
+            _webApiClient = WebApiClientFactory.Get<IStarwarsApi>("https://swapi.co/api", false, () => new SampleHttpClientHandler());
             items = new List<Starships>();
             var mockItems = new List<Starships>
             {

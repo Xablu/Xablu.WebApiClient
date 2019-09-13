@@ -13,11 +13,11 @@ namespace Xablu.WebApiClient
     {
         private static readonly ILog Logger = LogProvider.For<WebApiClient<T>>();
 
-        private readonly RefitService<T> _refitService;
+        private readonly IRefitService<T> _refitService;
 
-        public WebApiClient(string baseUrl, bool autoRedirectRequests = true, Func<DelegatingHandler> delegatingHandler = null)
+        public WebApiClient(IRefitService<T> refitService)
         {
-            _refitService = new RefitService<T>(baseUrl, autoRedirectRequests, delegatingHandler);
+            _refitService = refitService;
         }
 
         public Task Call(Func<T, Task> operation)
