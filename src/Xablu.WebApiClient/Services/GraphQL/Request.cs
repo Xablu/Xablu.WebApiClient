@@ -83,10 +83,15 @@ namespace Xablu.WebApiClient.Services.GraphQL
                 string propName = property.Name;
 
                 var hasAttribute = Attribute.IsDefined(property, typeof(QueryParameter));
+
                 if (hasAttribute)
                 {
-                    propDict.Add($"{property.Name}" + $"{{{attributeNumber.ToString()}}}", null);
-                    attributeNumber++;
+                    var IsExclusive = Attribute.GetCustomAttribute(property, typeof(QueryParameter)) != null;
+                    if (!IsExclusive)
+                    {
+                        propDict.Add($"{property.Name}" + $"{{{attributeNumber.ToString()}}}", null);
+                        attributeNumber++;
+                    }
                 }
                 else
                 {
