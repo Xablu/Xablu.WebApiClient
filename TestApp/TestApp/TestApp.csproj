@@ -19,4 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Xablu.WebApiClient\Xablu.WebApiClient.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Models\QueryNameAttribute.cs" />
+  </ItemGroup>
 </Project>

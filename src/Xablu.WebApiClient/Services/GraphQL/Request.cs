@@ -2,10 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Web;
 using GraphQL.Common.Request;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Xablu.WebApiClient.Attributes;
 
 namespace Xablu.WebApiClient.Services.GraphQL
@@ -82,21 +79,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
                 var propType = property.PropertyType;
                 string propName = property.Name;
 
-                var hasAttribute = Attribute.IsDefined(property, typeof(QueryParameter));
-
-                if (hasAttribute)
-                {
-                    var IsExclusive = Attribute.GetCustomAttribute(property, typeof(QueryParameter)) != null;
-                    if (!IsExclusive)
-                    {
-                        propDict.Add($"{property.Name}" + $"{{{attributeNumber.ToString()}}}", null);
-                        attributeNumber++;
-                    }
-                }
-                else
-                {
-                    propDict.Add(property.Name, null);
-                }
+                SetDictionary(property, propDict);
 
                 if (propType.IsClass)
                 {
@@ -111,6 +94,33 @@ namespace Xablu.WebApiClient.Services.GraphQL
             if (propDict.Any())
             {
                 PropertyDictList.Add(propDict);
+            }
+        }
+
+        private void SetDictionary(PropertyInfo property, Dictionary<string, object> propDict)
+        {
+            var hasAttribute = Attribute.IsDefined(property, typeof(QueryParameter)) || Attribute.IsDefined(property, typeof(QueryName));
+
+            if (hasAttribute)
+            {
+
+                var test = Attribute.GetCustomAttribute(property, typeof(QueryParameter)).GetType().GetProperties();
+
+
+                var IsExclusive = Attribute.GetCustomAttribute(property, typeof(QueryParameter))?.GetType().GetProperties().Length > 0;
+
+                if (!IsExclusive)
+                {
+                    var queryName = Attribute.GetCustomAttribute(property, typeof(QueryName));
+                    var query = (queryName != null ? $"{property.Name}: {queryName}" : $"{property.Name}") + $"{{{attributeNumber.ToString()}}}";
+
+                    propDict.Add(query, null);
+                    attributeNumber++;
+                }
+            }
+            else
+            {
+                propDict.Add(property.Name, null);
             }
         }
 

@@ -1,8 +1,4 @@
 using System;
-using System.Diagnostics.Contracts;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-
 namespace Xablu.WebApiClient.Attributes
 {
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
@@ -12,9 +8,8 @@ namespace Xablu.WebApiClient.Attributes
         {
 
         }
-        public QueryParameter(string exclusiveWith = null)
-        {
+        public QueryParameter(string exclusiveWith = null) => ExclusiveWith = exclusiveWith;
 
-        }
+        public string ExclusiveWith { get; }
     }
 }

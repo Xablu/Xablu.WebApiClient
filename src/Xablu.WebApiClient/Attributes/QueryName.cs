@@ -1,10 +1,11 @@
 using System;
 namespace Xablu.WebApiClient.Attributes
 {
-    public class QueryName
+    [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
+    public class QueryName : Attribute
     {
-        public QueryName()
-        {
-        }
+        public QueryName(string[] values = null) => Values = values;
+
+        public string[] Values { get; }
     }
 }
