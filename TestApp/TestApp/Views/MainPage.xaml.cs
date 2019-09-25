@@ -11,6 +11,8 @@ using GraphQL.Common.Request;
 using GraphQL.Common.Response;
 using Newtonsoft.Json;
 using System.Linq;
+using Xablu.WebApiClient;
+using TestApp.Services;
 
 namespace TestApp.Views
 {
@@ -38,22 +40,17 @@ namespace TestApp.Views
 
         private async Task GraphqlAsync()
         {
-            var dict = new Dictionary<string, string>() {
-                { "Authorization","Bearer " }
+            var defaultHeaders = new Dictionary<string, string>
+            {
+                ["User-Agent"] = "LukasThijs",
+                ["Authorization"] = "Bearer "
             };
-
-
-            var graphqlTest = new GraphQLService("https://api.github.com/graphql", null);
-            graphqlTest.Client.DefaultRequestHeaders.Add("User-Agent", "LukasThijs");
-            graphqlTest.Client.DefaultRequestHeaders.Add("Authorization", "Bearer ");
-
-            var responseModel = new UserResponseModel() { User = new User() };
-            var request = new Request<UserResponseModel>(null, responseModel, new[] { "(login: LukasThijs)" });
-            var response = await graphqlTest.Client.SendQueryAsync(request);
-
+            var webApiClient = WebApiClientFactory.Get<IGitHubApi>("https://api.github.com", false, () => new SampleHttpClientHandler(), defaultHeaders);
+            var request = new Request<UserResponseModel>(null, new UserResponseModel(), new[] { "(login: LukasThijs)" });
+              
+            // TODO: Handle the result!
+            await webApiClient.SendQueryAsync(request);
         }
-
-
 
 
         public async Task NavigateFromMenu(int id)

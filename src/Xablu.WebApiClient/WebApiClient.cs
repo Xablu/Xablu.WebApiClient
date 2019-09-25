@@ -1,11 +1,15 @@
 using System;
+using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Polly;
 using Polly.Wrap;
+using Xablu.WebApiClient.Attributes;
 using Xablu.WebApiClient.Client;
 using Xablu.WebApiClient.Enums;
 using Xablu.WebApiClient.Logging;
+using Xablu.WebApiClient.Services.GraphQL;
 
 namespace Xablu.WebApiClient
 {
@@ -14,10 +18,14 @@ namespace Xablu.WebApiClient
         private static readonly ILog Logger = LogProvider.For<WebApiClient<T>>();
 
         private readonly IRefitService<T> _refitService;
+        private readonly IGraphQLService _graphQLService;
 
-        public WebApiClient(IRefitService<T> refitService)
+        public WebApiClient(
+            IRefitService<T> refitService,
+            IGraphQLService graphQLService)
         {
             _refitService = refitService;
+            _graphQLService = graphQLService;
         }
 
         public Task Call(Func<T, Task> operation)
@@ -68,9 +76,36 @@ namespace Xablu.WebApiClient
             return Call<TResult>(operation, options.Priority, options.RetryCount, options.ShouldRetry, options.Timeout);
         }
 
+        public async Task SendMutationAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default) where TModel : class
         {
-            {
-            }
+            var defaultOptions = GetDefaultOptions();
+
+            var service = _graphQLService.GetByPriority(defaultOptions.Priority);
+
+            var result = await service.SendMutationAsync(request, cancellationToken);
+
+            // this method should send the GraphQL query and return what's necessary
+            // please note the method signature should probably change
+            // at this level we should also query the GraphQL attribute to see what is the GraphQL endpoint to use
+
+            throw new NotImplementedException();
+        }
+
+        public async Task SendQueryAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default) where TModel : class
+        {
+            var defaultOptions = GetDefaultOptions();
+
+            var service = _graphQLService.GetByPriority(defaultOptions.Priority);
+
+            service.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
+
+            var result = await service.SendQueryAsync(request, cancellationToken);
+
+            // this method should send the GraphQL query and return what's necessary
+            // please note the method signature should probably change
+            // at this level we should also query the GraphQL attribute to see what is the GraphQL endpoint to use
+
+            throw new NotImplementedException();
         }
 
         private static AsyncPolicyWrap GetWrappedPolicy(int retryCount, Func<Exception, bool> shouldRetry, int timeout)
@@ -90,6 +125,19 @@ namespace Xablu.WebApiClient
             var timeoutPolicy = Policy.TimeoutAsync<TResult>(timeout);
 
             return Policy.WrapAsync<TResult>(retryPolicy, timeoutPolicy);
+        }
+
+        private static string GetGraphQLEndpoint()
+        {
+            var attributes = typeof(T).GetCustomAttributes(false);
+            if (attributes.Any(a => a.GetType() == typeof(GraphQLEndpointAttribute)))
+            {
+                var endpointAttribute = (GraphQLEndpointAttribute)attributes.First(a => a.GetType() == typeof(GraphQLEndpointAttribute));
+                return endpointAttribute.Path;
+            }
+
+            //TODO: we should throw an exception here!
+            return string.Empty;
         }
 
         private RequestOptions GetDefaultOptions()
