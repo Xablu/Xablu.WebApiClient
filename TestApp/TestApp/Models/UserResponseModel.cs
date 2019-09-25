@@ -8,7 +8,7 @@ namespace TestApp.Models
     {
 
         [JsonProperty("user")]
-        [QueryName(new[] { "followers" })]
+        [QueryParameter]
         public User User { get; set; }
     }
 

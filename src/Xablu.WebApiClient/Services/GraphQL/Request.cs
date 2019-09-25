@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using GraphQL.Common.Request;
+using Newtonsoft.Json.Linq;
 using Xablu.WebApiClient.Attributes;
 
 namespace Xablu.WebApiClient.Services.GraphQL
@@ -11,8 +13,9 @@ namespace Xablu.WebApiClient.Services.GraphQL
         where T : class
     {
         private List<Dictionary<string, object>> PropertyDictList = new List<Dictionary<string, object>>();
+        private GraphQLService _service;
 
-        int attributeNumber;
+        private int attributeNumber;
 
         public Request(string query = "", T model = default, string[] optionalParameters = null)
         {
@@ -44,6 +47,69 @@ namespace Xablu.WebApiClient.Services.GraphQL
             }
         }
 
+        public async Task<List<string>> GetMutlipleResults(string[] values, GraphQLService service)
+        {
+            var resultList = new List<string>();
+            if (service != null)
+            {
+                _service = service;
+
+                foreach (var valueName in values)
+                {
+                    var result = await _service.Client.SendQueryAsync(GraphQLQuery).ConfigureAwait(false);
+                    if (result.Data != null)
+                    {
+
+                        string resultValue;
+                        var jObject = result.Data as JObject;
+                        if (jObject != null)
+                        {
+                            resultValue = GetJValue(jObject, valueName);
+                            if (!string.IsNullOrEmpty(resultValue))
+                            {
+                                resultList.Add(resultValue);
+                            }
+                        }
+                    }
+                }
+            }
+            return resultList;
+        }
+
+        private string GetJValue(JObject jObject, string valueName)
+        {
+            string resultValue = "";
+
+            if (string.IsNullOrEmpty(resultValue))
+            {
+                foreach (var item in jObject.Properties())
+                {
+                    if (string.Equals(item.Name.ToLower(), valueName.ToLower()))
+                    {
+                        resultValue = item.HasValues ? item.Value.ToString() : null;
+                        break;
+                    }
+
+                    if (string.IsNullOrEmpty(resultValue))
+                    {
+                        var hasChildren = item.Children().Any();
+                        if (hasChildren)
+                        {
+                            foreach (var child in item.Children())
+                            {
+                                var newObject = child as JObject;
+                                if (newObject != null && string.IsNullOrEmpty(resultValue))
+                                {
+                                    resultValue = GetJValue(newObject, valueName);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return resultValue?.ToString();
+        }
+
         private string GetQuery(T obj)
         {
             GetProperties(obj.GetType());
@@ -55,7 +121,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
             return result;
         }
 
-        private void GetProperties(Type type)
+        private void GetProperties(Type type, bool hasValue = false, object t = null)
         {
 
             var propsList = new List<PropertyInfo>();
@@ -74,6 +140,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
                 baseType = typeInfo.BaseType;
             }
 
+
             foreach (PropertyInfo property in propsList)
             {
                 var propType = property.PropertyType;
@@ -86,7 +153,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
                     var hasProperties = propType.GetProperties() != null && propType.GetProperties().Length > 0;
                     if (hasProperties)
                     {
-                        GetProperties(propType);
+                        GetProperties(propType, hasValue, t);
                     }
                 }
             }
@@ -104,11 +171,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
             if (hasAttribute)
             {
 
-
-
                 var isExclusive = !string.IsNullOrEmpty((Attribute.GetCustomAttribute(property, typeof(QueryParameter)) as QueryParameter)?.ExclusiveWith);
-
-
 
                 if (!isExclusive)
                 {
@@ -133,7 +196,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
             {
                 foreach (KeyValuePair<string, object> property in propertyDictonary.Reverse())
                 {
-                    queryString = queryString.Any() ? queryString = queryString.Insert(0, property.Key.ToLower() + " ") : queryString.Insert(0, property.Key.ToLower());
+                    queryString = queryString.Any() ? queryString = queryString.Insert(0, ToLowerFirstChar(property.Key) + " ") : queryString.Insert(0, ToLowerFirstChar(property.Key));
                 }
                 queryString = "{{" + $"{queryString}" + "}}";
             }
@@ -142,9 +205,17 @@ namespace Xablu.WebApiClient.Services.GraphQL
 
         private string FormatQuery(string query, string[] optionalParameters)
         {
-            var formattedString = (string.Format(query, optionalParameters)).ToLower();
+            var formattedString = (string.Format(query, optionalParameters));
 
-            return formattedString.ToLower();
+            return formattedString;
+        }
+
+        private string ToLowerFirstChar(string input)
+        {
+            string newString = input;
+            if (!string.IsNullOrEmpty(newString) && char.IsUpper(newString[0]))
+                newString = char.ToLower(newString[0]) + newString.Substring(1);
+            return newString;
         }
     }
 }

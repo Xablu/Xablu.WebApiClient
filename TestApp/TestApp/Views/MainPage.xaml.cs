@@ -44,12 +44,16 @@ namespace TestApp.Views
 
 
             var graphqlTest = new GraphQLService("https://api.github.com/graphql", null);
-            graphqlTest.Client.DefaultRequestHeaders.Add("User-Agent", "LukasThijs");
+            graphqlTest.Client.DefaultRequestHeaders.Add("User-Agent", "");
             graphqlTest.Client.DefaultRequestHeaders.Add("Authorization", "Bearer ");
 
             var responseModel = new UserResponseModel() { User = new User() };
             var request = new Request<UserResponseModel>(null, responseModel, new[] { "(login: LukasThijs)" });
-            var response = await graphqlTest.Client.SendQueryAsync(request);
+
+
+            var result3 = await graphqlTest.Client.SendQueryAsync(request);
+            var result = await request.GetMutlipleResults(new[] { "createdAt" }, graphqlTest);
+
 
         }
 
