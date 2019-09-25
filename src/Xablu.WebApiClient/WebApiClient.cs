@@ -32,7 +32,7 @@ namespace Xablu.WebApiClient
 
         public async Task Call(Func<T, Task> operation, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout)
         {
-            var service = GetServiceByPriority(priority);
+            var service = _refitService.GetByPriority(priority);
 
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
@@ -46,7 +46,7 @@ namespace Xablu.WebApiClient
 
         public async Task<TResult> Call<TResult>(Func<T, Task<TResult>> operation, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout)
         {
-            var service = GetServiceByPriority(priority);
+            var service = _refitService.GetByPriority(priority);
 
             var policy = GetWrappedPolicy<TResult>(retryCount, shouldRetry, timeout);
 
@@ -68,17 +68,8 @@ namespace Xablu.WebApiClient
             return Call<TResult>(operation, options.Priority, options.RetryCount, options.ShouldRetry, options.Timeout);
         }
 
-        private T GetServiceByPriority(Priority priority)
         {
-            switch(priority)
             {
-                case Priority.Background:
-                    return _refitService.Background;
-                case Priority.Speculative:
-                    return _refitService.Speculative;
-                case Priority.UserInitiated:
-                default:
-                    return _refitService.UserInitiated;
             }
         }
 

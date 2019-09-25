@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using Fusillade;
 using Refit;
@@ -7,22 +8,19 @@ using Xablu.WebApiClient.Logging;
 namespace Xablu.WebApiClient.Client
 {
     public class RefitService<T> : IRefitService<T>
+        where T : class
     {
         private static readonly ILog Logger = LogProvider.For<RefitService<T>>();
-
-        private readonly Func<DelegatingHandler> _delegatingHandler;
-
+         
         private readonly Lazy<T> _background;
         private readonly Lazy<T> _userInitiated;
         private readonly Lazy<T> _speculative;
 
-        public RefitService(string apiBaseAddress, bool autoRedirectRequests, Func<DelegatingHandler> delegatingHandler = null)
+        public RefitService(string apiBaseAddress, bool autoRedirectRequests, Func<DelegatingHandler> delegatingHandler, IDictionary<string, string> defaultHeaders)
         {
             if (string.IsNullOrEmpty(apiBaseAddress))
                 throw new ArgumentNullException(nameof(apiBaseAddress));
-
-            _delegatingHandler = delegatingHandler;
-
+             
             if (Logger.IsTraceEnabled())
             {
                 Logger.Trace($"Base url set to: {apiBaseAddress} and delegatingHandler: {delegatingHandler != null}");
@@ -32,9 +30,9 @@ namespace Xablu.WebApiClient.Client
             {
                 HttpMessageHandler handler;
 
-                if (_delegatingHandler != null)
+                if (delegatingHandler != null)
                 {
-                    var delegatingHandlerInstance = _delegatingHandler.Invoke();
+                    var delegatingHandlerInstance = delegatingHandler.Invoke();
                     delegatingHandlerInstance.InnerHandler = messageHandler;
                     handler = delegatingHandlerInstance; 
                 }
@@ -50,6 +48,14 @@ namespace Xablu.WebApiClient.Client
                 {
                     BaseAddress = new Uri(apiBaseAddress)
                 };
+
+                if (defaultHeaders != default)
+                {
+                    foreach(var header in defaultHeaders)
+                    {
+                        client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                    }
+                }
 
                 return RestService.For<T>(client);
             };
@@ -74,10 +80,18 @@ namespace Xablu.WebApiClient.Client
             }
         }
 
-        public T Background => _background.Value;
-
-        public T UserInitiated => _userInitiated.Value;
-
-        public T Speculative => _speculative.Value;
+        public T GetByPriority(Enums.Priority priority)
+        {
+            switch (priority)
+            {
+                case Enums.Priority.Background:
+                    return _background.Value;
+                case Enums.Priority.Speculative:
+                    return _speculative.Value;
+                case Enums.Priority.UserInitiated:
+                default:
+                    return _userInitiated.Value;
+            }
+        } 
     }
 }
