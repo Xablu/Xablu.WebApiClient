@@ -1,6 +1,8 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Xablu.WebApiClient.Enums;
+using Xablu.WebApiClient.Services.GraphQL;
 
 namespace Xablu.WebApiClient
 {
@@ -14,5 +16,11 @@ namespace Xablu.WebApiClient
 
         Task Call(Func<T, Task> operation, RequestOptions options);
         Task<TResult> Call<TResult>(Func<T, Task<TResult>> operation, RequestOptions options);
+
+        Task SendQueryAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default(CancellationToken))
+            where TModel : class;
+
+        Task SendMutationAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default(CancellationToken))
+            where TModel : class;
     }
 }
