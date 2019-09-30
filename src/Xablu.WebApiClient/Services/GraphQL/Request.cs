@@ -104,16 +104,23 @@ namespace Xablu.WebApiClient.Services.GraphQL
             if (hasAttribute)
             {
 
-                var isExclusive = !string.IsNullOrEmpty((Attribute.GetCustomAttribute(property, typeof(QueryParameterAttribute)) as QueryParameterAttribute)?.ExclusiveWith);
+                var queryParameter = (Attribute.GetCustomAttribute(property, typeof(QueryParameterAttribute)) as QueryParameterAttribute);
 
-                if (!isExclusive)
+                if (string.IsNullOrEmpty(queryParameter?.ExclusiveWith))
                 {
-                    var queryName = (Attribute.GetCustomAttribute(property, typeof(NameOfItemAttribute)) as NameOfItemAttribute)?.Values[0];
-                    var query = !string.IsNullOrEmpty(queryName) ? $"{property.Name}: {queryName}" : $"{property.Name}" + $"{{{attributeNumber.ToString()}}}";
+                    var propertyExists = propDict.ContainsKey(queryParameter.ExclusiveWith);
 
-                    propDict.Add(query, null);
-                    attributeNumber++;
+                    if (propertyExists)
+                    {
+                        propDict.Remove(queryParameter.ExclusiveWith);
+                    }
                 }
+
+                var queryName = (Attribute.GetCustomAttribute(property, typeof(NameOfItemAttribute)) as NameOfItemAttribute)?.Values[0];
+                var query = !string.IsNullOrEmpty(queryName) ? $"{property.Name}: {queryName}" : $"{property.Name}" + $"{{{attributeNumber.ToString()}}}";
+
+                propDict.Add(query, null);
+                attributeNumber++;
             }
             else
             {
