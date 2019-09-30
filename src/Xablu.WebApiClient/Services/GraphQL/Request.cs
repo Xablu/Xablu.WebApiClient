@@ -2,10 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Web;
 using GraphQL.Common.Request;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Xablu.WebApiClient.Attributes;
 
 namespace Xablu.WebApiClient.Services.GraphQL
@@ -82,16 +79,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
                 var propType = property.PropertyType;
                 string propName = property.Name;
 
-                var hasAttribute = Attribute.IsDefined(property, typeof(QueryParameter));
-                if (hasAttribute)
-                {
-                    propDict.Add($"{property.Name}" + $"{{{attributeNumber.ToString()}}}", null);
-                    attributeNumber++;
-                }
-                else
-                {
-                    propDict.Add(property.Name, null);
-                }
+                SetDictionary(property, propDict);
 
                 if (propType.IsClass)
                 {
@@ -109,6 +97,37 @@ namespace Xablu.WebApiClient.Services.GraphQL
             }
         }
 
+        private void SetDictionary(PropertyInfo property, Dictionary<string, object> propDict)
+        {
+            var hasAttribute = Attribute.IsDefined(property, typeof(QueryParameterAttribute)) || Attribute.IsDefined(property, typeof(NameOfItemAttribute));
+
+            if (hasAttribute)
+            {
+
+                var queryParameter = (Attribute.GetCustomAttribute(property, typeof(QueryParameterAttribute)) as QueryParameterAttribute);
+
+                if (string.IsNullOrEmpty(queryParameter?.ExclusiveWith))
+                {
+                    var propertyExists = propDict.ContainsKey(queryParameter.ExclusiveWith);
+
+                    if (propertyExists)
+                    {
+                        propDict.Remove(queryParameter.ExclusiveWith);
+                    }
+                }
+
+                var queryName = (Attribute.GetCustomAttribute(property, typeof(NameOfItemAttribute)) as NameOfItemAttribute)?.Values[0];
+                var query = !string.IsNullOrEmpty(queryName) ? $"{property.Name}: {queryName}" : $"{property.Name}" + $"{{{attributeNumber.ToString()}}}";
+
+                propDict.Add(query, null);
+                attributeNumber++;
+            }
+            else
+            {
+                propDict.Add(property.Name, null);
+            }
+        }
+
         private string QueryBuilder()
         {
             string queryString = "";
@@ -117,7 +136,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
             {
                 foreach (KeyValuePair<string, object> property in propertyDictonary.Reverse())
                 {
-                    queryString = queryString.Any() ? queryString = queryString.Insert(0, property.Key.ToLower() + " ") : queryString.Insert(0, property.Key.ToLower());
+                    queryString = queryString.Any() ? queryString = queryString.Insert(0, ToLowerFirstChar(property.Key) + " ") : queryString.Insert(0, ToLowerFirstChar(property.Key));
                 }
                 queryString = "{{" + $"{queryString}" + "}}";
             }
@@ -126,9 +145,17 @@ namespace Xablu.WebApiClient.Services.GraphQL
 
         private string FormatQuery(string query, string[] optionalParameters)
         {
-            var formattedString = (string.Format(query, optionalParameters)).ToLower();
+            var formattedString = (string.Format(query, optionalParameters));
 
-            return formattedString.ToLower();
+            return formattedString;
+        }
+
+        private string ToLowerFirstChar(string input)
+        {
+            string newString = input;
+            if (!string.IsNullOrEmpty(newString) && char.IsUpper(newString[0]))
+                newString = char.ToLower(newString[0]) + newString.Substring(1);
+            return newString;
         }
     }
 }
