@@ -6,9 +6,12 @@ namespace TestApp.Models
 {
     public class UserResponseModel
     {
+        [JsonProperty("users")]
+
+        public System.Collections.Generic.List<User> Users { get; set; }
 
         [JsonProperty("user")]
-        [QueryParameter]
+        [QueryParameter(nameof(Users))]
         public User User { get; set; }
     }
 
@@ -23,6 +26,7 @@ namespace TestApp.Models
 
         [JsonProperty("followers")]
         public Followers Followers { get; set; }
+
     }
 
     public class Followers

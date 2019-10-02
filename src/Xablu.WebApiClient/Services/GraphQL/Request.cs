@@ -6,14 +6,17 @@ using System.Threading.Tasks;
 using GraphQL.Common.Request;
 using Newtonsoft.Json.Linq;
 using Xablu.WebApiClient.Attributes;
+using Xablu.WebApiClient.Enums;
 
 namespace Xablu.WebApiClient.Services.GraphQL
 {
     public class Request<T> : GraphQLRequest
         where T : class
     {
-        private List<Dictionary<string, object>> PropertyDictList = new List<Dictionary<string, object>>();
+        private List<Dictionary<string, object>> _propertyDictList = new List<Dictionary<string, object>>();
+        private List<string> _exclusiveWithValues = new List<string>();
         private GraphQLService _service;
+
 
         private int attributeNumber;
 
@@ -47,7 +50,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
             }
         }
 
-        public async Task<List<string>> GetMutlipleResults(string[] values, GraphQLService service)
+        public async Task<List<string>> GetMutlipleResults(string[] values, GraphQLService service, Priority priority)
         {
             var resultList = new List<string>();
             if (service != null)
@@ -56,7 +59,8 @@ namespace Xablu.WebApiClient.Services.GraphQL
 
                 foreach (var valueName in values)
                 {
-                    var result = await _service.Client.SendQueryAsync(GraphQLQuery).ConfigureAwait(false);
+
+                    var result = await _service.GetByPriority(priority).SendQueryAsync(GraphQLQuery).ConfigureAwait(false);
                     if (result.Data != null)
                     {
 
@@ -121,7 +125,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
             return result;
         }
 
-        private void GetProperties(Type type, bool hasValue = false, object t = null)
+        private void GetProperties(Type type, object parentType = null)
         {
 
             var propsList = new List<PropertyInfo>();
@@ -144,47 +148,91 @@ namespace Xablu.WebApiClient.Services.GraphQL
             foreach (PropertyInfo property in propsList)
             {
                 var propType = property.PropertyType;
+                var parent = parentType ?? property;
                 string propName = property.Name;
 
-                SetDictionary(property, propDict);
+                SetDictionary(property, propDict, parent);
 
                 if (propType.IsClass)
                 {
                     var hasProperties = propType.GetProperties() != null && propType.GetProperties().Length > 0;
                     if (hasProperties)
                     {
-                        GetProperties(propType, hasValue, t);
+                        GetProperties(propType, parent);
                     }
                 }
             }
 
             if (propDict.Any())
             {
-                PropertyDictList.Add(propDict);
+                _propertyDictList.Add(propDict);
+            }
+
+            RemoveExcluded();
+
+        }
+
+        private void RemoveExcluded()
+        {
+            if (_exclusiveWithValues.Any())
+            {
+                for (var i = _propertyDictList.Count - 1; i >= 0; i--)
+                {
+                    for (var p = _propertyDictList[i].Count - 1; p >= 0; p--)
+                    {
+                        var valuePair = _propertyDictList[i].ElementAt(p);
+                        var valueParentType = valuePair.Value as PropertyInfo;
+                        if (valueParentType != null)
+                        {
+                            var test = _exclusiveWithValues.Any(s => s.Equals(valueParentType.Name, StringComparison.OrdinalIgnoreCase));
+                            if (test)
+                            {
+                                _propertyDictList[i].Remove(valuePair.Key);
+                            }
+                        }
+                    }
+                }
+                _propertyDictList.RemoveAll(p => p.Count == 0);
+                // this does not work sadly
+                //_propertyDictList.RemoveAll(dict =>
+                //{
+                //    bool result = false;
+                //    foreach (var item in dict.Values)
+                //    {
+                //        var parentType = item as PropertyInfo;
+                //        if (parentType != null)
+                //        {
+                //            return result = _exclusiveWithValues.Any(c => c.Equals(parentType.Name, StringComparison.OrdinalIgnoreCase));
+                //        }
+                //    }
+                //    return result;
+                //});
             }
         }
 
-        private void SetDictionary(PropertyInfo property, Dictionary<string, object> propDict)
+        private void SetDictionary(PropertyInfo property, Dictionary<string, object> propDict, object parentType)
         {
-            var hasAttribute = Attribute.IsDefined(property, typeof(QueryParameter)) || Attribute.IsDefined(property, typeof(QueryName));
+            var hasAttribute = Attribute.IsDefined(property, typeof(QueryParameterAttribute)) || Attribute.IsDefined(property, typeof(NameOfItemAttribute));
 
             if (hasAttribute)
             {
 
-                var isExclusive = !string.IsNullOrEmpty((Attribute.GetCustomAttribute(property, typeof(QueryParameter)) as QueryParameter)?.ExclusiveWith);
+                var queryParameter = (Attribute.GetCustomAttribute(property, typeof(QueryParameterAttribute)) as QueryParameterAttribute);
 
-                if (!isExclusive)
+                if (!string.IsNullOrEmpty(queryParameter?.ExclusiveWith))
                 {
-                    var queryName = (Attribute.GetCustomAttribute(property, typeof(QueryName)) as QueryName)?.Values[0];
-                    var query = !string.IsNullOrEmpty(queryName) ? $"{property.Name}: {queryName}" : $"{property.Name}" + $"{{{attributeNumber.ToString()}}}";
-
-                    propDict.Add(query, null);
-                    attributeNumber++;
+                    _exclusiveWithValues.Add(queryParameter.ExclusiveWith);
                 }
+
+                var queryName = (Attribute.GetCustomAttribute(property, typeof(NameOfItemAttribute)) as NameOfItemAttribute)?.Values[0];
+                var query = !string.IsNullOrEmpty(queryName) ? $"{property.Name}: {queryName}" : $"{property.Name}" + $"{{{attributeNumber.ToString()}}}";
+
+                propDict.Add(query, parentType);
+                attributeNumber++;
             }
             else
             {
-                propDict.Add(property.Name, null);
+                propDict.Add(property.Name, parentType);
             }
         }
 
@@ -192,7 +240,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
         {
             string queryString = "";
 
-            foreach (Dictionary<string, object> propertyDictonary in PropertyDictList)
+            foreach (Dictionary<string, object> propertyDictonary in _propertyDictList)
             {
                 foreach (KeyValuePair<string, object> property in propertyDictonary.Reverse())
                 {

@@ -1,61 +1,72 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Threading.Tasks;
+using Fusillade;
 using GraphQL.Client.Http;
-using GraphQL.Common.Request;
 
 namespace Xablu.WebApiClient.Services.GraphQL
 {
-    public class GraphQLService
+    public class GraphQLService : IGraphQLService
     {
-        private GraphQLHttpClientOptions _graphQLClientOptions;
-        private Dictionary<string, string> _headers;
+        private readonly Lazy<GraphQLHttpClient> _background;
+        private readonly Lazy<GraphQLHttpClient> _userInitiated;
+        private readonly Lazy<GraphQLHttpClient> _speculative;
 
-        public GraphQLService(string baseUrl = "", Func<DelegatingHandler> delegatingHandler = null, Dictionary<string, string> headers = null)
+        public string BaseUrl { get; private set; }
+
+        public GraphQLService(string apiBaseAddress, bool autoRedirectRequests, Func<DelegatingHandler> delegatingHandler, IDictionary<string, string> defaultHeaders)
         {
-            if (delegatingHandler != null)
+            BaseUrl = apiBaseAddress;
+
+            Func<HttpMessageHandler, GraphQLHttpClient> createClient = messageHandler =>
             {
-                _graphQLClientOptions = new GraphQLHttpClientOptions
+                HttpMessageHandler handler;
+
+                if (delegatingHandler != null)
                 {
-                    HttpMessageHandler = delegatingHandler?.Invoke()
-                };
-            }
-            BaseURL = baseUrl;
-            Headers = headers;
-
-        }
-
-        public GraphQLHttpClient Client { get; set; }
-
-        public string BaseURL { get; set; }
-
-        public Dictionary<string, string> Headers
-        {
-            get { return _headers; }
-            set
-            {
-                _headers = value;
-                InitClient(BaseURL, value);
-            }
-        }
-
-
-        private void InitClient(string baseUrl, Dictionary<string, string> headers = null)
-        {
-            Client = new GraphQLHttpClient(baseUrl);
-
-            if (_graphQLClientOptions != null)
-            {
-                Client.Options = _graphQLClientOptions;
-            }
-
-            if (headers != null)
-            {
-                foreach (KeyValuePair<string, string> header in headers)
-                {
-                    Client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                    var delegatingHandlerInstance = delegatingHandler.Invoke();
+                    delegatingHandlerInstance.InnerHandler = messageHandler;
+                    handler = delegatingHandlerInstance;
                 }
+                else
+                {
+                    handler = messageHandler;
+                }
+
+                // note: the string parameter is just a placeholder here
+                var client = new GraphQLHttpClient(apiBaseAddress);
+
+                client.Options = new GraphQLHttpClientOptions { HttpMessageHandler = handler };
+
+                if (defaultHeaders != default)
+                {
+                    foreach (var header in defaultHeaders)
+                    {
+                        client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                    }
+                }
+
+                return client;
+            };
+
+            _background = new Lazy<GraphQLHttpClient>(() => createClient(NetCache.Background));
+
+            _userInitiated = new Lazy<GraphQLHttpClient>(() => createClient(NetCache.UserInitiated));
+
+            _speculative = new Lazy<GraphQLHttpClient>(() => createClient(NetCache.Speculative));
+        }
+
+        public GraphQLHttpClient GetByPriority(Enums.Priority priority)
+        {
+            switch (priority)
+            {
+                case Enums.Priority.Background:
+                    return _background.Value;
+                case Enums.Priority.Speculative:
+                    return _speculative.Value;
+                case Enums.Priority.UserInitiated:
+                default:
+                    return _userInitiated.Value;
             }
         }
     }
