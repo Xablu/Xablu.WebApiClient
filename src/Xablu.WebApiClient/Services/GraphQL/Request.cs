@@ -20,27 +20,24 @@ namespace Xablu.WebApiClient.Services.GraphQL
 
         private int attributeNumber;
 
-        public Request(string query = "", T model = default, string[] optionalParameters = null)
+        public Request(string query = "", string[] optionalParameters = null)
         {
             OptionalParameters = optionalParameters;
-            Query = query;
-            ResponseModel = model;
+            Query = query; 
 
-            CreateQuery(model);
+            CreateQuery();
         }
 
         public string GraphQLQuery { get; set; }
-
-        public T ResponseModel { get; set; }
-
+         
         public string[] OptionalParameters { get; set; }
 
 
-        public void CreateQuery(T model)
+        public void CreateQuery()
         {
-            if (model != null)
+            if (string.IsNullOrEmpty(Query))
             {
-                var queryString = GetQuery(ResponseModel);
+                var queryString = GetQuery();
                 GraphQLQuery = queryString;
                 Query = GraphQLQuery;
             }
@@ -114,9 +111,9 @@ namespace Xablu.WebApiClient.Services.GraphQL
             return resultValue?.ToString();
         }
 
-        private string GetQuery(T obj)
+        private string GetQuery()
         {
-            GetProperties(obj.GetType());
+            GetProperties(typeof(T));
 
             var unformattedQuery = QueryBuilder();
 

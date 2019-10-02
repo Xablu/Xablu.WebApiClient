@@ -11,7 +11,7 @@ namespace TestApp.Models
         public System.Collections.Generic.List<User> Users { get; set; }
 
         [JsonProperty("user")]
-        [QueryParameter(nameof(Users))]
+        [QueryParameter(exclusiveWith: nameof(Users))]
         public User User { get; set; }
     }
 
