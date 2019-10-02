@@ -6,8 +6,7 @@ namespace TestApp.Models
 {
     public class UserResponseModel
     {
-        [JsonProperty("users")]
-
+        [JsonProperty("users")] 
         public System.Collections.Generic.List<User> Users { get; set; }
 
         [JsonProperty("user")]

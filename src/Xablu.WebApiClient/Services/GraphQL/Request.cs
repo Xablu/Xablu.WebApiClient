@@ -113,7 +113,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
 
         private string GetQuery()
         {
-            GetProperties(typeof(T));
+            LoadProperties(typeof(T));
 
             var unformattedQuery = QueryBuilder();
 
@@ -122,9 +122,8 @@ namespace Xablu.WebApiClient.Services.GraphQL
             return result;
         }
 
-        private void GetProperties(Type type, object parentType = null)
+        private void LoadProperties(Type type, object parentType = null)
         {
-
             var propsList = new List<PropertyInfo>();
             var baseType = type;
             var propDict = new Dictionary<string, object>();
@@ -136,11 +135,11 @@ namespace Xablu.WebApiClient.Services.GraphQL
                                                                 p.CanRead && p.CanWrite &&
                                                                 (p.GetMethod != null) && (p.SetMethod != null) &&
                                                                 (p.GetMethod.IsPublic && p.SetMethod.IsPublic) &&
-                                                                (!p.GetMethod.IsStatic) && (!p.SetMethod.IsStatic)).ToList();
+                                                                (!p.GetMethod.IsStatic) && (!p.SetMethod.IsStatic))
+                                                          .ToList();
                 propsList.AddRange(newProps);
                 baseType = typeInfo.BaseType;
             }
-
 
             foreach (PropertyInfo property in propsList)
             {
@@ -155,7 +154,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
                     var hasProperties = propType.GetProperties() != null && propType.GetProperties().Length > 0;
                     if (hasProperties)
                     {
-                        GetProperties(propType, parent);
+                        LoadProperties(propType, parent);
                     }
                 }
             }
@@ -166,7 +165,6 @@ namespace Xablu.WebApiClient.Services.GraphQL
             }
 
             RemoveExcluded();
-
         }
 
         private void RemoveExcluded()
@@ -241,7 +239,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
             {
                 foreach (KeyValuePair<string, object> property in propertyDictonary.Reverse())
                 {
-                    queryString = queryString.Any() ? queryString = queryString.Insert(0, ToLowerFirstChar(property.Key) + " ") : queryString.Insert(0, ToLowerFirstChar(property.Key));
+                    queryString = queryString.Any() ? queryString.Insert(0, ToLowerFirstChar(property.Key) + " ") : queryString.Insert(0, ToLowerFirstChar(property.Key));
                 }
                 queryString = "{{" + $"{queryString}" + "}}";
             }
