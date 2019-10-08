@@ -2,28 +2,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-using GraphQL.Common.Request;
-using Newtonsoft.Json.Linq;
 using Xablu.WebApiClient.Attributes;
-using Xablu.WebApiClient.Enums;
 
 namespace Xablu.WebApiClient.Services.GraphQL
 {
-    public class Request<T> : GraphQLRequest
+    public class Request<T> : BaseRequest
         where T : class
     {
-        private List<Dictionary<string, PropertyDetail>> _propertyDictList = new List<Dictionary<string, PropertyDetail>>();
+        private List<List<PropertyDetail>> _propertyListList = new List<List<PropertyDetail>>();
         private List<string> _exclusiveWithValues = new List<string>();
-        private GraphQLService _service;
 
 
         private int attributeNumber;
 
-        public Request(string query = "", string[] optionalParameters = null)
+        public Request(params string[] optionalParameters)
         {
             OptionalParameters = optionalParameters;
-            Query = query;
+            // Query = query;
 
             CreateQuery();
         }
@@ -31,7 +26,6 @@ namespace Xablu.WebApiClient.Services.GraphQL
         public string GraphQLQuery { get; set; }
 
         public string[] OptionalParameters { get; set; }
-
 
         public void CreateQuery()
         {
@@ -47,69 +41,40 @@ namespace Xablu.WebApiClient.Services.GraphQL
             }
         }
 
-        public async Task<List<string>> GetMutlipleResults(string[] values, GraphQLService service, Priority priority)
-        {
-            var resultList = new List<string>();
-            if (service != null)
-            {
-                _service = service;
 
-                foreach (var valueName in values)
-                {
+        //private string GetJValue(JObject jObject, string valueName)
+        //{
+        //    string resultValue = "";
 
-                    var result = await _service.GetByPriority(priority).SendQueryAsync(GraphQLQuery).ConfigureAwait(false);
-                    if (result.Data != null)
-                    {
+        //    if (string.IsNullOrEmpty(resultValue))
+        //    {
+        //        foreach (var item in jObject.Properties())
+        //        {
+        //            if (string.Equals(item.Name.ToLower(), valueName.ToLower()))
+        //            {
+        //                resultValue = item.HasValues ? item.Value.ToString() : null;
+        //                break;
+        //            }
 
-                        string resultValue;
-                        var jObject = result.Data as JObject;
-                        if (jObject != null)
-                        {
-                            resultValue = GetJValue(jObject, valueName);
-                            if (!string.IsNullOrEmpty(resultValue))
-                            {
-                                resultList.Add(resultValue);
-                            }
-                        }
-                    }
-                }
-            }
-            return resultList;
-        }
-
-        private string GetJValue(JObject jObject, string valueName)
-        {
-            string resultValue = "";
-
-            if (string.IsNullOrEmpty(resultValue))
-            {
-                foreach (var item in jObject.Properties())
-                {
-                    if (string.Equals(item.Name.ToLower(), valueName.ToLower()))
-                    {
-                        resultValue = item.HasValues ? item.Value.ToString() : null;
-                        break;
-                    }
-
-                    if (string.IsNullOrEmpty(resultValue))
-                    {
-                        var hasChildren = item.Children().Any();
-                        if (hasChildren)
-                        {
-                            foreach (var child in item.Children())
-                            {
-                                var newObject = child as JObject;
-                                if (newObject != null && string.IsNullOrEmpty(resultValue))
-                                {
-                                    resultValue = GetJValue(newObject, valueName);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return resultValue?.ToString();
-        }
+        //            if (string.IsNullOrEmpty(resultValue))
+        //            {
+        //                var hasChildren = item.Children().Any();
+        //                if (hasChildren)
+        //                {
+        //                    foreach (var child in item.Children())
+        //                    {
+        //                        var newObject = child as JObject;
+        //                        if (newObject != null && string.IsNullOrEmpty(resultValue))
+        //                        {
+        //                            resultValue = GetJValue(newObject, valueName);
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
+        //    return resultValue?.ToString();
+        //}
 
         private string GetQuery()
         {
@@ -122,16 +87,16 @@ namespace Xablu.WebApiClient.Services.GraphQL
             return result;
         }
 
-        private void LoadProperties(Type type, PropertyDetail propertyDetail = null)
+        private void LoadProperties(Type type)
         {
             var propsList = new List<PropertyInfo>();
             var baseType = type;
-            var propDict = new Dictionary<string, PropertyDetail>();
+            var propList = new List<PropertyDetail>();
 
             while (baseType != typeof(object))
             {
                 var typeInfo = baseType.GetTypeInfo();
-                var newProps = typeInfo.DeclaredProperties.Where(p => !propDict.ContainsKey(p.Name) &&
+                var newProps = typeInfo.DeclaredProperties.Where(p => !propList.Any(prop => prop.PropertyName.Equals(p.Name)) &&
                                                                 p.CanRead && p.CanWrite &&
                                                                 (p.GetMethod != null) && (p.SetMethod != null) &&
                                                                 (p.GetMethod.IsPublic && p.SetMethod.IsPublic) &&
@@ -146,100 +111,89 @@ namespace Xablu.WebApiClient.Services.GraphQL
             foreach (PropertyInfo property in propsList)
             {
                 var propType = property.PropertyType;
-                var propDetail = propertyDetail ?? new PropertyDetail() { Tag = property.Name, ParentName = property.DeclaringType.Name };
+                var propDetail = new PropertyDetail() { FieldName = property.Name, PropertyName = property.Name, ParentName = property.DeclaringType.Name };
 
-                SetDictionary(property, propDict, propDetail);
+                PopulatePropertyDetailsByProperty(property, propList, propDetail);
 
                 if (propType.IsClass)
                 {
                     var hasProperties = propType.GetProperties() != null && propType.GetProperties().Length > 0;
                     if (hasProperties)
                     {
-                        LoadProperties(propType, propDetail);
+                        LoadProperties(propType);
                     }
                 }
             }
 
-            if (propDict.Any())
+            if (propList.Any())
             {
-                _propertyDictList.Add(propDict);
+                _propertyListList.Add(propList);
             }
 
-            RemoveExcluded();
+            // RemoveExcluded();
         }
 
-        private void RemoveExcluded()
+        //private void RemoveExcluded()
+        //{
+        //    if (_exclusiveWithValues.Any())
+        //    {
+        //        for (var i = _propertyDictList.Count - 1; i >= 0; i--)
+        //        {
+        //            for (var p = _propertyDictList[i].Count - 1; p >= 0; p--)
+        //            {
+        //                var valuePair = _propertyDictList[i].ElementAt(p);
+        //                var tag = valuePair.Value?.PropertyName;
+        //                var parentName = valuePair.Value?.ParentName;
+        //                if (!string.IsNullOrEmpty(tag))
+        //                {
+        //                    var result = _exclusiveWithValues.Any(s => s.Equals(tag, StringComparison.OrdinalIgnoreCase) || s.Equals(parentName, StringComparison.OrdinalIgnoreCase));
+        //                    if (result)
+        //                    {
+        //                        _propertyDictList[i].Remove(valuePair.Key);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        _propertyDictList.RemoveAll(p => p.Count == 0);
+
+        //    }
+        //}
+
+        private void PopulatePropertyDetailsByProperty(PropertyInfo property, List<PropertyDetail> propertyList, PropertyDetail propertyDetail)
         {
-            if (_exclusiveWithValues.Any())
+
+
+            var queryName = Attribute.GetCustomAttribute(property, typeof(NameOfFieldAttribute)) as NameOfFieldAttribute;
+            string query = property.Name;
+
+            if (OptionalParameters != null && attributeNumber < OptionalParameters.Count())
             {
-                for (var i = _propertyDictList.Count - 1; i >= 0; i--)
-                {
-                    for (var p = _propertyDictList[i].Count - 1; p >= 0; p--)
-                    {
-                        var valuePair = _propertyDictList[i].ElementAt(p);
-                        var tag = valuePair.Value.Tag;
-                        if (!string.IsNullOrEmpty(tag))
-                        {
-                            var result = _exclusiveWithValues.Any(s => s.Equals(tag, StringComparison.OrdinalIgnoreCase));
-                            if (result)
-                            {
-                                _propertyDictList[i].Remove(valuePair.Key);
-                            }
-                        }
-                    }
-                }
-                _propertyDictList.RemoveAll(p => p.Count == 0);
-
+                query = !string.IsNullOrEmpty(queryName.NameOfField) ? $"{property.Name}" + $"{{{attributeNumber.ToString()}}}: {queryName.NameOfField}" : $"{property.Name}" + $"{{{attributeNumber.ToString()}}}";
+                attributeNumber++;
             }
-        }
 
-        private void SetDictionary(PropertyInfo property, Dictionary<string, PropertyDetail> propDict, PropertyDetail propertyDetail)
-        {
-            var hasAttribute = Attribute.IsDefined(property, typeof(QueryParameterAttribute)) || Attribute.IsDefined(property, typeof(NameOfItemAttribute));
-
-            if (hasAttribute)
+            if (queryName != null)
             {
-
-                var queryParameter = (Attribute.GetCustomAttribute(property, typeof(QueryParameterAttribute)) as QueryParameterAttribute);
-
-                if (!string.IsNullOrEmpty(queryParameter?.ExclusiveWith))
+                if (!string.IsNullOrEmpty(queryName.NameOfField))
                 {
-                    _exclusiveWithValues.Add(queryParameter.ExclusiveWith);
+                    query = $"{property.Name}: {queryName.NameOfField}";
                 }
-
-                var queryName = (Attribute.GetCustomAttribute(property, typeof(NameOfItemAttribute)) as NameOfItemAttribute)?.Values[0];
-                string query;
-
-                if (!string.IsNullOrEmpty(queryName))
-                {
-                    query = $"{property.Name}: {queryName}";
-                }
-                else if (OptionalParameters != null)
-                {
-                    query = $"{property.Name}" + $"{{{attributeNumber.ToString()}}}";
-                    attributeNumber++;
-                }
-                else
-                {
-                    query = $"{property.Name}";
-                }
-                propDict.Add(query, propertyDetail);
             }
-            else
-            {
-                propDict.Add(property.Name, propertyDetail);
-            }
+
+            propertyDetail.FieldName = query;
+            propertyList.Add(propertyDetail);
         }
 
         private string QueryBuilder()
         {
             string queryString = "";
 
-            foreach (Dictionary<string, PropertyDetail> propertyDictonary in _propertyDictList)
+            foreach (List<PropertyDetail> propertyList in _propertyListList)
             {
-                foreach (KeyValuePair<string, PropertyDetail> property in propertyDictonary.Reverse())
+                propertyList.Reverse();
+                foreach (PropertyDetail property in propertyList)
                 {
-                    queryString = queryString.Any() ? queryString.Insert(0, ToLowerFirstChar(property.Key) + " ") : queryString.Insert(0, ToLowerFirstChar(property.Key));
+                    queryString = queryString.Any() ? queryString.Insert(0, ToLowerFirstChar(property.FieldName) + " ") : queryString.Insert(0, ToLowerFirstChar(property.FieldName));
                 }
                 queryString = "{{" + $"{queryString}" + "}}";
             }

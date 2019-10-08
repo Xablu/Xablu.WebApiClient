@@ -3,6 +3,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Polly;
 using Polly.Wrap;
 using Xablu.WebApiClient.Attributes;
@@ -44,7 +46,7 @@ namespace Xablu.WebApiClient
 
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
-            if(Logger.IsTraceEnabled())
+            if (Logger.IsTraceEnabled())
             {
                 Logger.Trace($"Operation running with parameters: Priority: {priority}, retryCount: {retryCount}, has should retry condition: {shouldRetry != null}, timeout: {timeout}");
             }
@@ -76,22 +78,25 @@ namespace Xablu.WebApiClient
             return Call<TResult>(operation, options.Priority, options.RetryCount, options.ShouldRetry, options.Timeout);
         }
 
-        public async Task SendMutationAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default) where TModel : class
+        public async Task<TModel> SendMutationAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default)
+            where TModel : class, new()
         {
             var defaultOptions = GetDefaultOptions();
 
             var service = _graphQLService.GetByPriority(defaultOptions.Priority);
 
             var result = await service.SendMutationAsync(request, cancellationToken);
-
-            // this method should send the GraphQL query and return what's necessary
-            // please note the method signature should probably change
-            // at this level we should also query the GraphQL attribute to see what is the GraphQL endpoint to use
-
-            throw new NotImplementedException();
+            var resultData = result.Data as JObject;
+            if (resultData == null)
+            {
+                throw new InvalidCastException("Result is not a valid Json");
+            }
+            var model = JsonConvert.DeserializeObject<TModel>(resultData.ToString());
+            return model;
         }
 
-        public async Task SendQueryAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default) where TModel : class
+        public async Task<TModel> SendQueryAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default)
+            where TModel : class, new()
         {
             var defaultOptions = GetDefaultOptions();
 
@@ -100,12 +105,13 @@ namespace Xablu.WebApiClient
             service.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
 
             var result = await service.SendQueryAsync(request, cancellationToken);
-
-            // this method should send the GraphQL query and return what's necessary
-            // please note the method signature should probably change
-            // at this level we should also query the GraphQL attribute to see what is the GraphQL endpoint to use
-
-            throw new NotImplementedException();
+            var resultData = result.Data as JObject;
+            if (resultData == null)
+            {
+                throw new InvalidCastException("Result is not a valid Json");
+            }
+            var model = JsonConvert.DeserializeObject<TModel>(resultData.ToString());
+            return model;
         }
 
         private static AsyncPolicyWrap GetWrappedPolicy(int retryCount, Func<Exception, bool> shouldRetry, int timeout)

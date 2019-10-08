@@ -4,13 +4,16 @@ using Xablu.WebApiClient.Attributes;
 
 namespace TestApp.Models
 {
+    public class UsersResponseModel
+    {
+        [JsonProperty("users")]
+        public System.Collections.Generic.List<User> Users { get; set; }
+    }
+
     public class UserResponseModel
     {
-        [JsonProperty("users")] 
-        public System.Collections.Generic.List<User> Users { get; set; }
-
         [JsonProperty("user")]
-        [QueryParameter(exclusiveWith: nameof(Users))]
+        [NameOfField("Test")]
         public User User { get; set; }
     }
 

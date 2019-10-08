@@ -48,10 +48,10 @@ namespace TestApp.Views
             var webApiClient = WebApiClientFactory.Get<IGitHubApi>("https://api.github.com", false, () => new SampleHttpClientHandler(), defaultHeaders);
 
 
-            var requestForSingleUser = new Request<UserResponseModel>(null, new[] { "(login: LukasThijs)" });
-            
-            //var requestForUsersList = new Request<UserResponseModel>(null);
-              
+            var requestForSingleUser = new Request<UserResponseModel>(null, "(login: LukasThijs)");
+
+            var requestForUsersList = new Request<UsersResponseModel>();
+
             // TODO: Handle the result!
             await webApiClient.SendQueryAsync(requestForSingleUser);
         }

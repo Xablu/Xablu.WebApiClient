@@ -17,10 +17,10 @@ namespace Xablu.WebApiClient
         Task Call(Func<T, Task> operation, RequestOptions options);
         Task<TResult> Call<TResult>(Func<T, Task<TResult>> operation, RequestOptions options);
 
-        Task SendQueryAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default(CancellationToken))
-            where TModel : class;
+        Task<TModel> SendQueryAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default(CancellationToken))
+            where TModel : class, new();
 
-        Task SendMutationAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default(CancellationToken))
-            where TModel : class;
+        Task<TModel> SendMutationAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default(CancellationToken))
+            where TModel : class, new();
     }
 }
