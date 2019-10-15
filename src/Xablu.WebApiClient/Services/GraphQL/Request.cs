@@ -6,6 +6,14 @@ using Xablu.WebApiClient.Attributes;
 
 namespace Xablu.WebApiClient.Services.GraphQL
 {
+    public class Request : BaseRequest
+    {
+        public Request(string query)
+        {
+            Query = query;
+        }
+    }
+
     public class Request<T> : BaseRequest
         where T : class
     {
@@ -18,8 +26,6 @@ namespace Xablu.WebApiClient.Services.GraphQL
         public Request(params string[] optionalParameters)
         {
             OptionalParameters = optionalParameters;
-            // Query = query;
-
             CreateQuery();
         }
 
