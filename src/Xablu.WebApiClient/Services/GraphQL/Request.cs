@@ -10,6 +10,10 @@ namespace Xablu.WebApiClient.Services.GraphQL
     {
         public Request(string query)
         {
+            if (string.IsNullOrEmpty(query))
+            {
+                throw new ArgumentNullException(query, "Query specified is null, please pass a valid query.");
+            }
             Query = query;
         }
     }
@@ -211,7 +215,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
 
         private string FormatQuery(string query, string[] optionalParameters)
         {
-            var formattedString = (string.Format(query, optionalParameters));
+            var formattedString = string.Format(query, optionalParameters);
 
             return formattedString;
         }
