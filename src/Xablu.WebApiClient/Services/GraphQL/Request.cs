@@ -18,9 +18,6 @@ namespace Xablu.WebApiClient.Services.GraphQL
         where T : class
     {
         private List<List<PropertyDetail>> _propertyListList = new List<List<PropertyDetail>>();
-        private List<string> _exclusiveWithValues = new List<string>();
-
-
         private int attributeNumber;
 
         public Request(params string[] optionalParameters)
@@ -89,6 +86,11 @@ namespace Xablu.WebApiClient.Services.GraphQL
             var unformattedQuery = QueryBuilder();
 
             var result = OptionalParameters != null ? FormatQuery(unformattedQuery, OptionalParameters) : unformattedQuery;
+
+            if (string.IsNullOrEmpty(result))
+            {
+                throw new RequestException("no valid query");
+            }
 
             return result;
         }
