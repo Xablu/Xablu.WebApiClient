@@ -89,7 +89,8 @@ namespace Xablu.WebApiClient.Services.GraphQL
 
             if (string.IsNullOrEmpty(result))
             {
-                throw new RequestException("no valid query");
+                var errorMessage = string.IsNullOrEmpty(unformattedQuery) ? "No valid query. Something went wrong with building the query." : "No valid query. Something went wrong when formatting the query";
+                throw new RequestException(errorMessage);
             }
 
             return result;
