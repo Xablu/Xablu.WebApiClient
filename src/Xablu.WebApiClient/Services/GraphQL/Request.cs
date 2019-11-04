@@ -119,8 +119,6 @@ namespace Xablu.WebApiClient.Services.GraphQL
                 baseType = typeInfo.BaseType;
             }
 
-
-
             foreach (PropertyInfo property in propsList)
             {
                 var propType = property.PropertyType;
@@ -142,8 +140,6 @@ namespace Xablu.WebApiClient.Services.GraphQL
             {
                 _propertyListList.Add(propList);
             }
-
-            // RemoveExcluded();
         }
 
         //private void RemoveExcluded()

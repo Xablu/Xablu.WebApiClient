@@ -141,9 +141,7 @@ namespace Xablu.WebApiClient
                 var endpointAttribute = (GraphQLEndpointAttribute)attributes.First(a => a.GetType() == typeof(GraphQLEndpointAttribute));
                 return endpointAttribute.Path;
             }
-
-            //TODO: we should throw an exception here!
-            return string.Empty;
+            throw new RequestException("No endpoint found");
         }
 
         private RequestOptions GetDefaultOptions()
