@@ -1,11 +1,11 @@
 using System;
 namespace Xablu.WebApiClient.Attributes
 {
-    [AttributeUsage(AttributeTargets.All, AllowMultiple = false)]
-    public class NameOfItemAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    public class NameOfFieldAttribute : Attribute
     {
-        public NameOfItemAttribute(string[] values = null) => Values = values;
+        public NameOfFieldAttribute(string nameOfField = null) => NameOfField = nameOfField;
 
-        public string[] Values { get; }
+        public string NameOfField { get; }
     }
 }

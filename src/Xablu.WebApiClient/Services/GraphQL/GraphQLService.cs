@@ -37,7 +37,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
                 var client = new GraphQLHttpClient(apiBaseAddress);
 
                 client.Options = new GraphQLHttpClientOptions { HttpMessageHandler = handler };
-                
+
                 if (defaultHeaders != default)
                 {
                     foreach (var header in defaultHeaders)

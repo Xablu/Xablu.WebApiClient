@@ -4,11 +4,16 @@ using Xablu.WebApiClient.Attributes;
 
 namespace TestApp.Models
 {
+    public class UsersResponseModel
+    {
+        [JsonProperty("users")]
+        public System.Collections.Generic.List<User> Users { get; set; }
+    }
+
     public class UserResponseModel
     {
-
         [JsonProperty("user")]
-        [NameOfItemAttribute(new[] { "followers" })]
+        [NameOfField("Test")]
         public User User { get; set; }
     }
 
@@ -23,6 +28,7 @@ namespace TestApp.Models
 
         [JsonProperty("followers")]
         public Followers Followers { get; set; }
+
     }
 
     public class Followers
