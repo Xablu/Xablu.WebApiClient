@@ -78,15 +78,24 @@ namespace Xablu.WebApiClient
             return Call<TResult>(operation, options.Priority, options.RetryCount, options.ShouldRetry, options.Timeout);
         }
 
-        public async Task<TModel> SendMutationAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default)
+        public async Task<TModel> SendMutation<TModel>(Request<TModel> request, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
             where TModel : class, new()
         {
             var defaultOptions = GetDefaultOptions();
 
             var service = _graphQLService.GetByPriority(defaultOptions.Priority);
 
-            var result = await service.SendMutationAsync(request, cancellationToken);
-            var resultData = result.Data as JObject;
+            var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
+
+            var result = policy.ExecuteAsync(async () =>
+            {
+                var result = await service.SendMutationAsync(request, cancellationToken);
+                return result;
+            })?.Result;
+
+            //maybe throw null exception if result is null as well?
+
+            var resultData = result?.Data as JObject;
             if (resultData == null)
             {
                 throw new InvalidCastException("Result is not a valid Json");
@@ -95,7 +104,7 @@ namespace Xablu.WebApiClient
             return model;
         }
 
-        public async Task<TModel> SendQueryAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default)
+        public async Task<TModel> SendQueryAsync<TModel>(Request<TModel> request, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
             where TModel : class, new()
         {
             var defaultOptions = GetDefaultOptions();
@@ -104,8 +113,15 @@ namespace Xablu.WebApiClient
 
             service.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
 
-            var result = await service.SendQueryAsync(request, cancellationToken);
-            var resultData = result.Data as JObject;
+            var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
+
+            var result = policy.ExecuteAsync(async () =>
+            {
+                var result = await service.SendMutationAsync(request, cancellationToken);
+                return result;
+            })?.Result;
+
+            var resultData = result?.Data as JObject;
             if (resultData == null)
             {
                 throw new InvalidCastException("Result is not a valid Json");
