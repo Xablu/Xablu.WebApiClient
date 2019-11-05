@@ -78,7 +78,7 @@ namespace Xablu.WebApiClient
             return Call<TResult>(operation, options.Priority, options.RetryCount, options.ShouldRetry, options.Timeout);
         }
 
-        public async Task<TModel> SendMutation<TModel>(Request<TModel> request, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
+        public async Task<TModel> SendMutationAsync<TModel>(Request<TModel> request, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
             where TModel : class, new()
         {
             var defaultOptions = GetDefaultOptions();

@@ -53,7 +53,7 @@ namespace TestApp.Views
             var requestForUsersList = new Request<UsersResponseModel>();
 
             // TODO: Handle the result!
-            await webApiClient.SendQueryAsync(requestForSingleUser);
+            //  await webApiClient.SendQueryAsync(requestForSingleUser);
         }
 
 

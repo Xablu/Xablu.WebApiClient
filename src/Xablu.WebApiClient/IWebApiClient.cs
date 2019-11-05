@@ -20,7 +20,7 @@ namespace Xablu.WebApiClient
         Task<TModel> SendQueryAsync<TModel>(Request<TModel> request, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default(CancellationToken))
             where TModel : class, new();
 
-        Task<TModel> SendMutation<TModel>(Request<TModel> request, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default(CancellationToken))
+        Task<TModel> SendMutationAsync<TModel>(Request<TModel> request, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default(CancellationToken))
             where TModel : class, new();
     }
 }
