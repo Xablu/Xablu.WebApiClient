@@ -77,7 +77,7 @@ namespace Xablu.WebApiClient.Services.Rest
                 {
                     Logger.Trace("Disabling AutoRedirects");
                 }
-                internalClientHandler.AllowAutoRedirect = false;
+                internalClientHandler.AllowAutoRedirect = true;
             }
         }
 

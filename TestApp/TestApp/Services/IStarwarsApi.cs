@@ -7,10 +7,10 @@ namespace TestApp.Services
 {
     public interface IStarwarsApi
     {
-        [Get("/starships")]
-        Task GetTask();
+        [Get("/starships/")]
+        Task<string> GetTask();
 
-        [Get("/starships")]
+        [Get("/starships/")]
         Task<Models.StarWarsAPI.ApiResponse<List<Starships>>> GetStarships();
     }
 }

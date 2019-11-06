@@ -13,6 +13,7 @@ namespace TestConsoleApp
     {
         static IWebApiClient<IStarwarsApi> _webApiClient;
         static List<Starships> items = new List<Starships>();
+        string postResult;
 
         static void Main(string[] args)
         {
@@ -21,33 +22,33 @@ namespace TestConsoleApp
 
         static async Task MainAsync(string[] args)
         {
-            _webApiClient = WebApiClientFactory.Get<IStarwarsApi>("https://swapi.co/api", false, () => new SampleHttpClientHandler());
-            await ServiceMenu();
+            await CallMenu();
         }
 
-        static async Task ServiceMenu()
+        static async Task CallMenu()
         {
             Console.WriteLine("WebApiClient test console");
             Console.WriteLine("------------------------\n");
             Console.WriteLine("Type a number to choose the API service, and then press Enter");
             Console.WriteLine("\t1 - Refit");
             Console.WriteLine("\t2 - GraphQL");
+            Console.WriteLine("\t3 - Quit Program");
             Console.Write("Your option? ");
 
-            await CallMenu();
+            await ServiceMenu();
         }
-        static async Task CallMenu()
+
+        static async Task ServiceMenu()
         {
             switch (Console.ReadLine())
             {
                 case "1":
                     Console.WriteLine("Type a number to choose a randomised example Refitcall, and then press Enter");
                     Console.WriteLine("\t1 - GET");
-                    Console.WriteLine("\t2 - PUT");
                     Console.WriteLine("\t2 - POST");
-                    Console.WriteLine("\t2 - DELETE");
+                    Console.WriteLine("\t3 - AUTHENTICATE");
                     Console.Write("Your option? ");
-                    await PrintCall();
+                    await PrintRefitCall();
                     break;
                 case "2":
                     Console.WriteLine("Type a number to choose the randomised exmaple call, and then press Enter");
@@ -56,25 +57,49 @@ namespace TestConsoleApp
                     Console.WriteLine("\t2 - POST");
                     Console.WriteLine("\t2 - DELETE");
                     Console.Write("Your option? ");
-                    await PrintCall();
+                    await PrintGraphqlCall();
+                    break;
+                case "3":
+                    Environment.Exit(0);
                     break;
                 default:
-                    await ServiceMenu();
+                    await CallMenu();
                     break;
             }
         }
 
-        static async Task PrintCall()
+        static async Task PrintRefitCall()
         {
-            BaseViewModel model = new BaseViewModel();
             switch (Console.ReadLine())
             {
                 case "1":
                     Console.WriteLine("Wait for your result...");
                     try
                     {
-                        var items = await GetStarShipItemsAsync(true);
-                        Convert(items.ToString());
+                        var _items = await RefitExampleCalls.GetStarShipItemsAsync(true);
+                        items = _items as List<Starships>;
+                    }
+                    catch (ArgumentException aex)
+                    {
+                        Console.WriteLine($"Caught ArgumentException: {aex.Message}");
+                    }
+                    break;
+                case "2":
+                    Console.WriteLine("Wait for your result...");
+                    try
+                    {
+                        string postResult = await RefitExampleCalls.PostRawPostmanEcho(true);
+                    }
+                    catch (ArgumentException aex)
+                    {
+                        Console.WriteLine($"Caught ArgumentException: {aex.Message}");
+                    }
+                    break;
+                case "3":
+                    Console.WriteLine("Wait for your result...");
+                    try
+                    {
+                        string postResult = await RefitExampleCalls.AuthenticatePostmanEcho(true);
                     }
                     catch (ArgumentException aex)
                     {
@@ -82,41 +107,15 @@ namespace TestConsoleApp
                     }
                     break;
                 default:
-                    await ServiceMenu();
+                    await CallMenu();
                     break;
             }
+            await ServiceMenu();
         }
 
-        static async Task<IEnumerable<Starships>> GetStarShipItemsAsync(bool forceRefresh = false)
+        static async Task PrintGraphqlCall()
         {
-            await _webApiClient.Call(
-                    (service) => service.GetTask());
-
-            await _webApiClient.Call(
-                    (service) => service.GetTask(),
-                    Xablu.WebApiClient.Enums.Priority.UserInitiated,
-                    2,
-                    (ex) => true,
-                    60);
-
-            var result = await _webApiClient.Call<ApiResponse<List<Starships>>>(
-                    (service) => service.GetStarships(),
-                    Xablu.WebApiClient.Enums.Priority.UserInitiated,
-                    2,
-                    (ex) => true,
-                    60);
-
-            return await Task.FromResult(items);
-        }
-
-        static void Convert(string json)
-        {
-            JObject parsed = JObject.Parse(json);
-
-            foreach (var pair in parsed)
-            {
-                Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
-            }
+            await ServiceMenu();
         }
     }
 }
