@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -40,6 +39,17 @@ namespace Xablu.WebApiClient
             return Call<TResult>(operation, GetDefaultOptions());
         }
 
+
+        public Task Call(Func<T, Task> operation, RequestOptions options)
+        {
+            return Call(operation, options.Priority, options.RetryCount, options.ShouldRetry, options.Timeout);
+        }
+
+        public Task<TResult> Call<TResult>(Func<T, Task<TResult>> operation, RequestOptions options)
+        {
+            return Call<TResult>(operation, options.Priority, options.RetryCount, options.ShouldRetry, options.Timeout);
+        }
+
         public async Task Call(Func<T, Task> operation, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout)
         {
             var service = _refitService.GetByPriority(priority);
@@ -68,32 +78,26 @@ namespace Xablu.WebApiClient
             return await policy.ExecuteAsync(() => operation.Invoke(service));
         }
 
-        public Task Call(Func<T, Task> operation, RequestOptions options)
+        public Task SendQueryAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default)
+           where TModel : class, new()
         {
-            return Call(operation, options.Priority, options.RetryCount, options.ShouldRetry, options.Timeout);
+            return SendQueryAsync(request, GetDefaultOptions(), cancellationToken);
         }
 
-        public Task<TResult> Call<TResult>(Func<T, Task<TResult>> operation, RequestOptions options)
-        {
-            return Call<TResult>(operation, options.Priority, options.RetryCount, options.ShouldRetry, options.Timeout);
-        }
-
-        public async Task<TModel> SendMutationAsync<TModel>(Request<TModel> request, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
+        public Task<TModel> SendQueryAsync<TModel>(Request<TModel> request, RequestOptions options, CancellationToken cancellationToken = default)
             where TModel : class, new()
         {
-            var defaultOptions = GetDefaultOptions();
+            return SendQueryAsync(request, options.Priority, options.RetryCount, options.ShouldRetry, options.Timeout, cancellationToken);
+        }
 
-            var service = _graphQLService.GetByPriority(defaultOptions.Priority);
+        public async Task<TModel> SendQueryAsync<TModel>(Request<TModel> request, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
+            where TModel : class, new()
+        {
+            var service = _graphQLService.GetByPriority(priority);
+            service.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
 
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
-
-            var result = policy.ExecuteAsync(async () =>
-            {
-                var result = await service.SendMutationAsync(request, cancellationToken);
-                return result;
-            })?.Result;
-
-            //maybe throw null exception if result is null as well?
+            var result = await policy.ExecuteAsync(async () => await service.SendQueryAsync(request, cancellationToken));
 
             var resultData = result?.Data as JObject;
             if (resultData == null)
@@ -104,22 +108,26 @@ namespace Xablu.WebApiClient
             return model;
         }
 
-        public async Task<TModel> SendQueryAsync<TModel>(Request<TModel> request, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
+        public Task<TModel> SendMutationAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default)
             where TModel : class, new()
         {
-            var defaultOptions = GetDefaultOptions();
+            return SendMutationAsync(request, GetDefaultOptions(), cancellationToken);
+        }
 
-            var service = _graphQLService.GetByPriority(defaultOptions.Priority);
+        public Task<TModel> SendMutationAsync<TModel>(Request<TModel> request, RequestOptions options, CancellationToken cancellationToken = default)
+            where TModel : class, new()
+        {
+            return SendMutationAsync(request, options.Priority, options.RetryCount, options.ShouldRetry, options.Timeout, cancellationToken);
+        }
 
+        public async Task<TModel> SendMutationAsync<TModel>(Request<TModel> request, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
+            where TModel : class, new()
+        {
+            var service = _graphQLService.GetByPriority(priority);
             service.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
-
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
-            var result = policy.ExecuteAsync(async () =>
-            {
-                var result = await service.SendMutationAsync(request, cancellationToken);
-                return result;
-            })?.Result;
+            var result = await policy.ExecuteAsync(async () => await service.SendMutationAsync(request, cancellationToken));
 
             var resultData = result?.Data as JObject;
             if (resultData == null)

@@ -13,46 +13,46 @@ namespace Xablu.WebApiClient.Tests
         Task Get();
     }
 
-    public class WebApiClientTests
-    {
-        [Fact]
-        public void EnsureUserInitiatedIsSelectedByDefault()
-        {
-            // mock dependencies 
-            var service = new Mock<IRefitService<IStarwarsApi>>();
-            var mockedAPI = new Mock<IStarwarsApi>();
+    //public class WebApiClientTests
+    //{
+    //    [Fact]
+    //    public void EnsureUserInitiatedIsSelectedByDefault()
+    //    {
+    //        // mock dependencies 
+    //        var service = new Mock<IRefitService<IStarwarsApi>>();
+    //        var mockedAPI = new Mock<IStarwarsApi>();
 
-            // setup dependency mocks
-            service.SetupGet(s => s.UserInitiated).Returns(mockedAPI.Object);
-            mockedAPI.Setup(api => api.Get()).Returns(Task.CompletedTask);
+    //        // setup dependency mocks
+    //        service.SetupGet(s => s.UserInitiated).Returns(mockedAPI.Object);
+    //        mockedAPI.Setup(api => api.Get()).Returns(Task.CompletedTask);
 
-            var client = new WebApiClient<IStarwarsApi>(service.Object);
+    //        var client = new WebApiClient<IStarwarsApi>(service.Object);
 
-            // execute sentence to test
-            client.Call(api => api.Get());
+    //        // execute sentence to test
+    //        client.Call(api => api.Get());
 
-            // make sure UserInitiated was called
-            service.VerifyGet(s => s.UserInitiated);
-        }
+    //        // make sure UserInitiated was called
+    //        service.VerifyGet(s => s.UserInitiated);
+    //    }
 
-        [Fact]
-        public void EnsureOperationIsCalledInTheRefitAPI()
-        {
-            // mock dependencies 
-            var service = new Mock<IRefitService<IStarwarsApi>>();
-            var mockedAPI = new Mock<IStarwarsApi>();
+    //[Fact]
+    //public void EnsureOperationIsCalledInTheRefitAPI()
+    //{
+    //    // mock dependencies 
+    //    var service = new Mock<IRefitService<IStarwarsApi>>();
+    //    var mockedAPI = new Mock<IStarwarsApi>();
 
-            // setup dependency mocks
-            service.SetupGet(s => s.UserInitiated).Returns(mockedAPI.Object);
-            mockedAPI.Setup(api => api.Get()).Returns(Task.CompletedTask).Verifiable();
+    //    // setup dependency mocks
+    //    service.SetupGet(s => s.UserInitiated).Returns(mockedAPI.Object);
+    //    mockedAPI.Setup(api => api.Get()).Returns(Task.CompletedTask).Verifiable();
 
-            var client = new WebApiClient<IStarwarsApi>(service.Object);
+    //    var client = new WebApiClient<IStarwarsApi>(service.Object);
 
-            // execute sentence to test
-            client.Call(api => api.Get());
+    //    // execute sentence to test
+    //    client.Call(api => api.Get());
 
-            // make sure IStarwarsApi.Get was called
-            mockedAPI.Verify(api => api.Get(), Times.Once);
-        }
-    }
+    //    // make sure IStarwarsApi.Get was called
+    //    mockedAPI.Verify(api => api.Get(), Times.Once);
+    //}
+    //}
 }
