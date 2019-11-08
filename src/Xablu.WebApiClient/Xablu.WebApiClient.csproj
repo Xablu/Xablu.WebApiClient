@@ -5,7 +5,6 @@
     <TargetFrameworks Condition=" '$(OS)' != 'Windows_NT' ">netstandard2.0;Xamarin.iOS10;Xamarin.TVOS10;Xamarin.WatchOS10;MonoAndroid60;MonoAndroid70;MonoAndroid71;MonoAndroid80;MonoAndroid81;MonoAndroid90;;</TargetFrameworks>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <DefaultLanguage>en-US</DefaultLanguage> 
-    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
     
   <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
@@ -42,12 +41,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    
-    <None Include="README.txt">
-      <Pack>true</Pack>
-      <PackagePath>README.txt</PackagePath>
-    </None>
-
+     
     <PackageReference Include="fusillade" Version="2.0.5" />
     <PackageReference Include="Polly" Version="7.1.0" /> 
     <PackageReference Include="Refit" Version="4.7.9" />
@@ -64,14 +58,20 @@
   </ItemGroup> 
     
   <ItemGroup>
-    <!-- This None is here so the conditionally included files show up in the Solution Explorer -->
-    <None Include="**\*.cs;**\*.xml;**\*.axml;**\*.png" Exclude="obj\**\*.*;bin\**\*.*;bin;obj" />
-   
-    <!-- We will compile anything ending in .shared.cs  You can change this --> 
+    <Compile Remove="**\*.android.cs" />
+    <Compile Remove="**\*.ios.cs" />
+    <Compile Remove="**\*.netstandard.cs" /> 
+    <!--<None Include="**\*.ios.cs" />
+    <None Include="**\*.android.cs" />-->
+    <None Include="README.txt" pack="true" PackagePath="." /> 
+  </ItemGroup>
+     
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) Or $(TargetFramework.StartsWith('Xamarin.TVOS')) Or $(TargetFramework.StartsWith('Xamarin.WatchOS10')) Or $(TargetFramework.StartsWith('uap'))">
+    <Compile Include="**\*.netstandard.cs" />  
   </ItemGroup>
   
-  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid')) ">
-    <Compile Include="**\*.android.cs" />
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid'))">
+    <Compile Include="**\*.android.cs" />  
     <!-- if you have resources add this
     <AndroidResource Include="Resources\**\*.axml" />
     <AndroidResource Include="Resources\**\*.xml" />
@@ -80,6 +80,6 @@
   </ItemGroup>
 
   <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
-    <Compile Include="**\*.ios.cs" />
+    <Compile Include="**\*.ios.cs" />  
   </ItemGroup>
 </Project>
