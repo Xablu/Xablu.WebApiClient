@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Moq;
 using Refit;
-using Xablu.WebApiClient.Client;
+using Xablu.WebApiClient.Services.Rest;
 using Xunit;
 
 namespace Xablu.WebApiClient.Tests
