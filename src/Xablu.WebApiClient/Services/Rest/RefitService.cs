@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Net.Http;
 using Fusillade;
 using Refit;
-using Xablu.WebApiClient.Logging;
+using Xablu.WebApiClient.Native;
+using Xablu.WebApiClient.Logging; 
 
-namespace Xablu.WebApiClient.Client
+namespace Xablu.WebApiClient.Services.Rest
 {
     public class RefitService<T> : IRefitService<T>
         where T : class
@@ -27,7 +28,7 @@ namespace Xablu.WebApiClient.Client
             }
 
             Func<HttpMessageHandler, T> createClient = messageHandler =>
-            {
+            { 
                 HttpMessageHandler handler;
 
                 if (delegatingHandler != null)
@@ -60,11 +61,11 @@ namespace Xablu.WebApiClient.Client
                 return RestService.For<T>(client);
             };
 
-            _background = new Lazy<T>(() => createClient(NetCache.Background));
+            _background = new Lazy<T>(() => createClient(new RateLimitedHttpMessageHandler(new NativeHttpClientHandler(), Priority.Background)));
 
-            _userInitiated = new Lazy<T>(() => createClient(NetCache.UserInitiated));
+            _userInitiated = new Lazy<T>(() => createClient(new RateLimitedHttpMessageHandler(new NativeHttpClientHandler(), Priority.UserInitiated)));
 
-            _speculative = new Lazy<T>(() => createClient(NetCache.Speculative));
+            _speculative = new Lazy<T>(() => createClient(new RateLimitedHttpMessageHandler(new NativeHttpClientHandler(), Priority.Speculative)));
         }
 
         protected virtual void DisableAutoRedirects(HttpMessageHandler messageHandler)
