@@ -1,7 +1,7 @@
 using System;
 using Xablu.WebApiClient.Enums;
 
-namespace Xablu.WebApiClient.Client
+namespace Xablu.WebApiClient.Services.Rest
 {
     public interface IRefitService<T>
     {

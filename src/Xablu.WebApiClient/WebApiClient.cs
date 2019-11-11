@@ -7,10 +7,10 @@ using Newtonsoft.Json.Linq;
 using Polly;
 using Polly.Wrap;
 using Xablu.WebApiClient.Attributes;
-using Xablu.WebApiClient.Client;
 using Xablu.WebApiClient.Enums;
 using Xablu.WebApiClient.Logging;
 using Xablu.WebApiClient.Services.GraphQL;
+using Xablu.WebApiClient.Services.Rest;
 
 namespace Xablu.WebApiClient
 {

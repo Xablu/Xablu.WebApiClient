@@ -4,11 +4,8 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 using Xamarin.Forms;
-
-using TestApp.Models;
 using TestApp.Services;
 using TestApp.Models.StarWarsAPI;
-using Xablu.WebApiClient.Client;
 
 namespace TestApp.ViewModels
 {

@@ -1,10 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">netstandard2.0;Xamarin.iOS10;Xamarin.TVOS10;Xamarin.WatchOS10;MonoAndroid60;MonoAndroid70;MonoAndroid71;MonoAndroid80;MonoAndroid81;MonoAndroid90;uap10.0.16299;</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' != 'Windows_NT' ">netstandard2.0;Xamarin.iOS10;Xamarin.TVOS10;Xamarin.WatchOS10;MonoAndroid60;MonoAndroid70;MonoAndroid71;MonoAndroid80;MonoAndroid81;MonoAndroid90;;</TargetFrameworks>
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
-    <GeneratePackageOnBuild Condition=" '$(Configuration)' == 'Release' and '$(IsTestProject)' != 'true'">true</GeneratePackageOnBuild>
     <DefaultLanguage>en-US</DefaultLanguage> 
+  </PropertyGroup>
+    
+  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+    <DebugType>pdbonly</DebugType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile> 
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild> 
   </PropertyGroup>
 
   <!-- Assembly information -->
@@ -29,32 +41,45 @@
   </PropertyGroup>
 
   <ItemGroup>
-    
-    <Content Include="README.txt">
-      <Pack>true</Pack>
-      <PackagePath>README.txt</PackagePath>
-    </Content>
-
+     
     <PackageReference Include="fusillade" Version="2.0.5" />
-    <PackageReference Include="Polly" Version="7.1.0" />
-    <PackageReference Include="Refit" Version="4.7.51" />
-    <PackageReference Include="MSBuild.Sdk.Extras" Version="1.2.1" PrivateAssets="All" />
+    <PackageReference Include="Polly" Version="7.1.0" /> 
     <PackageReference Include="Refit" Version="4.7.9" />
-    <PackageReference Include="System.ComponentModel" Version="4.3.0" />
+    <!--<PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.Diagnostics.Contracts" Version="4.3.0" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
-    <PackageReference Include="System.Net.Requests" Version="4.3.0" />
+    <PackageReference Include="System.Net.Requests" Version="4.3.0" />-->
     <PackageReference Include="GraphQL.Client" Version="2.0.0-alpha.3" />
     <PackageReference Include="LibLog" Version="5.0.6">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Client\" />
-    <Folder Include="Enums\" />
-    <Folder Include="Services\" />
-    <Folder Include="Attributes\" />
   </ItemGroup> 
+    
+  <ItemGroup>
+    <Compile Remove="**\*.android.cs" />
+    <Compile Remove="**\*.ios.cs" />
+    <Compile Remove="**\*.netstandard.cs" /> 
+    <!--<None Include="**\*.ios.cs" />
+    <None Include="**\*.android.cs" />-->
+    <None Include="README.txt" pack="true" PackagePath="." /> 
+  </ItemGroup>
+     
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) Or $(TargetFramework.StartsWith('Xamarin.TVOS')) Or $(TargetFramework.StartsWith('Xamarin.WatchOS10')) Or $(TargetFramework.StartsWith('uap'))">
+    <Compile Include="**\*.netstandard.cs" />  
+  </ItemGroup>
+  
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid'))">
+    <Compile Include="**\*.android.cs" />  
+    <!-- if you have resources add this
+    <AndroidResource Include="Resources\**\*.axml" />
+    <AndroidResource Include="Resources\**\*.xml" />
+    <AndroidResource Include="Resources\**\*.png" />
+    -->
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
+    <Compile Include="**\*.ios.cs" />  
+  </ItemGroup>
 </Project>

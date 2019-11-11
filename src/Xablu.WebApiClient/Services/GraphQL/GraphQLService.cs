@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Net.Http;
 using Fusillade;
 using GraphQL.Client.Http;
+using Xablu.WebApiClient.Logging;
+using Xablu.WebApiClient.Native;
 
 namespace Xablu.WebApiClient.Services.GraphQL
 {
     public class GraphQLService : IGraphQLService
     {
+        private static readonly ILog Logger = LogProvider.For<GraphQLService>();
+
         private readonly Lazy<GraphQLHttpClient> _background;
         private readonly Lazy<GraphQLHttpClient> _userInitiated;
         private readonly Lazy<GraphQLHttpClient> _speculative;
@@ -16,6 +20,14 @@ namespace Xablu.WebApiClient.Services.GraphQL
 
         public GraphQLService(string apiBaseAddress, bool autoRedirectRequests, Func<DelegatingHandler> delegatingHandler, IDictionary<string, string> defaultHeaders)
         {
+            if (string.IsNullOrEmpty(apiBaseAddress))
+                throw new ArgumentNullException(nameof(apiBaseAddress));
+
+            if (Logger.IsTraceEnabled())
+            {
+                Logger.Trace($"Base url set to: {apiBaseAddress} and delegatingHandler: {delegatingHandler != null}");
+            }
+
             BaseUrl = apiBaseAddress;
 
             Func<HttpMessageHandler, GraphQLHttpClient> createClient = messageHandler =>
@@ -33,6 +45,9 @@ namespace Xablu.WebApiClient.Services.GraphQL
                     handler = messageHandler;
                 }
 
+                if (!autoRedirectRequests)
+                    DisableAutoRedirects(messageHandler);
+
                 // note: the string parameter is just a placeholder here
                 var client = new GraphQLHttpClient(apiBaseAddress);
 
@@ -49,11 +64,24 @@ namespace Xablu.WebApiClient.Services.GraphQL
                 return client;
             };
 
-            _background = new Lazy<GraphQLHttpClient>(() => createClient(NetCache.Background));
+            _background = new Lazy<GraphQLHttpClient>(() => createClient(new RateLimitedHttpMessageHandler(new NativeHttpClientHandler(), Priority.Background)));
 
-            _userInitiated = new Lazy<GraphQLHttpClient>(() => createClient(NetCache.UserInitiated));
+            _userInitiated = new Lazy<GraphQLHttpClient>(() => createClient(new RateLimitedHttpMessageHandler(new NativeHttpClientHandler(), Priority.UserInitiated)));
 
-            _speculative = new Lazy<GraphQLHttpClient>(() => createClient(NetCache.Speculative));
+            _speculative = new Lazy<GraphQLHttpClient>(() => createClient(new RateLimitedHttpMessageHandler(new NativeHttpClientHandler(), Priority.Speculative)));
+        }
+
+        protected virtual void DisableAutoRedirects(HttpMessageHandler messageHandler)
+        {
+            if (messageHandler is DelegatingHandler internalDelegate
+                && internalDelegate.InnerHandler is HttpClientHandler internalClientHandler)
+            {
+                if (Logger.IsTraceEnabled())
+                {
+                    Logger.Trace("Disabling AutoRedirects");
+                }
+                internalClientHandler.AllowAutoRedirect = false;
+            }
         }
 
         public GraphQLHttpClient GetByPriority(Enums.Priority priority)

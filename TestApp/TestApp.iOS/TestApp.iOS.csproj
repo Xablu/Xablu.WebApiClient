@@ -137,6 +137,10 @@
       <Project>{DAB5634F-08B5-459D-B8D1-2DF1FE428025}</Project>
       <Name>TestApp</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\src\Xablu.WebApiClient\Xablu.WebApiClient.csproj">
+      <Project>{353DBDAF-A31D-461A-99BA-B217399E968A}</Project>
+      <Name>Xablu.WebApiClient</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

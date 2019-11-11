@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using Xablu.WebApiClient.Client;
 using Xablu.WebApiClient.Services.GraphQL;
+using Xablu.WebApiClient.Services.Rest;
 
 namespace Xablu.WebApiClient
 {

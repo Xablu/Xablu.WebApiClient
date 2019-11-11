@@ -14,12 +14,6 @@
     <PackageReference Include="Xamarin.Essentials" Version="1.1.0" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Models\StarWarsAPI\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\src\Xablu.WebApiClient\Xablu.WebApiClient.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Models\QueryNameAttribute.cs" />
   </ItemGroup>
 </Project>
