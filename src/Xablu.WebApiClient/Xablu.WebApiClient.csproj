@@ -43,8 +43,8 @@
   <ItemGroup>
      
     <PackageReference Include="fusillade" Version="2.0.5" />
-    <PackageReference Include="Polly" Version="7.1.0" /> 
-    <PackageReference Include="Refit" Version="4.7.9" />
+    <PackageReference Include="Polly" Version="7.1.1" /> 
+    <PackageReference Include="Refit" Version="4.8.14" />
     <!--<PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.Diagnostics.Contracts" Version="4.3.0" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
