@@ -52,13 +52,13 @@ namespace TestConsoleApp
             }
 
             ConvertJson(jsonresult);
-            return await Task.FromResult(result.Results);
+            return result.Results;
         }
 
         // test post call
         public static async Task<string> PostRawPostmanEcho(bool forceRefresh = false)
         {
-            IWebApiClient<IPostmanEcho> webApiClient = WebApiClientFactory.Get<IPostmanEcho>("https://postman-echo.com/", false, () => new SampleHttpClientHandler());
+            IWebApiClient<IPostmanEcho> webApiClient = WebApiClientFactory.Get<IPostmanEcho>("https://postman-echo.com/", true, () => new SampleHttpClientHandler());
 
             PostObject postObject = new PostObject();
             postObject.testName = "hello world";
@@ -82,7 +82,7 @@ namespace TestConsoleApp
             ConvertJson(postResult);
             Console.WriteLine("\t Post object: ");
             ConvertJson(postObjectResult);
-            return await Task.FromResult(postResult);
+            return postResult;
         }
 
         // test login and authorization methods
@@ -111,7 +111,7 @@ namespace TestConsoleApp
             //    {"oauth_signature", "s0rK92Myxx7ceUBVzlMaxiiXU00"}
             //};
 
-            IWebApiClient<IPostmanEcho> basicAuthWebApiClient = WebApiClientFactory.Get<IPostmanEcho>("https://postman-echo.com/", false, () => new SampleHttpClientHandler(), authValues);
+            IWebApiClient<IPostmanEcho> basicAuthWebApiClient = WebApiClientFactory.Get<IPostmanEcho>("https://postman-echo.com/", true, () => new SampleHttpClientHandler(), authValues);
             //IWebApiClient<IPostmanEcho> oAuthWebApiClient = WebApiClientFactory.Get<IPostmanEcho>("https://postman-echo.com/", false, () => new SampleHttpClientHandler(), oAuthValues);
 
             var basicAuthResult = await basicAuthWebApiClient.Call(
@@ -132,10 +132,10 @@ namespace TestConsoleApp
             ConvertJson(basicAuthResult);
             //Console.WriteLine("\t oauth: ");
             //ConvertJson(oAuthResult);
-            return await Task.FromResult(basicAuthResult);
+            return basicAuthResult;
         }
 
-            static void ConvertJson(string json)
+        static void ConvertJson(string json)
         {
             JObject parsed = JObject.Parse(json);
 

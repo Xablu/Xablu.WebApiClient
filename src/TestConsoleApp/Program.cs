@@ -70,10 +70,10 @@ namespace TestConsoleApp
 
         static async Task PrintRefitCall()
         {
+            Console.WriteLine("Wait for your result...");
             switch (Console.ReadLine())
             {
                 case "1":
-                    Console.WriteLine("Wait for your result...");
                     try
                     {
                         var _items = await RefitExampleCalls.GetStarShipItemsAsync(true);
@@ -85,7 +85,6 @@ namespace TestConsoleApp
                     }
                     break;
                 case "2":
-                    Console.WriteLine("Wait for your result...");
                     try
                     {
                         string postResult = await RefitExampleCalls.PostRawPostmanEcho(true);
@@ -96,7 +95,6 @@ namespace TestConsoleApp
                     }
                     break;
                 case "3":
-                    Console.WriteLine("Wait for your result...");
                     try
                     {
                         string postResult = await RefitExampleCalls.AuthenticatePostmanEcho(true);

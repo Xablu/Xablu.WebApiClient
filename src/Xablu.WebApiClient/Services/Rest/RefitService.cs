@@ -39,7 +39,7 @@ namespace Xablu.WebApiClient.Services.Rest
                 }
                 else
                 {
-                    handler = messageHandler; 
+                    handler = messageHandler;
                 }
 
                 if(!autoRedirectRequests)
