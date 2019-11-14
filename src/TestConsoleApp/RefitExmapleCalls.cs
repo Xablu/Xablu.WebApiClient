@@ -10,6 +10,7 @@ using TestApp.Models;
 using TestApp.Models.StarWarsAPI;
 using TestApp.Services;
 using Xablu.WebApiClient;
+using Xablu.WebApiClient.Native;
 
 namespace TestConsoleApp
 {
@@ -21,7 +22,7 @@ namespace TestConsoleApp
         // the first way is more modular and works for any json, the second more adjusted for SWAPI
         public static async Task<IEnumerable<Starships>> GetStarShipItemsAsync(bool forceRefresh = false)
         {
-            IWebApiClient<IStarwarsApi> _webApiClient = WebApiClientFactory.Get<IStarwarsApi>("https://swapi.co/api", false, () => new SampleHttpClientHandler());
+            IWebApiClient<IStarwarsApi> _webApiClient = WebApiClientFactory.Get<IStarwarsApi>("https://swapi.co/api", true, () => new NativeHttpClientHandler());
             var jsonresult = await _webApiClient.Call(
                     (service) => service.GetTask(),
                     Xablu.WebApiClient.Enums.Priority.UserInitiated,
@@ -58,7 +59,7 @@ namespace TestConsoleApp
         // test post call
         public static async Task<string> PostRawPostmanEcho(bool forceRefresh = false)
         {
-            IWebApiClient<IPostmanEcho> webApiClient = WebApiClientFactory.Get<IPostmanEcho>("https://postman-echo.com/", true, () => new SampleHttpClientHandler());
+            IWebApiClient<IPostmanEcho> webApiClient = WebApiClientFactory.Get<IPostmanEcho>("https://postman-echo.com/", false, () => new NativeHttpClientHandler());
 
             PostObject postObject = new PostObject();
             postObject.testName = "hello world";
@@ -111,7 +112,7 @@ namespace TestConsoleApp
             //    {"oauth_signature", "s0rK92Myxx7ceUBVzlMaxiiXU00"}
             //};
 
-            IWebApiClient<IPostmanEcho> basicAuthWebApiClient = WebApiClientFactory.Get<IPostmanEcho>("https://postman-echo.com/", true, () => new SampleHttpClientHandler(), authValues);
+            IWebApiClient<IPostmanEcho> basicAuthWebApiClient = WebApiClientFactory.Get<IPostmanEcho>("https://postman-echo.com/", false, () => new NativeHttpClientHandler(), authValues);
             //IWebApiClient<IPostmanEcho> oAuthWebApiClient = WebApiClientFactory.Get<IPostmanEcho>("https://postman-echo.com/", false, () => new SampleHttpClientHandler(), oAuthValues);
 
             var basicAuthResult = await basicAuthWebApiClient.Call(
