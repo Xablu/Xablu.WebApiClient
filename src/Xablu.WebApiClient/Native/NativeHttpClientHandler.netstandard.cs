@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Xablu.WebApiClient.Native
 {
-    public class NativeHttpClientHandler : DelegatingHandler
+    public class NativeHttpClientHandler : HttpClientHandler
     {
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
