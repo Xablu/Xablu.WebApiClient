@@ -6,7 +6,11 @@
     <Product>$(AssemblyName) ($(TargetFramework))</Product>
     <DefaultLanguage>en-US</DefaultLanguage> 
   </PropertyGroup>
-    
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
   <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
