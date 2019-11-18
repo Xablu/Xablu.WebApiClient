@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TestApp.Models
+﻿namespace TestApp.Models
 {
     public class Item
     {

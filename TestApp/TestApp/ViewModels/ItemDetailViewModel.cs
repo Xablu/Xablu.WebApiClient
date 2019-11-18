@@ -1,7 +1,4 @@
-﻿using System;
-
-using TestApp.Models;
-using TestApp.Models.StarWarsAPI;
+﻿using TestApp.Models.StarWarsAPI;
 
 namespace TestApp.ViewModels
 {

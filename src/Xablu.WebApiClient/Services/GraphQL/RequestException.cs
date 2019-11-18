@@ -1,5 +1,4 @@
 using System;
-using GraphQL.Common.Response;
 namespace Xablu.WebApiClient.Services.GraphQL
 {
     public class RequestException : Exception

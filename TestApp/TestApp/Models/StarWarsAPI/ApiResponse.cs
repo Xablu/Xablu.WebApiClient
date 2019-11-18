@@ -1,4 +1,3 @@
-using System;
 namespace TestApp.Models.StarWarsAPI
 {
     public class ApiResponse<T>

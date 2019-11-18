@@ -1,4 +1,3 @@
-using System;
 using Xablu.WebApiClient.Enums;
 
 namespace Xablu.WebApiClient.Services.Rest
