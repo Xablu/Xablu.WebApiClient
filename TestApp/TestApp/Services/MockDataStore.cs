@@ -10,7 +10,6 @@ namespace TestApp.Services
     public class MockDataStore : IDataStore<Starships>
     {
         List<Starships> items;
-        //public IRefitClient refitClient = new RefitClient("https://swapi.co/api");
         private IWebApiClient<IStarwarsApi> _webApiClient;
 
         public MockDataStore()

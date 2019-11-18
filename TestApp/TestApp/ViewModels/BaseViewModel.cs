@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-
-using Xamarin.Forms;
-using TestApp.Services;
 using TestApp.Models.StarWarsAPI;
+using TestApp.Services;
+using Xamarin.Forms;
 
 namespace TestApp.ViewModels
 {

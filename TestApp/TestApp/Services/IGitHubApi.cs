@@ -1,4 +1,3 @@
-using System;
 using Xablu.WebApiClient.Attributes;
 
 namespace TestApp.Services

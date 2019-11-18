@@ -2,9 +2,9 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Xamarin.Forms;
-using TestApp.Views;
 using TestApp.Models.StarWarsAPI;
+using TestApp.Views;
+using Xamarin.Forms;
 
 namespace TestApp.ViewModels
 {

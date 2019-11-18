@@ -1,9 +1,7 @@
-﻿using System;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
-using TestApp.Services;
+﻿using TestApp.Services;
 using TestApp.Views;
 using Xablu.WebApiClient;
+using Xamarin.Forms;
 
 namespace TestApp
 {

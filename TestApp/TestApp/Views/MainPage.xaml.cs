@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
-
 using TestApp.Models;
-using Xablu.WebApiClient.Services.GraphQL;
-using GraphQL.Common.Request;
-using GraphQL.Common.Response;
-using Newtonsoft.Json;
-using System.Linq;
-using Xablu.WebApiClient;
-using TestApp.Services;
+using Xamarin.Forms;
 
 namespace TestApp.Views
 {
@@ -29,31 +19,6 @@ namespace TestApp.Views
             MasterBehavior = MasterBehavior.Popover;
 
             MenuPages.Add((int)MenuItemType.Browse, (NavigationPage)Detail);
-
-
-
-
-            Task.Run(async () => await GraphqlAsync());
-
-
-        }
-
-        private async Task GraphqlAsync()
-        {
-            var defaultHeaders = new Dictionary<string, string>
-            {
-                ["User-Agent"] = "LukasThijs",
-                ["Authorization"] = "Bearer "
-            };
-            var webApiClient = WebApiClientFactory.Get<IGitHubApi>("https://api.github.com", false, () => new SampleHttpClientHandler(), defaultHeaders);
-
-
-            var requestForSingleUser = new Request<UserResponseModel>(null, "(login: LukasThijs)");
-
-            var requestForUsersList = new Request<UsersResponseModel>();
-
-            // TODO: Handle the result!
-            //  await webApiClient.SendQueryAsync(requestForSingleUser);
         }
 
 
