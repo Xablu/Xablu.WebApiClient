@@ -59,7 +59,7 @@ namespace TestConsoleApp
                     //Console.WriteLine("\t2 - DELETE");
                     Console.WriteLine("\t2 - Back to Home Menu");
                     Console.Write("Your option? ");
-                    await PrintGraphqlCall();
+                    //await PrintGraphqlCall();
                     break;
                 case "3":
                     Environment.Exit(0);
@@ -117,21 +117,20 @@ namespace TestConsoleApp
         {
             switch (Console.ReadLine())
             {
-            case "1":
-                try
-                {
-                    string _items = await GraphQLExampleCalls.GraphqlAsync().ToString();
-                }
-                catch (ArgumentException aex)
-                {
-                    Console.WriteLine($"Caught ArgumentException: {aex.Message}");
-                }
-                break;
-            default:
-                {
+                case "1":
+                    try
+                    {
+                        var _items = await GraphQLExampleCalls.GraphqlAsync();
+                        string items = _items;
+                    }
+                    catch (ArgumentException aex)
+                    {
+                        Console.WriteLine($"Caught ArgumentException: {aex.Message}");
+                    }
+                    break;
+                default:
                     await CallMenu();
                     break;
-                }
             }
         }
     }

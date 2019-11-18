@@ -17,7 +17,7 @@ namespace TestConsoleApp
 
         }
 
-        public static async Task GraphqlAsync()
+        public static async Task<string> GraphqlAsync()
         {
             var defaultHeaders = new Dictionary<string, string>
             {
@@ -31,6 +31,8 @@ namespace TestConsoleApp
             var requestForUsersList = new Request<UsersResponseModel>();
 
             await webApiClient.SendQueryAsync(requestForSingleUser);
+
+            return requestForSingleUser.ToString();
         }
 
         static void ConvertJson(string json)

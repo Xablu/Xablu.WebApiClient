@@ -73,7 +73,7 @@ namespace TestConsoleApp
 
             var postResult = await webApiClient.Call(
                     (service) => service.Post("test"),
-                    UserInitiated,
+                    Priority.UserInitiated,
                     2,
                     (ex) => true,
                     60);
@@ -145,19 +145,4 @@ namespace TestConsoleApp
             }
         }
     }
-}
-
-Down here is an example call for connecting with a Web API service through Refit:
-
-Task<TResult> Call<TResult>(Func<T, Task<TResult>> operation, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout);
-
-async Task<IEnumerable<MyModel>> GetStarShipItemsAsync(bool forceRefresh = false)
-{
-    IWebApiClient<IRefitInteraface> webApiClient = WebApiClientFactory.Get<IRefitInteraface>("baseURL", bool defaultHeaders: true);
-    var jsonresult = await webApiClient.Call(
-            (IRefitInterafaceService) => IRefitInterafaceService.GetTask(),
-            (Polly.Priority) Priority.UserInitiated,
-            (retryCount) 2,
-            (shouldRetry) => true,
-            (timeout) 60);
 }
