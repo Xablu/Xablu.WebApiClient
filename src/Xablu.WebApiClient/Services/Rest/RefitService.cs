@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using Fusillade;
 using Refit;
+using Xablu.WebApiClient.Logging;
 using Xablu.WebApiClient.Native;
-using Xablu.WebApiClient.Logging; 
 
 namespace Xablu.WebApiClient.Services.Rest
 {
@@ -12,7 +12,7 @@ namespace Xablu.WebApiClient.Services.Rest
         where T : class
     {
         private static readonly ILog Logger = LogProvider.For<RefitService<T>>();
-         
+
         private readonly Lazy<T> _background;
         private readonly Lazy<T> _userInitiated;
         private readonly Lazy<T> _speculative;
@@ -21,28 +21,28 @@ namespace Xablu.WebApiClient.Services.Rest
         {
             if (string.IsNullOrEmpty(apiBaseAddress))
                 throw new ArgumentNullException(nameof(apiBaseAddress));
-             
+
             if (Logger.IsTraceEnabled())
             {
                 Logger.Trace($"Base url set to: {apiBaseAddress} and delegatingHandler: {delegatingHandler != null}");
             }
 
             Func<HttpMessageHandler, T> createClient = messageHandler =>
-            { 
+            {
                 HttpMessageHandler handler;
 
                 if (delegatingHandler != null)
                 {
                     var delegatingHandlerInstance = delegatingHandler.Invoke();
                     delegatingHandlerInstance.InnerHandler = messageHandler;
-                    handler = delegatingHandlerInstance; 
+                    handler = delegatingHandlerInstance;
                 }
                 else
                 {
-                    handler = messageHandler; 
+                    handler = messageHandler;
                 }
 
-                if(!autoRedirectRequests)
+                if (!autoRedirectRequests)
                     DisableAutoRedirects(messageHandler);
 
                 var client = new HttpClient(handler)
@@ -52,7 +52,7 @@ namespace Xablu.WebApiClient.Services.Rest
 
                 if (defaultHeaders != default)
                 {
-                    foreach(var header in defaultHeaders)
+                    foreach (var header in defaultHeaders)
                     {
                         client.DefaultRequestHeaders.Add(header.Key, header.Value);
                     }
@@ -93,6 +93,6 @@ namespace Xablu.WebApiClient.Services.Rest
                 default:
                     return _userInitiated.Value;
             }
-        } 
+        }
     }
 }

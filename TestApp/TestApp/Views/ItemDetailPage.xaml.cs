@@ -1,11 +1,7 @@
-﻿using System;
-using System.ComponentModel;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
-
-using TestApp.Models;
-using TestApp.ViewModels;
+﻿using System.ComponentModel;
 using TestApp.Models.StarWarsAPI;
+using TestApp.ViewModels;
+using Xamarin.Forms;
 
 namespace TestApp.Views
 {
