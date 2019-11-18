@@ -10,14 +10,13 @@ using TestApp.Models;
 using TestApp.Models.StarWarsAPI;
 using TestApp.Services;
 using Xablu.WebApiClient;
+using Xablu.WebApiClient.Enums;
 using Xablu.WebApiClient.Native;
 
 namespace TestConsoleApp
 {
     public class RefitExampleCalls
     {
-        static List<Starships> items = new List<Starships>();
-
         // 2 ways to check an object. One from json printed, the other an object from the api
         // the first way is more modular and works for any json, the second more adjusted for SWAPI
         public static async Task<IEnumerable<Starships>> GetStarShipItemsAsync(bool forceRefresh = false)
@@ -25,14 +24,14 @@ namespace TestConsoleApp
             IWebApiClient<IStarwarsApi> _webApiClient = WebApiClientFactory.Get<IStarwarsApi>("https://swapi.co/api", true);
             var jsonresult = await _webApiClient.Call(
                     (service) => service.GetTask(),
-                    Xablu.WebApiClient.Enums.Priority.UserInitiated,
+                    Priority.UserInitiated,
                     2,
                     (ex) => true,
                     60);
 
             var result = await _webApiClient.Call(
                     (service) => service.GetStarships(),
-                    Xablu.WebApiClient.Enums.Priority.UserInitiated,
+                    Priority.UserInitiated,
                     2,
                     (ex) => true,
                     60);
@@ -42,7 +41,7 @@ namespace TestConsoleApp
             {
                 var timeoutresult = await _webApiClient.Call(
                     (service) => service.GetTask(),
-                    Xablu.WebApiClient.Enums.Priority.UserInitiated,
+                    Priority.UserInitiated,
                     2,
                     (ex) => true,
                     3);
@@ -67,14 +66,14 @@ namespace TestConsoleApp
 
             var postObjectResult = await webApiClient.Call(
                 (service) => service.PostObject(postObject),
-                Xablu.WebApiClient.Enums.Priority.UserInitiated,
+                Priority.UserInitiated,
                 2,
                 (ex) => true,
                 60);
 
             var postResult = await webApiClient.Call(
                     (service) => service.Post("test"),
-                    Xablu.WebApiClient.Enums.Priority.UserInitiated,
+                    UserInitiated,
                     2,
                     (ex) => true,
                     60);
@@ -146,4 +145,19 @@ namespace TestConsoleApp
             }
         }
     }
+}
+
+Down here is an example call for connecting with a Web API service through Refit:
+
+Task<TResult> Call<TResult>(Func<T, Task<TResult>> operation, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout);
+
+async Task<IEnumerable<MyModel>> GetStarShipItemsAsync(bool forceRefresh = false)
+{
+    IWebApiClient<IRefitInteraface> webApiClient = WebApiClientFactory.Get<IRefitInteraface>("baseURL", bool defaultHeaders: true);
+    var jsonresult = await webApiClient.Call(
+            (IRefitInterafaceService) => IRefitInterafaceService.GetTask(),
+            (Polly.Priority) Priority.UserInitiated,
+            (retryCount) 2,
+            (shouldRetry) => true,
+            (timeout) 60);
 }

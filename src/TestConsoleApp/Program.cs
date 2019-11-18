@@ -47,15 +47,17 @@ namespace TestConsoleApp
                     Console.WriteLine("\t1 - GET");
                     Console.WriteLine("\t2 - POST");
                     Console.WriteLine("\t3 - AUTHENTICATE");
+                    Console.WriteLine("\t4 - Back to Home Menu");
                     Console.Write("Your option? ");
                     await PrintRefitCall();
                     break;
                 case "2":
                     Console.WriteLine("Type a number to choose the randomised exmaple call, and then press Enter");
                     Console.WriteLine("\t1 - GET");
-                    Console.WriteLine("\t2 - PUT");
-                    Console.WriteLine("\t2 - POST");
-                    Console.WriteLine("\t2 - DELETE");
+                    //Console.WriteLine("\t2 - PUT");
+                    //Console.WriteLine("\t2 - POST");
+                    //Console.WriteLine("\t2 - DELETE");
+                    Console.WriteLine("\t2 - Back to Home Menu");
                     Console.Write("Your option? ");
                     await PrintGraphqlCall();
                     break;
@@ -113,7 +115,24 @@ namespace TestConsoleApp
 
         static async Task PrintGraphqlCall()
         {
-            await ServiceMenu();
+            switch (Console.ReadLine())
+            {
+            case "1":
+                try
+                {
+                    string _items = await GraphQLExampleCalls.GraphqlAsync().ToString();
+                }
+                catch (ArgumentException aex)
+                {
+                    Console.WriteLine($"Caught ArgumentException: {aex.Message}");
+                }
+                break;
+            default:
+                {
+                    await CallMenu();
+                    break;
+                }
+            }
         }
     }
 }
