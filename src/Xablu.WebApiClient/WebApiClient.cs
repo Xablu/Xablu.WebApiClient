@@ -125,6 +125,7 @@ namespace Xablu.WebApiClient
         {
             var service = _graphQLService.GetByPriority(priority);
             service.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
+
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
             var result = await policy.ExecuteAsync(async () => await service.SendMutationAsync(request, cancellationToken));

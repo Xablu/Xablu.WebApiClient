@@ -170,14 +170,12 @@ namespace Xablu.WebApiClient.Services.GraphQL
 
         private void PopulatePropertyDetailsByProperty(PropertyInfo property, List<PropertyDetail> propertyList, PropertyDetail propertyDetail)
         {
-
-
             var queryName = Attribute.GetCustomAttribute(property, typeof(NameOfFieldAttribute)) as NameOfFieldAttribute;
             string query = property.Name;
 
             if (OptionalParameters != null && attributeNumber < OptionalParameters.Count())
             {
-                query = !string.IsNullOrEmpty(queryName.NameOfField) ? $"{property.Name}" + $"{{{attributeNumber.ToString()}}}: {queryName.NameOfField}" : $"{property.Name}" + $"{{{attributeNumber.ToString()}}}";
+                query = !string.IsNullOrEmpty(queryName?.NameOfField) ? $"{property?.Name}" + $"{{{attributeNumber.ToString()}}}: {queryName?.NameOfField}" : $"{property?.Name}" + $"{{{attributeNumber.ToString()}}}";
                 attributeNumber++;
             }
 
@@ -202,7 +200,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
                 propertyList.Reverse();
                 foreach (PropertyDetail property in propertyList)
                 {
-                    queryString = queryString.Any() ? queryString.Insert(0, ToLowerFirstChar(property.FieldName) + " ") : queryString.Insert(0, ToLowerFirstChar(property.FieldName));
+                    queryString = queryString.Any() ? queryString.Insert(0, ToLowerFirstChar(property?.FieldName) + " ") : queryString.Insert(0, ToLowerFirstChar(property?.FieldName));
                 }
                 queryString = "{{" + $"{queryString}" + "}}";
             }

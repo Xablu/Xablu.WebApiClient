@@ -54,12 +54,12 @@ namespace TestConsoleApp
                 case "2":
                     Console.WriteLine("Type a number to choose the randomised exmaple call, and then press Enter");
                     Console.WriteLine("\t1 - GET");
-                    //Console.WriteLine("\t2 - PUT");
-                    //Console.WriteLine("\t2 - POST");
-                    //Console.WriteLine("\t2 - DELETE");
+                    // Console.WriteLine("\t2 - PUT");
+                    // Console.WriteLine("\t2 - POST");
+                    //  Console.WriteLine("\t2 - DELETE");
                     Console.WriteLine("\t2 - Back to Home Menu");
                     Console.Write("Your option? ");
-                    //await PrintGraphqlCall();
+                    await PrintGraphqlCall();
                     break;
                 case "3":
                     Environment.Exit(0);
