@@ -78,7 +78,7 @@ namespace Xablu.WebApiClient
             return await policy.ExecuteAsync(() => operation.Invoke(service));
         }
 
-        public Task SendQueryAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default)
+        public Task<TModel> SendQueryAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default)
            where TModel : class, new()
         {
             return SendQueryAsync(request, GetDefaultOptions(), cancellationToken);
