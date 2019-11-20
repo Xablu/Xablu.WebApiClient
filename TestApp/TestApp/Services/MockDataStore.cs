@@ -84,7 +84,7 @@ namespace TestApp.Services
 
             //give either result back with own refit interface and endpoints or either give endpoint and let our package handle it for you
 
-            return await Task.FromResult(items);
+            return items;
         }
     }
 }
