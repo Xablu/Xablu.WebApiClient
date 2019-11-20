@@ -20,11 +20,11 @@ namespace TestConsoleApp
         {
             var defaultHeaders = new Dictionary<string, string>
             {
-                ["User-Agent"] = "LukasThijs",
-                ["Authorization"] = "Bearer e9da1446711b5529b1aabe27a21ae205897bcbde"
+                ["User-Agent"] = "xabluexampleuser",
+                ["Authorization"] = "Bearer 8f9b136d6d9d84817752218dd3e7c16480407bf0"
             };
-            var webApiClient = WebApiClientFactory.Get<IGitHubApi>("https://api.github.com/", false, default, defaultHeaders);
-            //8f9b136d6d9d84817752218dd3e7c16480407bf0
+            var webApiClient = WebApiClientFactory.Get<IGitHubApi>("https://api.github.com", false, default, defaultHeaders);
+
             var requestForSingleUser = new Request<UserResponseModel>("(login: \"LukasThijs\")");
 
             await webApiClient.SendQueryAsync(requestForSingleUser);
