@@ -78,7 +78,7 @@ namespace Xablu.WebApiClient
             return await policy.ExecuteAsync(() => operation.Invoke(service));
         }
 
-        public Task SendQueryAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default)
+        public Task<TModel> SendQueryAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default)
            where TModel : class, new()
         {
             return SendQueryAsync(request, GetDefaultOptions(), cancellationToken);
@@ -125,6 +125,7 @@ namespace Xablu.WebApiClient
         {
             var service = _graphQLService.GetByPriority(priority);
             service.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
+
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
             var result = await policy.ExecuteAsync(async () => await service.SendMutationAsync(request, cancellationToken));
