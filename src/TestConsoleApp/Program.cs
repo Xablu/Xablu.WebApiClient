@@ -120,8 +120,8 @@ namespace TestConsoleApp
                 case "1":
                     try
                     {
-                        var _items = await GraphQLExampleCalls.GraphqlAsync();
-                        string items = _items;
+                        var model = await GraphQLExampleCalls.GraphqlAsync();
+                        Console.WriteLine(model);
                     }
                     catch (ArgumentException aex)
                     {

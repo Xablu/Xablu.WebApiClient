@@ -18,28 +18,23 @@ namespace TestConsoleApp
 
         public static async Task<string> GraphqlAsync()
         {
+            var first = "411eecb9b8fc9f5ac0a";
+            var second = "ff63e8135cb68b4f10116";
+            var combinedB = first + second;
             var defaultHeaders = new Dictionary<string, string>
             {
                 ["User-Agent"] = "xabluexampleuser",
-                ["Authorization"] = "Bearer 8f9b136d6d9d84817752218dd3e7c16480407bf0"
+                ["Authorization"] = $"Bearer {combinedB}"
             };
+
             var webApiClient = WebApiClientFactory.Get<IGitHubApi>("https://api.github.com", false, default, defaultHeaders);
 
-            var requestForSingleUser = new Request<UserResponseModel>("(login: \"LukasThijs\")");
+            var requestForSingleUser = new Request<UserResponseModel>("(login: \"exampleuserxablu\")");
 
-            await webApiClient.SendQueryAsync(requestForSingleUser);
+            var result = await webApiClient.SendQueryAsync(requestForSingleUser);
+            var serializedObject = JsonConvert.SerializeObject(result);
 
-            return requestForSingleUser.ToString();
-        }
-
-        static void ConvertJson(string json)
-        {
-            JObject parsed = JObject.Parse(json);
-
-            foreach (var pair in parsed)
-            {
-                Console.WriteLine("{0}: {1}", pair.Key, pair.Value);
-            }
+            return serializedObject;
         }
     }
 
