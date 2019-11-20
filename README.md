@@ -6,12 +6,12 @@ The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of 
 > We have been working on a 2nd version of WebApiClient which is based on Refit and will support GraphQL. This version has may new features. Beware, upgrading from version 1 to version 2 has some breaking changes since it’s not backwards compatible. 
 
 ## Table of contents  
-1.[How Xablu.WebApiClient Works](#howto)
-2.[Download / Install](#downloadinstal)
-3.[Build Status](#buildstatus) 
-4.[Key Features](#features)
-5.[Example ](#examples)
-6.[Contributions ](#contributions)
+1.[How Xablu.WebApiClient Works](#howto)<br/>
+2.[Download / Install](#downloadinstal)<br/>
+3.[Build Status](#buildstatus)<br/> 
+4.[Key Features](#features)<br/>
+5.[Example ](#examples)<br/>
+6.[Contributions ](#contributions)<br/>
 7.[Feedback ](#feedback)
 
 ## How Xablu.WebApiClient Works <a name="howto"></a>
@@ -47,7 +47,7 @@ The Xablu.WebApiClient is written following the multi-target library approach. M
 
 ## Build Status: <a name="buildstatus"></a>
 [![Build status](https://ci.appveyor.com/api/projects/status/5ey0sq4fn01t9o56?svg=true)](https://ci.appveyor.com/project/Xablu/xablu-webapiclient)
-[![GitHub tag](https://img.shields.io/github/tag/Xablu/Xablu.WebApiClient.svg)
+[![GitHub tag]](https://img.shields.io/github/tag/Xablu/Xablu.WebApiClient.svg)
 [![NuGet](https://img.shields.io/nuget/v/Xablu.WebApiClient.svg?label=NuGet)](https://www.nuget.org/packages/Xablu.WebApiClient/)
 [![MyGet](https://img.shields.io/myget/xabluhq/v/Xablu.WebApiClient.svg)](https://www.myget.org/F/Xablu.WebApiClient/api/v2)
 
