@@ -48,7 +48,7 @@ The Xablu.WebApiClient is written following the multi-target library approach. M
 
 ## Build Status: <a name="buildstatus"></a>
 [![Build status](https://ci.appveyor.com/api/projects/status/5ey0sq4fn01t9o56?svg=true)](https://ci.appveyor.com/project/Xablu/xablu-webapiclient)
-[![Build status](https://img.shields.io/github/tag/Xablu/Xablu.WebApiClient.svg)]
+![Github tag](https://img.shields.io/github/tag/Xablu/Xablu.WebApiClient.svg)
 [![NuGet](https://img.shields.io/nuget/v/Xablu.WebApiClient.svg?label=NuGet)](https://www.nuget.org/packages/Xablu.WebApiClient/)
 [![MyGet](https://img.shields.io/myget/xabluhq/v/Xablu.WebApiClient.svg)](https://www.myget.org/F/Xablu.WebApiClient/api/v2)
 
