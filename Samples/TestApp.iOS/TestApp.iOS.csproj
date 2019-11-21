@@ -140,7 +140,7 @@
       <Name>Xablu.WebApiClient</Name>
     </ProjectReference>
     <ProjectReference Include="..\TestApp\TestApp.csproj">
-      <Project>{D12D1473-EFA8-43B0-8E69-CADC5F204C8B}</Project>
+      <Project>{A75769C8-8B31-4953-9924-58173BB07438}</Project>
       <Name>TestApp</Name>
     </ProjectReference>
   </ItemGroup>
