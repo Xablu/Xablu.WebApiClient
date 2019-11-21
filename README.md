@@ -1,121 +1,123 @@
-# Xablu.WebApiClient
-The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of Web API services in .NET projects.
+![xablu logo ](/Assets/xablu_logo.png "Xablu")
 
-### Setup & Usage
-* Available on NuGet: https://www.nuget.org/packages/Xablu.WebApiClient/
-* Install into each project that utilizes the WebApiClient
+# Xablu.WebApiClient   
 
-### Build Status: 
-[![Build status](https://ci.appveyor.com/api/projects/status/5ey0sq4fn01t9o56?svg=true
-)](https://ci.appveyor.com/project/Xablu/xablu-webapiclient)
-![GitHub tag](https://img.shields.io/github/tag/Xablu/Xablu.WebApiClient.svg)
+
+The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of Web API services in .NET projects.<br/> 
+
+> :construction: :warning: *Already using this library*?<br/> 
+> *We have been working on a 2nd version of WebApiClient which is based on Refit and will support GraphQL. This version has may new features. Beware, upgrading from version 1 to version 2 has some breaking changes since it’s not backwards compatible.* 
+
+## Table of contents  
+1. [How Xablu.WebApiClient Works](#howto)<br/>
+2. [Download / Install](#downloadinstal)<br/>
+3. [Build Status](#buildstatus)<br/> 
+4. [Key Features](#features)<br/>
+5. [Example ](#examples)<br/>
+6. [Contributions](#contributions)<br/>
+7. [Feedback](#feedback)
+
+## How Xablu.WebApiClient Works <a name="howto"></a>
+WebApiClient is an open source library, created and maintained by [Xablu](https://www.xablu.com/). It is currently available for .NET / Xamarin. Through experience, we discovered that any .NET client app that has resilient calls to web services, uses a combination of libraries. Therefore, we built: 
+
+* A REST client that is flexible and has no limitations. 
+* A GraphQL client that is powerful and includes a query builder.
+
+![webapiclient model](/Assets/model.png "WebApiClient Model")
+
+## Technical detail
+We have taken the time to update this package with all kind of new features including different libraries. Including these libraries come with new technologies 
+that you might not know about. Because of this reason we have made a summary below about each of the technologie explaining their use-case.
+
+### Refit: 
+[Refit](https://github.com/reactiveui/refit) is the backbone for the REST client. It allows making HTTP/S requests to external services. Any app that uses Refit does not require much effort to start using our code. All the features provided by Refit are also exposed by our library without limitation. 
+
+### Fussilade: 
+[Fusillade](https://github.com/reactiveui/Fusillade) is an HttpClient implementation which allows an app to efficiently schedule / create requests with different priorities. As a user you have the ability to set these priorities when you make a request. 
+
+### Polly: 
+[Polly](https://github.com/reactiveui/Fusillade) is a very flexible resilience and transient-fault-handling library that allow apps to react to certain situations through policies like retry and timeout. This package provides a very simple way of using all common available features. Every HTTP call made has Polly implemented and the user has the option to customize this. 
+
+### GraphQL.Client: 
+[GraphQL.Client](https://github.com/graphql-dotnet/graphql-client) is the base of our GraphQL implementation, which also includes all additions  from Fussilade and Polly as well. The coolest thing? We built a query builder that translates your common response models into a query (and it also gives you the results back as C# objects).   
+
+## Download / Install <a name="downloadinstal"></a>
+The Xablu.WebApiClient is written following the multi-target library approach. Meaning you can simply add the Xablu.WebApiClient package through NuGet. Install the NuGet package into your shared .NET Standard project and ALL Client projects. 
+
+* NuGet: Xablu.WebApiClient
+* PM> Install-Package Xablu.WebApiClient
+* Namespace: using Xablu.WebApiClient
+
+## Build Status: <a name="buildstatus"></a>
+[![Build status](https://ci.appveyor.com/api/projects/status/5ey0sq4fn01t9o56?svg=true)](https://ci.appveyor.com/project/Xablu/xablu-webapiclient)
+![Github tag](https://img.shields.io/github/tag/Xablu/Xablu.WebApiClient.svg)
 [![NuGet](https://img.shields.io/nuget/v/Xablu.WebApiClient.svg?label=NuGet)](https://www.nuget.org/packages/Xablu.WebApiClient/)
 [![MyGet](https://img.shields.io/myget/xabluhq/v/Xablu.WebApiClient.svg)](https://www.myget.org/F/Xablu.WebApiClient/api/v2)
 
-# Usage
+## Key Features <a name="features"></a>
 
-### Standard
+The WebApiClient contains new features with respect to the previous version. The list of key features is depicted below: 
 
-Create a new singleton of WebApiClient and use it to do REST operations.
+REST Client:
+  * Based on Refit                                          ✔
+  * Implemented Retry and Timeout from Polly                ✔
+  * Implemented Fusillade’s Priorities                      ✔
+
+GraphQL Client: 
+  * Based on GraphQL.Client                                 ✔
+  * Implemented Retry and Timeout from Polly                ✔
+  * Implemented Fusillade’s Priorities                      ✔
+  * Implemented a Custom, Object-Oriented Query Builder     ✔
+
+## Example <a name="examples"></a>
+
+Make sure to check out the [Test Console App](https://github.com/Xablu/Xablu.WebApiClient/tree/develop/Samples/TestConsoleApp) inside the package. Down here is an example call for connecting with a Web API service through Refit:
+
+Abstract:
 ```c#
-var restApiClient = new RestApiClient("http://baseurl.com/");
+Task<TResult> Call<TResult>(Func<T, Task<TResult>> operation, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout); 
 ```
-
-### MvvmCross
-
-If you want to use the standard HTTP client handlers, just register `IRestApiClient` with a base url. You can set the type of native handler in your csproj settings.
-
+Example implementation:
 ```c#
-Mvx.RegisterSingleton<IRestApiClient>(new RestApiClient(Constants.ApiBaseUrl));
-```
-
-When using custom HTTP handler, register a custom iOS Handler
-
-```c#
-var options = new RestApiClientOptions(Constants.ApiBaseUrl) 
+async Task<IEnumerable<MyModel>> GetModelsItemsAsync(bool forceRefresh = false) 
 {
-    DefaultHttpMessageHandler = () => new NSUrlSessionHandler();
-};
-Mvx.RegisterSingleton<IRestApiClient>(new RestApiClient(options));
-```
-
-Register the custom handler in Android
-
-```c#
-var options = new RestApiClientOptions(Constants.ApiBaseUrl) 
-{
-    DefaultHttpMessageHandler = () => new AndroidClientHandler();
-};
-Mvx.RegisterSingleton<IRestApiClient>(new RestApiClient(options));
-```
-
-Create a client to handle Http traffic
-
-```c#
-public class AuthenticationClient : IAuthenticationClient
-{
-   public AuthenticationClient(IRestApiClient apiClient) : base(apiClient)
-   {
-   }
-
-   public Task<int> AuthenticateWithCredentials(string username, string password)
-   {
-      var uri = new UriTemplate("user/logon");
-
-      var content = new MultipartFormDataContent();
-      content.Add(new StringContent(username), "username");
-      content.Add(new StringContent(password), "password");
-
-      return ExecuteRemoteRequest(async () => await apiClient.PostAsync<MultipartFormDataContent, int>(Priority.UserInitiated, uri.Resolve(), content).ConfigureAwait(false));
-   }
+  IWebApiClient<IRefitInterface> webApiClient = WebApiClientFactory.Get<IRefitInterface>("baseURL", defaultHeaders: true);
+  var jsonresult = await webApiClient.Call(
+      operation: myRefitService => myRefitService.GetData(),
+      priority: Priority.UserInitiated,
+      retryCount: 2,
+      shouldRetry: exception => myShouldRetryCondition(exception),
+      timeout: 60); 
 }
 ```
-	
-Add a Service to change and handle user logic
+Down here is an example call for connecting with a web API service through GraphQL:
 
+Abstract:
 ```c#
-public class AuthenticationService : IAuthenticationService
+public static IWebApiClient<T> Get<T>(string baseUrl, bool autoRedirectRequests = true, Func<DelegatingHandler> delegatingHandler = default, IDictionary<string, string> defaultHeaders = default) where T : class
+```
+Implementation:
+```c#
+async Task GraphqlAsync()
 {
-   private IBlobCache cache;
-   private IAuthenticationClient authClient;
-
-   public AuthenticationService(IAuthenticationClient authClient, IBlobCache cache = null)
-      : base()
-   {
-      this.cache = (cache ?? BlobCache.Secure);
-      this.authClient = authClient;
-   }
-
-   public async Task<bool> Login(string username, string password)
-   {
-      var userId = await authClient.AuthenticateWithCredentials(username, password).ConfigureAwait(false);
-
-      if (userId != default(int))
-      {
-         await this.cache.InsertObject(Settings.UserIdCacheKey, userId);
-	 return true;
-      }
-
-      return false;
-   }
-
-   public async Task<bool> IsAuthenticated()
-   {
-      try
-      {
-         var userId = await cache.GetObject<int>(Settings.UserIdCacheKey).ToTask().ConfigureAwait(false);
-	 return true;
-      }
-      catch (KeyNotFoundException)
-      {
-         return false;
-      }
-   }
-
-   public async Task Logout()
-   {
-      await cache.InvalidateAll().ToTask().ConfigureAwait(false);
-   }
+  var defaultHeaders = new Dictionary<string, string>
+  {
+    ["User-Agent"] = "ExampleUser",
+    ["Authorization"] = "Bearer ******"
+  };
+  IWebApiClient<IGitHubApi> webApiClient = WebApiClientFactory.Get<IGitHubApi>("https://api.github.com", false, default, defaultHeaders);
+  var requestForSingleUser = new Request<UserResponseModel>("(login: \"ExampleUser\")");
+  await webApiClient.SendQueryAsync(requestForSingleUser);
 }
 ```
 
+# Contributions <a name="contributions"></a>
+All contributions are welcome! If you have a problem, please open an issue. And PRs are also appreciated! 
+
+# Feedback <a name="feedback"></a>
+Are you using this library? We would love to hear from you!
+Or do you have any questions or suggestions?
+You are welcome to discuss it on:
+
+[<img src="/Assets/github.png">](https://github.com/Xablu)
+[<img src="/Assets/twitter.png">](https://twitter.com/xabluhq)

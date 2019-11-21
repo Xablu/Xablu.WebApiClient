@@ -1,0 +1,90 @@
+<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
+
+  <PropertyGroup>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">netstandard2.0;Xamarin.iOS10;Xamarin.TVOS10;Xamarin.WatchOS10;MonoAndroid60;MonoAndroid70;MonoAndroid71;MonoAndroid80;MonoAndroid81;MonoAndroid90;uap10.0.16299;</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' != 'Windows_NT' ">netstandard2.0;Xamarin.iOS10;Xamarin.TVOS10;Xamarin.WatchOS10;MonoAndroid60;MonoAndroid70;MonoAndroid71;MonoAndroid80;MonoAndroid81;MonoAndroid90;;</TargetFrameworks>
+    <Product>$(AssemblyName) ($(TargetFramework))</Product>
+    <DefaultLanguage>en-US</DefaultLanguage> 
+    <ReleaseVersion>2.0</ReleaseVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)'=='Debug' ">
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(Configuration)'=='Release' ">
+    <DebugType>pdbonly</DebugType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile> 
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild> 
+  </PropertyGroup>
+
+  <!-- Assembly information -->
+  <PropertyGroup>
+    <Version>1.1.0.0</Version>
+    <FileVersion>1.1.0.0</FileVersion>
+    <Authors>Xablu</Authors>
+    <Description>The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of Web API services in .NET projects.</Description>
+    <Copyright>Copyright (c) 2016 Xablu</Copyright>
+  </PropertyGroup>
+
+  <!-- Package information -->
+  <PropertyGroup>
+    <PackageId>Xablu.WebApiClient</PackageId>
+    <PackageVersion>$(Version)</PackageVersion>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>&gt;xamarin, monodroid, C#, xamarin.android, android, ios, uwp, Windows, tvOS, Mac, MacOS, Xablu, Web API, REST, ASP.NET, .NET</PackageTags>
+    <PackageLicenseUrl>https://github.com/Xablu/Xablu.WebApiClient/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/Xablu/Xablu.WebApiClient</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/Xablu/Xablu.WebApiClient/master/icon_xablu.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/Xablu/Xablu.WebApiClient</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+     
+    <PackageReference Include="fusillade" Version="2.0.5" />
+    <PackageReference Include="Polly" Version="7.1.1" /> 
+    <PackageReference Include="Refit" Version="5.0.15" />
+    <!--<PackageReference Include="System.ComponentModel" Version="4.3.0" />
+    <PackageReference Include="System.Diagnostics.Contracts" Version="4.3.0" />
+    <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Net.Requests" Version="4.3.0" />-->
+    <PackageReference Include="GraphQL.Client" Version="2.0.0-alpha.3" />
+    <PackageReference Include="LibLog" Version="5.0.6">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup> 
+    
+  <ItemGroup>
+    <Compile Remove="**\*.android.cs" />
+    <Compile Remove="**\*.ios.cs" />
+    <Compile Remove="**\*.netstandard.cs" /> 
+    <!--<None Include="**\*.ios.cs" />
+    <None Include="**\*.android.cs" />-->
+    <None Include="README.txt" pack="true" PackagePath="." /> 
+  </ItemGroup>
+     
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('netstandard')) Or $(TargetFramework.StartsWith('Xamarin.TVOS')) Or $(TargetFramework.StartsWith('Xamarin.WatchOS10')) Or $(TargetFramework.StartsWith('uap'))">
+    <Compile Include="**\*.netstandard.cs" />  
+  </ItemGroup>
+  
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('MonoAndroid'))">
+    <Compile Include="**\*.android.cs" />  
+    <!-- if you have resources add this
+    <AndroidResource Include="Resources\**\*.axml" />
+    <AndroidResource Include="Resources\**\*.xml" />
+    <AndroidResource Include="Resources\**\*.png" />
+    -->
+  </ItemGroup>
+
+  <ItemGroup Condition=" $(TargetFramework.StartsWith('Xamarin.iOS')) ">
+    <Compile Include="**\*.ios.cs" />  
+  </ItemGroup>
+</Project>
