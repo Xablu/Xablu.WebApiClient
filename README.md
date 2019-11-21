@@ -1,4 +1,4 @@
-# Xablu.WebApiClient   ![xablu logo ](/readmecontent/xablu_logo.png "Xablu")
+# Xablu.WebApiClient   ![xablu logo ](/Assets/xablu_logo.png "Xablu")
 
 The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of Web API services in .NET projects. 
 
@@ -20,7 +20,7 @@ WebApiClient is an open source library, created and maintained by Xablu. It is c
 * A REST client library that combines the most popular libraries like Refit, Fussilade and Poly into a single package. 
 * A library that makes it easier to work with GraphQL APIs.
 
-![webapiclient model](/readmecontent/model.png "WebApiClient Model")
+![webapiclient model](/Assets/model.png "WebApiClient Model")
 
 ## Technical detail
 We have taken the time to update this package with all kind of new features including different libraries. Including these libraries come with new technologies 
@@ -118,5 +118,5 @@ Are you using this library? We would love to hear from you!
 Or do you have any questions or suggestions?
 You are welcome to discuss it on:
 
-[<img src="/readmecontent/github.png">](https://github.com/Xablu)
-[<img src="/readmecontent/twitter.png">](https://twitter.com/xabluhq)
+[<img src="/Assets/github.png">](https://github.com/Xablu)
+[<img src="/Assets/twitter.png">](https://twitter.com/xabluhq)
