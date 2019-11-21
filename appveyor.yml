@@ -14,8 +14,11 @@ dotnet_csproj:
   assembly_version: '{version}'
   file_version: '{version}'
 
+before_build:
+- cmd: dotnet restore src\Xablu.WebApiClient.sln
+
 build:
-  project: src/Xablu.WebApiClient.sln
+  project: src\Xablu.WebApiClient.sln
 
 artifacts:
   - path: 'Xablu.WebApiClient.*.nupkg'
