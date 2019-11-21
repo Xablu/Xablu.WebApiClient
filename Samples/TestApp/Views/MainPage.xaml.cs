@@ -28,7 +28,7 @@ namespace TestApp.Views
             Task.Run(async () => await GraphqlAsync());
         }
 
-        public async Task<string> GraphqlAsync()
+        public async Task<UserResponseModel> GraphqlAsync()
         {
             var defaultHeaders = new Dictionary<string, string>
             {
@@ -42,12 +42,9 @@ namespace TestApp.Views
             test.DefaultRequestHeaders.Add("User-Agent", "LukasThijs");
             test.DefaultRequestHeaders.Add("Authorization", "Bearer insertbearer");
 
-            //todo call below works
-            //    var a = await test.SendQueryAsync(requestForSingleUser);
-            //todo call below does not work
-            await webApiClient.SendQueryAsync<UserResponseModel>(requestForSingleUser);
+            var user = await webApiClient.SendQueryAsync<UserResponseModel>(requestForSingleUser);
 
-            return null;
+            return user;
         }
 
 
