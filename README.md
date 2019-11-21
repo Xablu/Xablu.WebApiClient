@@ -1,4 +1,6 @@
-# Xablu.WebApiClient   ![xablu logo ](/Assets/xablu_logo.png "Xablu")
+![xablu logo ](/Assets/xablu_logo.png "Xablu")
+
+# Xablu.WebApiClient   
 
 
 The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of Web API services in .NET projects.<br/> 
@@ -7,19 +9,19 @@ The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of 
 > *We have been working on a 2nd version of WebApiClient which is based on Refit and will support GraphQL. This version has may new features. Beware, upgrading from version 1 to version 2 has some breaking changes since it’s not backwards compatible.* 
 
 ## Table of contents  
-1.[How Xablu.WebApiClient Works](#howto)<br/>
-2.[Download / Install](#downloadinstal)<br/>
-3.[Build Status](#buildstatus)<br/> 
-4.[Key Features](#features)<br/>
-5.[Example ](#examples)<br/>
-6.[Contributions](#contributions)<br/>
-7.[Feedback](#feedback)
+1. [How Xablu.WebApiClient Works](#howto)<br/>
+2. [Download / Install](#downloadinstal)<br/>
+3. [Build Status](#buildstatus)<br/> 
+4. [Key Features](#features)<br/>
+5. [Example ](#examples)<br/>
+6. [Contributions](#contributions)<br/>
+7. [Feedback](#feedback)
 
 ## How Xablu.WebApiClient Works <a name="howto"></a>
-WebApiClient is an open source library, created and maintained by Xablu. It is currently available for .NET / Xamarin. Through experience, we discovered that any .NET client app that has resilient calls to web services, uses a combination of libraries. Therefore, we built: 
+WebApiClient is an open source library, created and maintained by [Xablu](https://www.xablu.com/). It is currently available for .NET / Xamarin. Through experience, we discovered that any .NET client app that has resilient calls to web services, uses a combination of libraries. Therefore, we built: 
 
-* A REST client library that combines the most popular libraries like Refit, Fussilade and Poly into a single package. 
-* A library that makes it easier to work with GraphQL APIs.
+* A REST client that is flexible and has no limitations. 
+* A GraphQL client that is powerful and includes a query builder.
 
 ![webapiclient model](/Assets/model.png "WebApiClient Model")
 
@@ -28,16 +30,16 @@ We have taken the time to update this package with all kind of new features incl
 that you might not know about. Because of this reason we have made a summary below about each of the technologie explaining their use-case.
 
 ### Refit: 
-Refit is the backbone that allows making HTTP/S requests to external services. Any app that uses Refit does not require much effort to start using our code. All the features provided by Refit are also exposed by our library without limitation. 
+[Refit](https://github.com/reactiveui/refit) is the backbone for the REST client. It allows making HTTP/S requests to external services. Any app that uses Refit does not require much effort to start using our code. All the features provided by Refit are also exposed by our library without limitation. 
 
 ### Fussilade: 
-Fusillade is an HttpClient implementation which allows an app to efficiently schedule / create requests with different priorities. As a user you have the ability to set these priorities when you make a request. 
+[Fusillade](https://github.com/reactiveui/Fusillade) is an HttpClient implementation which allows an app to efficiently schedule / create requests with different priorities. As a user you have the ability to set these priorities when you make a request. 
 
 ### Polly: 
-Polly is a very flexible resilience and transient-fault-handling library that allow apps to react to certain situations through policies like retry and timeout. This package provides a very simple way of using all common available features. Every HTTP call made has Polly implemented and the user has the option to customize this. 
+[Polly](https://github.com/reactiveui/Fusillade) is a very flexible resilience and transient-fault-handling library that allow apps to react to certain situations through policies like retry and timeout. This package provides a very simple way of using all common available features. Every HTTP call made has Polly implemented and the user has the option to customize this. 
 
-### GraphQL: 
-GraphQL intergration has a dependancy towards the GraphQL.Client, and also includes all additions which come from Fussilade and Polly as well. This package comes with a query builder which translates your common response models into a query.   
+### GraphQL.Client: 
+[GraphQL.Client](https://github.com/graphql-dotnet/graphql-client) is the base of our GraphQL implementation, which also includes all additions  from Fussilade and Polly as well. The coolest thing? We built a query builder that translates your common response models into a query (and it also gives you the results back as C# objects).   
 
 ## Download / Install <a name="downloadinstal"></a>
 The Xablu.WebApiClient is written following the multi-target library approach. Meaning you can simply add the Xablu.WebApiClient package through NuGet. Install the NuGet package into your shared .NET Standard project and ALL Client projects. 
@@ -72,11 +74,11 @@ GraphQL Client:
 Make sure to check out the [Test Console App](https://github.com/Xablu/Xablu.WebApiClient/tree/develop/Samples/TestConsoleApp) inside the package. Down here is an example call for connecting with a Web API service through Refit:
 
 Abstract:
-```
+```c#
 Task<TResult> Call<TResult>(Func<T, Task<TResult>> operation, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout); 
 ```
 Example implementation:
-```
+```c#
 async Task<IEnumerable<MyModel>> GetModelsItemsAsync(bool forceRefresh = false) 
 {
   IWebApiClient<IRefitInterface> webApiClient = WebApiClientFactory.Get<IRefitInterface>("baseURL", defaultHeaders: true);
@@ -91,11 +93,11 @@ async Task<IEnumerable<MyModel>> GetModelsItemsAsync(bool forceRefresh = false)
 Down here is an example call for connecting with a web API service through GraphQL:
 
 Abstract:
-```
+```c#
 public static IWebApiClient<T> Get<T>(string baseUrl, bool autoRedirectRequests = true, Func<DelegatingHandler> delegatingHandler = default, IDictionary<string, string> defaultHeaders = default) where T : class
 ```
 Implementation:
-```
+```c#
 async Task GraphqlAsync()
 {
   var defaultHeaders = new Dictionary<string, string>
@@ -108,11 +110,12 @@ async Task GraphqlAsync()
   await webApiClient.SendQueryAsync(requestForSingleUser);
 }
 ```
+
 # Contributions <a name="contributions"></a>
 All contributions are welcome! If you have a problem, please open an issue. And PRs are also appreciated! 
 
 # Feedback <a name="feedback"></a>
-Are you using this library? We would love to hear from you! 
+Are you using this library? We would love to hear from you!
 Or do you have any questions or suggestions?
 You are welcome to discuss it on:
 
