@@ -101,7 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TestApp\TestApp.csproj">
-      <Project>{DAB5634F-08B5-459D-B8D1-2DF1FE428025}</Project>
+      <Project>{D12D1473-EFA8-43B0-8E69-CADC5F204C8B}</Project>
       <Name>TestApp</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\Xablu.WebApiClient\Xablu.WebApiClient.csproj">
