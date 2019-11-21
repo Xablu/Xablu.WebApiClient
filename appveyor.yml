@@ -15,7 +15,7 @@ dotnet_csproj:
   file_version: '{version}'
 
 before_build:
-- cmd: dotnet restore src\Xablu.WebApiClient.sln
+- cmd: msbuild /t:restore src\Xablu.WebApiClient.sln
 
 build:
   project: src\Xablu.WebApiClient.sln
