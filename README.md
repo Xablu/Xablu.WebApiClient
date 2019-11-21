@@ -68,7 +68,7 @@ GraphQL Client:
 
 ## Example <a name="examples"></a>
 
-Make sure to check out more examples in the [Test Console App](TestConsoleApp) in the package. Down here is an example call for connecting with a Web API service through Refit:
+Make sure to check out the [Test Console App](https://github.com/Xablu/Xablu.WebApiClient/tree/develop/Samples/TestConsoleApp) inside the package. Down here is an example call for connecting with a Web API service through Refit:
 
 Abstract:
 ```
