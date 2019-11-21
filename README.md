@@ -79,13 +79,13 @@ Example implementation:
 ```
 async Task<IEnumerable<MyModel>> GetModelsItemsAsync(bool forceRefresh = false) 
 {
-  IWebApiClient<IRefitInterface> webApiClient = WebApiClientFactory.Get<IRefitInterface>("baseURL", bool defaultHeaders: true);
+  IWebApiClient<IRefitInterface> webApiClient = WebApiClientFactory.Get<IRefitInterface>("baseURL", defaultHeaders: true);
   var jsonresult = await webApiClient.Call(
-      (myRefitService) => myRefitService.GetData(),
-      (Polly.Priority) Priority.UserInitiated,
-      (retryCount) 2,
-      (shouldRetry) => true,
-      (timeout) timeout: 60); 
+      operation: myRefitService => myRefitService.GetData(),
+      priority: Priority.UserInitiated,
+      retryCount: 2,
+      shouldRetry: exception => myShouldRetryCondition(exception),
+      timeout: 60); 
 }
 ```
 Down here is an example call for connecting with a web API service through GraphQL:
@@ -103,9 +103,8 @@ async Task GraphqlAsync()
     ["User-Agent"] = "ExampleUser",
     ["Authorization"] = "Bearer ******"
   };
-  var webApiClient = WebApiClientFactory.Get<IGitHubApi>("https://api.github.com", false, default, defaultHeaders);
-  var requestForSingleUser = new Request<UserResponseModel>(null, "(login: \"ExampleUser\")");
-  var requestForUsersList = new Request<UsersResponseModel>();
+  IWebApiClient<IGitHubApi> webApiClient = WebApiClientFactory.Get<IGitHubApi>("https://api.github.com", false, default, defaultHeaders);
+  var requestForSingleUser = new Request<UserResponseModel>("(login: \"ExampleUser\")");
   await webApiClient.SendQueryAsync(requestForSingleUser);
 }
 ```
