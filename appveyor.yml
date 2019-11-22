@@ -1,34 +1,42 @@
+version: 2.0.{build}
+
+image: Visual Studio 2019
+
+skip_commits:
+  files:
+    - '**/*.md'
+
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+
+before_build:
+- cmd: msbuild /t:restore src\Xablu.WebApiClient.sln
+
+
+build:
+  project: src\Xablu.WebApiClient.sln
+
+artifacts:
+  - path: '**\Xablu.WebApiClient.*.nupkg'
+
+configuration: Release
+
+for:
 -
   branches:
       only:
         - master
-
-  version: 2.0.{build}
-
-  image: Visual Studio 2019
   
-  skip_commits:
-    files:
-      - '**/*.md'
+  build:
+    publish_nuget: true
 
-  dotnet_csproj:
-    patch: true
-    file: '**\*.csproj'
-    version: '{version}'
-    package_version: '{version}'
-    assembly_version: '{version}'
-    file_version: '{version}'
-
-  build_script:
-    - cmd: msbuild src/Xablu.WebApiClient.sln /t:restore
-    - cmd: msbuild src/Xablu.WebApiClient.sln /t:pack /p:Configuration=Release /p:VersionNumber=%version% /p:PackageOutputPath=%APPVEYOR_BUILD_FOLDER%
-  
-  artifacts:
-    - path: 'Xablu.WebApiClient.*.nupkg'
-  
   deploy:
     provider: NuGet
-    server: https://www.nuget.org/api/v2/package
     api_key:
       secure: Fa1CPP5b0AEtKdI1cPJOwFalpn/bKgcbBYw6KFdSN7S2YIn9hQsNcgDEmc5EnPhD
     artifact: /.*\.nupkg/
@@ -37,29 +45,6 @@
       only:
         - develop
 
-  version: 2.0.{build}
-
-  image: Visual Studio 2019
-  
-  skip_commits:
-    files:
-      - '**/*.md'
-
-  dotnet_csproj:
-    patch: true
-    file: '**\*.csproj'
-    version: '{version}'
-    package_version: '{version}'
-    assembly_version: '{version}'
-    file_version: '{version}'
-
-  build_script:
-    - cmd: msbuild src/Xablu.WebApiClient.sln /t:restore
-    - cmd: msbuild src/Xablu.WebApiClient.sln /t:pack /p:PackageOutputPath=%APPVEYOR_BUILD_FOLDER%
-  
-  artifacts:
-    - path: 'Xablu.WebApiClient.*.nupkg'
-  
   deploy:
     provider: NuGet
     server: https://www.myget.org/F/xabluhq/api/v2/package
