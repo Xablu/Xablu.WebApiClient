@@ -3,6 +3,9 @@ pool:
   demands: msbuild
   vmImage: windows-2019
 
+#here is where we set the version number (Build.BuildNumber)
+name: 2.0$(rev:.r)
+
 steps:
 - task: NuGetToolInstaller@1
   displayName: 'Use NuGet '
