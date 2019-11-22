@@ -15,7 +15,8 @@ dotnet_csproj:
   file_version: '{version}'
 
 build_script:
-- cmd: msbuild src\Xablu.WebApiClient.sln /t:restore /t:pack /p:VersionNumber=%version% /p:PackageOutputPath=%APPVEYOR_BUILD_FOLDER% 
+- cmd: msbuild src\Xablu.WebApiClient.sln /t:restore
+- cmd: msbuild src\Xablu.WebApiClient.sln /t:pack /p:VersionNumber=%version% /p:PackageOutputPath=%APPVEYOR_BUILD_FOLDER% 
 
 build:
   project: src\Xablu.WebApiClient.sln
