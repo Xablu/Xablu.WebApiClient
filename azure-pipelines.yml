@@ -1,24 +1,38 @@
-# Starter pipeline
+pool:
+  name: Azure Pipelines
+  demands: msbuild
+
+steps:
 - task: NuGetToolInstaller@1
-  inputs:
-    versionSpec: 
+  displayName: 'Use NuGet '
+
 - task: NuGetCommand@2
+  displayName: 'NuGet restore'
   inputs:
-    command: 'restore'
-    restoreSolution: 'src/Xablu.WebApiClient.sln'
-    feedsToUse: 'select'
+    restoreSolution: src/Xablu.WebApiClient.sln
+
 - task: MSBuild@1
+  displayName: 'Build Beta'
   inputs:
-    solution: 'src/Xablu.WebApiClient/Xablu.WebApiClient.csproj'
+    solution: src/Xablu.WebApiClient/Xablu.WebApiClient.csproj
     configuration: 'Release'
-    msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber)-beta /p:PackageOutputPath=$(build.artifactstagingdirectory)/beta /p:AssemblyFileVersion=$(Build.BuildNumber)'
+    msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber)-beta /p:PackageOutputPath=$(build.artifactstagingdirectory)/beta /p:AssemblyFileVersion=$(Build.BuildNumber) '
+
 - task: MSBuild@1
+  displayName: 'Build Public'
   inputs:
-    solution: 'src/Xablu.WebApiClient/Xablu.WebApiClient.csproj'
+    solution: src/Xablu.WebApiClient/Xablu.WebApiClient.csproj
     configuration: 'Release'
-    msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber) /p:PackageOutputPath=$(build.artifactstagingdirectory)/public  /p:AssemblyFileVersion=$(Build.BuildNumber)'
+    msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber) /p:PackageOutputPath=$(build.artifactstagingdirectory)/public  /p:AssemblyFileVersion=$(Build.BuildNumber) '
+
 - task: CopyFiles@2
+  displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
   inputs:
     SourceFolder: '$(build.sourcesdirectory)'
-    Contents: '**\bin\$(BuildConfiguration)\**\*.nupkg'
+    Contents: '**\bin\Release\**\*.nupkg'
     TargetFolder: '$(build.artifactstagingdirectory)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
