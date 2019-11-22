@@ -1,0 +1,42 @@
+pool:
+  name: Azure Pipelines
+  demands: msbuild
+  vmImage: windows-2019
+
+#here is where we set the version number (Build.BuildNumber)
+name: 2.0.0$(rev:.r)
+
+steps:
+- task: NuGetToolInstaller@1
+  displayName: 'Use NuGet '
+
+- task: NuGetCommand@2
+  displayName: 'NuGet restore'
+  inputs:
+    restoreSolution: src/Xablu.WebApiClient.sln
+
+- task: MSBuild@1
+  displayName: 'Build Beta'
+  inputs:
+    solution: src/Xablu.WebApiClient/Xablu.WebApiClient.csproj
+    configuration: 'Release'
+    msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber)-beta /p:PackageOutputPath=$(build.artifactstagingdirectory)/beta /p:AssemblyFileVersion=$(Build.BuildNumber) '
+
+- task: MSBuild@1
+  displayName: 'Build Public'
+  inputs:
+    solution: src/Xablu.WebApiClient/Xablu.WebApiClient.csproj
+    configuration: 'Release'
+    msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber) /p:PackageOutputPath=$(build.artifactstagingdirectory)/public  /p:AssemblyFileVersion=$(Build.BuildNumber) '
+
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+  inputs:
+    SourceFolder: '$(build.sourcesdirectory)'
+    Contents: '**\bin\Release\**\*.nupkg'
+    TargetFolder: '$(build.artifactstagingdirectory)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
