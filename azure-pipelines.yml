@@ -1,0 +1,24 @@
+# Starter pipeline
+- task: NuGetToolInstaller@1
+  inputs:
+    versionSpec: 
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: 'src/Xablu.WebApiClient.sln'
+    feedsToUse: 'select'
+- task: MSBuild@1
+  inputs:
+    solution: 'src/Xablu.WebApiClient/Xablu.WebApiClient.csproj'
+    configuration: 'Release'
+    msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber)-beta /p:PackageOutputPath=$(build.artifactstagingdirectory)/beta /p:AssemblyFileVersion=$(Build.BuildNumber)'
+- task: MSBuild@1
+  inputs:
+    solution: 'src/Xablu.WebApiClient/Xablu.WebApiClient.csproj'
+    configuration: 'Release'
+    msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber) /p:PackageOutputPath=$(build.artifactstagingdirectory)/public  /p:AssemblyFileVersion=$(Build.BuildNumber)'
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(build.sourcesdirectory)'
+    Contents: '**\bin\$(BuildConfiguration)\**\*.nupkg'
+    TargetFolder: '$(build.artifactstagingdirectory)'
