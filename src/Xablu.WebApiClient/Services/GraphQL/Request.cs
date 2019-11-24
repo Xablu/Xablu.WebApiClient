@@ -87,6 +87,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
         {
             LoadProperties(typeof(T));
 
+            CurateProperties();
             var unformattedQuery = QueryBuilder();
 
             var result = OptionalParameters != null ? FormatQuery(unformattedQuery, OptionalParameters) : unformattedQuery;
@@ -139,6 +140,15 @@ namespace Xablu.WebApiClient.Services.GraphQL
             if (propList.Any())
             {
                 _propertyListList.Add(propList);
+            }
+        }
+
+        protected virtual void CurateProperties()
+        {
+            var parentTypeToExclude = typeof(List<>);
+            foreach (List<PropertyDetail> propertyList in _propertyListList.Where(list => list.Any()))
+            {
+                propertyList.RemoveAll(p => p.ParentName == parentTypeToExclude.Name);
             }
         }
 
@@ -195,7 +205,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
         {
             string queryString = "";
 
-            foreach (List<PropertyDetail> propertyList in _propertyListList)
+            foreach (List<PropertyDetail> propertyList in _propertyListList.Where(list => list.Any()))
             {
                 propertyList.Reverse();
                 foreach (PropertyDetail property in propertyList)
