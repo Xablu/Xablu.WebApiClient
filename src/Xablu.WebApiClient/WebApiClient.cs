@@ -99,6 +99,13 @@ namespace Xablu.WebApiClient
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
             var result = await policy.ExecuteAsync(async () => await service.SendQueryAsync(request, cancellationToken));
 
+            if (result.Errors != null && result.Errors.Any())
+            {
+                string message = "GraphQL" + (result.Errors.Length == 1 ? " Error: " : " Errors: ");
+                message += string.Join(" /// ", result.Errors.Select(e  => e.Message));
+                throw new Exception(message);
+            }
+
             var resultData = result?.Data as JObject;
             if (resultData == null)
             {
@@ -129,6 +136,13 @@ namespace Xablu.WebApiClient
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
             var result = await policy.ExecuteAsync(async () => await service.SendMutationAsync(request, cancellationToken));
+
+            if (result.Errors != null && result.Errors.Any())
+            {
+                string message = "GraphQL" + (result.Errors.Length == 1 ? " Error: " : " Errors: ");
+                message += string.Join(" /// ", result.Errors.Select(e => e.Message));
+                throw new Exception(message);
+            }
 
             var resultData = result?.Data as JObject;
             if (resultData == null)
