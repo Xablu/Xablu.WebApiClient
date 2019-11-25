@@ -99,19 +99,6 @@ namespace Xablu.WebApiClient
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
             var result = await policy.ExecuteAsync(async () => await service.SendQueryAsync(request, cancellationToken));
 
-            if (result?.Errors?.Length > 0)
-            {
-                string error = "";
-                int numberOfError = 1;
-                foreach (var item in result.Errors)
-                {
-                    error += $"{numberOfError}. {item}";
-                    numberOfError++;
-                }
-                var message = $"The following has occured: {error}";
-                throw new RequestException(message);
-            }
-
             var resultData = result?.Data as JObject;
             if (resultData == null)
             {
@@ -141,19 +128,6 @@ namespace Xablu.WebApiClient
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
             var result = await policy.ExecuteAsync(async () => await service.SendMutationAsync(request, cancellationToken));
-
-            if (result?.Errors?.Length > 0)
-            {
-                string error = "";
-                int numberOfError = 1;
-                foreach (var item in result.Errors)
-                {
-                    error += $"{numberOfError}. {item}";
-                    numberOfError++;
-                }
-                var message = $"The following has occured: {error}";
-                throw new RequestException(message);
-            }
 
             var resultData = result?.Data as JObject;
             if (resultData == null)
