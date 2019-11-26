@@ -34,5 +34,14 @@ namespace Xablu.WebApiClient
 
         Task<TModel> SendMutationAsync<TModel>(Request<TModel> request, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default(CancellationToken))
             where TModel : class, new();
+
+        Task<TModel> SendMutationAsync<TModel>(string mutationString, dynamic queryVariable, CancellationToken cancellationToken = default(CancellationToken))
+            where TModel : class, new();
+
+        Task<TModel> SendMutationAsync<TModel>(string mutationString, dynamic queryVariable, RequestOptions options, CancellationToken cancellationToken = default(CancellationToken))
+            where TModel : class, new();
+
+        Task<TModel> SendMutationAsync<TModel>(string mutationString, dynamic queryVariable, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default(CancellationToken))
+            where TModel : class, new();
     }
 }
