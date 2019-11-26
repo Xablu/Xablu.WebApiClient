@@ -51,15 +51,16 @@ namespace TestConsoleApp
             var webApiClient = WebApiClientFactory.Get<IGitHubApi>("https://api.github.com", false, default, defaultHeaders);
             var mutationQuery = @" mutation ($changeUserStatusInputModel: ChangeUserStatusInput!) { changeUserStatus(input: $changeUserStatusInputModel){ clientMutationId, status { message }}}";
 
-            var variables = new {
-                changeUserStatusInputModel = new ChangeUserStatusInputModel()
-                { 
-                    ClientMutationId = "101010101", 
+            var variables = new
+            {
+                changeUserStatusInputModel = new ChangeUserInputVariables()
+                {
+                    ClientMutationId = "101010101",
                     Message = "The mutation has succeeded"
                 }
             };
 
-            var result = await webApiClient.SendMutationAsync<ChangeUserStatusInputModel>(mutationString: mutationQuery, variables);
+            var result = await webApiClient.SendMutationAsync<ChangeUserStatus>(mutationQuery, variables);
             var serializedObject = JsonConvert.SerializeObject(result);
 
             return serializedObject;
@@ -92,7 +93,7 @@ namespace TestConsoleApp
         public long TotalCount { get; set; }
     }
 
-    public class ChangeUserStatusInputModel
+    public class ChangeUserInputVariables
     {
         [JsonProperty("clientMutationId")]
         public string ClientMutationId { get; set; }
@@ -100,22 +101,20 @@ namespace TestConsoleApp
         [JsonProperty("message")]
         public string Message { get; set; }
 
-        //[JsonProperty("changeUserStatus")]
-        //public ChangeUserStatus ChangeUserStatus { get; set; }
     }
 
-    //public class ChangeUserStatus
-    //{
-    //    [JsonProperty("clientMutationId")]
-    //    public string ClientMutationId { get; set; }
+    public class ChangeUserStatus
+    {
+        [JsonProperty("clientMutationId")]
+        public string ClientMutationId { get; set; }
 
-    //    [JsonProperty("status")]
-    //    public Status Status { get; set; }
-    //}
+        [JsonProperty("status")]
+        public Status Status { get; set; }
+    }
 
-    //public class Status
-    //{
-    //    [JsonProperty("message")]
-    //    public string Message { get; set; }
-    //}
+    public class Status
+    {
+        [JsonProperty("message")]
+        public string Message { get; set; }
+    }
 }

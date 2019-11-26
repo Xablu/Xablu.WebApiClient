@@ -57,7 +57,7 @@ namespace TestConsoleApp
                     Console.WriteLine("\t2 - SendMutation");
                     // Console.WriteLine("\t2 - POST");
                     //  Console.WriteLine("\t2 - DELETE");
-                    Console.WriteLine("\t2 - Back to Home Menu");
+                    Console.WriteLine("\t3 - Back to Home Menu");
                     Console.Write("Your option? ");
                     await PrintGraphqlCall();
                     break;

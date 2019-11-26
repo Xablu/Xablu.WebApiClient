@@ -188,16 +188,16 @@ namespace Xablu.WebApiClient
                 throw new Exception(message);
             }
 
-            var resultData = result?.Data as JObject;
+            var name = typeof(TModel).Name;
+            var variableName = char.ToLower(name[0]) + name?.Substring(1);
+            var resultData = result?.GetDataFieldAs<TModel>(variableName);
+
             if (resultData == null)
             {
-                throw new InvalidCastException("Result is not a valid Json");
+                throw new InvalidCastException("Model provided is not of correct type");
             }
-            var model = JsonConvert.DeserializeObject<TModel>(resultData.ToString());
-            return model;
+            return resultData;
         }
-
-
 
         private static AsyncPolicyWrap GetWrappedPolicy(int retryCount, Func<Exception, bool> shouldRetry, int timeout)
         {
