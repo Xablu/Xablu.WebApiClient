@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using GraphQL.Common.Request;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Polly;
@@ -99,6 +100,13 @@ namespace Xablu.WebApiClient
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
             var result = await policy.ExecuteAsync(async () => await service.SendQueryAsync(request, cancellationToken));
 
+            if (result.Errors != null && result.Errors.Any())
+            {
+                string message = "GraphQL" + (result.Errors.Length == 1 ? " Error: " : " Errors: ");
+                message += string.Join(" /// ", result.Errors.Select(e => e.Message));
+                throw new Exception(message);
+            }
+
             var resultData = result?.Data as JObject;
             if (resultData == null)
             {
@@ -130,6 +138,13 @@ namespace Xablu.WebApiClient
 
             var result = await policy.ExecuteAsync(async () => await service.SendMutationAsync(request, cancellationToken));
 
+            if (result.Errors != null && result.Errors.Any())
+            {
+                string message = "GraphQL" + (result.Errors.Length == 1 ? " Error: " : " Errors: ");
+                message += string.Join(" /// ", result.Errors.Select(e => e.Message));
+                throw new Exception(message);
+            }
+
             var resultData = result?.Data as JObject;
             if (resultData == null)
             {
@@ -137,6 +152,51 @@ namespace Xablu.WebApiClient
             }
             var model = JsonConvert.DeserializeObject<TModel>(resultData.ToString());
             return model;
+        }
+
+        public Task<TModel> SendMutationAsync<TModel>(string mutationString, dynamic queryVariable, CancellationToken cancellationToken = default)
+            where TModel : class, new()
+        {
+            return SendMutationAsync<TModel>(mutationString, queryVariable, GetDefaultOptions(), cancellationToken);
+        }
+
+        public Task<TModel> SendMutationAsync<TModel>(string mutationString, dynamic queryVariable, RequestOptions options, CancellationToken cancellationToken = default) where TModel : class, new()
+        {
+            return SendMutationAsync<TModel>(mutationString, queryVariable, options.Priority, options.RetryCount, options.ShouldRetry, options.Timeout, cancellationToken);
+        }
+
+        public async Task<TModel> SendMutationAsync<TModel>(string mutationString, dynamic queryVariables, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
+           where TModel : class, new()
+        {
+            var service = _graphQLService.GetByPriority(priority);
+            service.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
+
+            var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
+
+            var mutationRequest = new GraphQLRequest()
+            {
+                Query = mutationString,
+                Variables = queryVariables
+            };
+
+            var result = await policy.ExecuteAsync(async () => await service.SendMutationAsync(mutationRequest, cancellationToken));
+
+            if (result.Errors != null && result.Errors.Any())
+            {
+                string message = "GraphQL" + (result.Errors.Length == 1 ? " Error: " : " Errors: ");
+                message += string.Join(" /// ", result.Errors.Select(e => e.Message));
+                throw new Exception(message);
+            }
+
+            var name = typeof(TModel).Name;
+            var variableName = char.ToLower(name[0]) + name?.Substring(1);
+            var resultData = result?.GetDataFieldAs<TModel>(variableName);
+
+            if (resultData == null)
+            {
+                throw new InvalidCastException("Model provided is not of correct type");
+            }
+            return resultData;
         }
 
         private static AsyncPolicyWrap GetWrappedPolicy(int retryCount, Func<Exception, bool> shouldRetry, int timeout)
@@ -180,5 +240,7 @@ namespace Xablu.WebApiClient
                     ShouldRetry = RequestOptions.DefaultShouldRetry
                 };
         }
+
+
     }
 }

@@ -34,7 +34,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
 
         public string[] OptionalParameters { get; set; }
 
-        public void CreateQuery()
+        private void CreateQuery()
         {
             if (string.IsNullOrEmpty(Query))
             {
@@ -83,9 +83,11 @@ namespace Xablu.WebApiClient.Services.GraphQL
         //    return resultValue?.ToString();
         //}
 
-        private string GetQuery()
+        protected virtual string GetQuery()
         {
             LoadProperties(typeof(T));
+
+            CurateProperties();
 
             var unformattedQuery = QueryBuilder();
 
@@ -100,7 +102,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
             return result;
         }
 
-        private void LoadProperties(Type type)
+        protected virtual void LoadProperties(Type type)
         {
             var propsList = new List<PropertyInfo>();
             var baseType = type;
@@ -115,13 +117,16 @@ namespace Xablu.WebApiClient.Services.GraphQL
                                                                 (p.GetMethod.IsPublic && p.SetMethod.IsPublic) &&
                                                                 (!p.GetMethod.IsStatic) && (!p.SetMethod.IsStatic))
                                                           .ToList();
+
                 propsList.AddRange(newProps);
+
                 baseType = typeInfo.BaseType;
             }
 
             foreach (PropertyInfo property in propsList)
             {
                 var propType = property.PropertyType;
+
                 var propDetail = new PropertyDetail() { FieldName = property.Name, PropertyName = property.Name, ParentName = property.DeclaringType.Name };
 
                 PopulatePropertyDetailsByProperty(property, propList, propDetail);
@@ -139,6 +144,15 @@ namespace Xablu.WebApiClient.Services.GraphQL
             if (propList.Any())
             {
                 _propertyListList.Add(propList);
+            }
+        }
+
+        protected virtual void CurateProperties()
+        {
+            var parentTypeToExclude = typeof(List<>);
+            foreach (List<PropertyDetail> propertyList in _propertyListList.Where(list => list.Any()))
+            {
+                propertyList.RemoveAll(p => p.ParentName == parentTypeToExclude.Name);
             }
         }
 
@@ -195,7 +209,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
         {
             string queryString = "";
 
-            foreach (List<PropertyDetail> propertyList in _propertyListList)
+            foreach (List<PropertyDetail> propertyList in _propertyListList.Where(list => list.Any()))
             {
                 propertyList.Reverse();
                 foreach (PropertyDetail property in propertyList)
