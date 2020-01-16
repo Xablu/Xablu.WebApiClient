@@ -27,6 +27,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
         {
             Mutation = mutation;
             CreateMutationQuery();
+            this.Variables = variables;
         }
 
 
@@ -157,7 +158,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
             string inputString = "";
             if (mutationDetail != null && !string.IsNullOrEmpty(variableInputName))
             {
-                inputString = $"($MutationParameterInputName: {variableInputName}!)" + $"{{{mutationDetail.MutationName}(${mutationDetail.MutationParameterName}: $MutationParameterInputName)";
+                inputString = $"($MutationParameterInputName: {variableInputName}!)" + $"{{{mutationDetail.MutationName}({mutationDetail.MutationParameterName}: $MutationParameterInputName)";
             }
             {
                 return inputString;
