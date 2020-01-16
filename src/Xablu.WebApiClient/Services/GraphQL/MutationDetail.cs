@@ -3,14 +3,14 @@ namespace Xablu.WebApiClient.Services.GraphQL
 {
     public class MutationDetail
     {
-        public MutationDetail(string mutationName, string mutationParameterInputName)
+        public MutationDetail(string mutationName, string mutationParameterName)
         {
             MutationName = mutationName;
-            MutationParameterInputName = mutationParameterInputName;
+            MutationParameterName = mutationParameterName;
         }
         // Maybe change this to method name?
         public string MutationName { get; set; }
-        public string MutationParameterInputName { get; set; }
+        public string MutationParameterName { get; set; }
 
     }
 }

@@ -23,7 +23,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
     {
         // Model fed should have a NameOfInputAttribute! todo throw exception if none is found!
         private List<List<PropertyDetail>> _propertyListList = new List<List<PropertyDetail>>();
-        public MutationRequest(MutationDetail mutation)
+        public MutationRequest(MutationDetail mutation, object variables)
         {
             Mutation = mutation;
             CreateMutationQuery();
@@ -157,7 +157,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
             string inputString = "";
             if (mutationDetail != null && !string.IsNullOrEmpty(variableInputName))
             {
-                inputString = $"(${mutationDetail.MutationParameterInputName}: {variableInputName}!)" + $"{{{mutationDetail.MutationName}(input: ${mutationDetail.MutationParameterInputName})";
+                inputString = $"($MutationParameterInputName: {variableInputName}!)" + $"{{{mutationDetail.MutationName}(${mutationDetail.MutationParameterName}: $MutationParameterInputName)";
             }
             {
                 return inputString;
