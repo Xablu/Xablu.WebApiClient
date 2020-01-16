@@ -6,16 +6,10 @@ namespace Xablu.WebApiClient.Attributes
     {
         public VariableInputAttribute(string VariableInputModelName = "")
         {
-            if (string.IsNullOrEmpty(VariableInputModelName))
+            if (!string.IsNullOrEmpty(VariableInputModelName))
             {
                 ModelInputName = VariableInputModelName;
             }
-            else
-            {
-                ModelInputName = GetType().Name;
-            }
-
-
         }
 
         public string ModelInputName { get; }

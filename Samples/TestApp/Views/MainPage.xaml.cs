@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using TestApp.Models;
 using TestApp.Services;
 using Xablu.WebApiClient;
+using Xablu.WebApiClient.Attributes;
 using Xablu.WebApiClient.Services.GraphQL;
 using Xamarin.Forms;
 
@@ -25,6 +26,9 @@ namespace TestApp.Views
             MasterBehavior = MasterBehavior.Popover;
 
             MenuPages.Add((int)MenuItemType.Browse, (NavigationPage)Detail);
+
+            //    var test = new MutationRequest<BookReview>(new MutationDetail("changeUserStatus", "changeUserStatusInputModel"));
+
             Task.Run(async () => await GraphqlAsync());
         }
 
@@ -101,4 +105,12 @@ namespace TestApp.Views
         [JsonProperty("totalCount")]
         public long TotalCount { get; set; }
     }
+
+    //[VariableInput("ReviewInput")]
+    //public class BookReview
+    //{
+    //    public string Review { get; set; }
+    //    public string BookISBN { get; set; }
+    //    public string Id { get; set; }
+    //}
 }
