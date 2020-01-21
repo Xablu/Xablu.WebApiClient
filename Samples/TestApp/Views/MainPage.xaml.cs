@@ -27,30 +27,7 @@ namespace TestApp.Views
 
             MenuPages.Add((int)MenuItemType.Browse, (NavigationPage)Detail);
 
-            //    var test = new MutationRequest<BookReview>(new MutationDetail("changeUserStatus", "changeUserStatusInputModel"));
-
-            Task.Run(async () => await GraphqlAsync());
         }
-
-        public async Task<UserResponseModel> GraphqlAsync()
-        {
-            var defaultHeaders = new Dictionary<string, string>
-            {
-                ["User-Agent"] = "LukasThijs",
-                ["Authorization"] = "bearer insertbearer"
-            };
-            var webApiClient = WebApiClientFactory.Get<IGitHubApi>("https://api.github.com/", false, default, defaultHeaders);
-
-            var requestForSingleUser = new Request<UserResponseModel>("(login: \"LukasThijs\")");
-            var test = new GraphQLHttpClient("https://api.github.com/graphql");
-            test.DefaultRequestHeaders.Add("User-Agent", "LukasThijs");
-            test.DefaultRequestHeaders.Add("Authorization", "Bearer insertbearer");
-
-            var user = await webApiClient.SendQueryAsync<UserResponseModel>(requestForSingleUser);
-
-            return user;
-        }
-
 
         public async Task NavigateFromMenu(int id)
         {
@@ -80,37 +57,4 @@ namespace TestApp.Views
             }
         }
     }
-
-    public class UsersResponseModel
-    {
-        [JsonProperty("users")]
-        public List<User> Users { get; set; }
-    }
-    public class UserResponseModel
-    {
-        [JsonProperty("user")]
-        public User User { get; set; }
-    }
-    public class User
-    {
-        [JsonProperty("createdAt")]
-        public DateTimeOffset CreatedAt { get; set; }
-        [JsonProperty("location")]
-        public string Location { get; set; }
-        [JsonProperty("followers")]
-        public Followers Followers { get; set; }
-    }
-    public class Followers
-    {
-        [JsonProperty("totalCount")]
-        public long TotalCount { get; set; }
-    }
-
-    //[VariableInput("ReviewInput")]
-    //public class BookReview
-    //{
-    //    public string Review { get; set; }
-    //    public string BookISBN { get; set; }
-    //    public string Id { get; set; }
-    //}
 }
