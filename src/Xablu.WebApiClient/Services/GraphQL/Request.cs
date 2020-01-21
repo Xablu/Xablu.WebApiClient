@@ -48,41 +48,6 @@ namespace Xablu.WebApiClient.Services.GraphQL
             }
         }
 
-
-        //private string GetJValue(JObject jObject, string valueName)
-        //{
-        //    string resultValue = "";
-
-        //    if (string.IsNullOrEmpty(resultValue))
-        //    {
-        //        foreach (var item in jObject.Properties())
-        //        {
-        //            if (string.Equals(item.Name.ToLower(), valueName.ToLower()))
-        //            {
-        //                resultValue = item.HasValues ? item.Value.ToString() : null;
-        //                break;
-        //            }
-
-        //            if (string.IsNullOrEmpty(resultValue))
-        //            {
-        //                var hasChildren = item.Children().Any();
-        //                if (hasChildren)
-        //                {
-        //                    foreach (var child in item.Children())
-        //                    {
-        //                        var newObject = child as JObject;
-        //                        if (newObject != null && string.IsNullOrEmpty(resultValue))
-        //                        {
-        //                            resultValue = GetJValue(newObject, valueName);
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //    return resultValue?.ToString();
-        //}
-
         protected virtual string GetQuery()
         {
             LoadProperties(typeof(T));
@@ -155,32 +120,6 @@ namespace Xablu.WebApiClient.Services.GraphQL
                 propertyList.RemoveAll(p => p.ParentName == parentTypeToExclude.Name);
             }
         }
-
-        //private void RemoveExcluded()
-        //{
-        //    if (_exclusiveWithValues.Any())
-        //    {
-        //        for (var i = _propertyDictList.Count - 1; i >= 0; i--)
-        //        {
-        //            for (var p = _propertyDictList[i].Count - 1; p >= 0; p--)
-        //            {
-        //                var valuePair = _propertyDictList[i].ElementAt(p);
-        //                var tag = valuePair.Value?.PropertyName;
-        //                var parentName = valuePair.Value?.ParentName;
-        //                if (!string.IsNullOrEmpty(tag))
-        //                {
-        //                    var result = _exclusiveWithValues.Any(s => s.Equals(tag, StringComparison.OrdinalIgnoreCase) || s.Equals(parentName, StringComparison.OrdinalIgnoreCase));
-        //                    if (result)
-        //                    {
-        //                        _propertyDictList[i].Remove(valuePair.Key);
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        _propertyDictList.RemoveAll(p => p.Count == 0);
-
-        //    }
-        //}
 
         private void PopulatePropertyDetailsByProperty(PropertyInfo property, List<PropertyDetail> propertyList, PropertyDetail propertyDetail)
         {

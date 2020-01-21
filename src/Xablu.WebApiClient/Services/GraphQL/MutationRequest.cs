@@ -8,49 +8,33 @@ namespace Xablu.WebApiClient.Services.GraphQL
 {
     public class MutationRequest : BaseRequest
     {
-        public MutationRequest(string query)
+        public MutationRequest(string query, object variables = null)
         {
             if (string.IsNullOrEmpty(query))
             {
                 throw new ArgumentNullException(query, "Query specified is null, please pass a valid query.");
             }
             Query = query;
+            Variables = variables;
         }
     }
 
     public class MutationRequest<T> : BaseRequest
         where T : class
     {
-        // Model fed should have a NameOfInputAttribute! todo throw exception if none is found!
         private List<List<PropertyDetail>> _propertyListList = new List<List<PropertyDetail>>();
-        public MutationRequest(MutationDetail mutation, object variables)
+        public MutationRequest(MutationDetail mutation, object variables = null)
         {
             Mutation = mutation;
+            Variables = variables;
             CreateMutationQuery();
-            this.Variables = variables;
         }
 
 
         public MutationDetail Mutation { get; set; }
 
         public string GraphQLMutationQuery { get; set; }
-        // so the query should have the following inputs:
-        // "mutation ($"{InputAttributeName}: {reviewInput}"
-        //        "mutation ($InputAttributeName: reviewInput!) { Mutation[0](review: ${InputAttributeName}) { id review } }"
 
-        // -> solution probably  // "mutation ($VariableInputAttribute: {VariableInputName + "Input!"}) { {Mutation.MutationName}({Mutation.MutationVariableNames}: $VariableInputAttribute) { id review } }"
-
-
-
-
-        // "mutation ($review: reviewInput!) { createReview(review: $review) { id review } }"
-        //@" mutation ($changeUserStatusInputModel: ChangeUserStatusInput!) { changeUserStatus(input: $changeUserStatusInputModel){ clientMutationId, status { message }}}";
-
-        //
-
-        // mutation (
-        // too difficult just do the following;
-        // 
         private void CreateMutationQuery()
         {
             if (string.IsNullOrEmpty(Query))
@@ -129,8 +113,14 @@ namespace Xablu.WebApiClient.Services.GraphQL
 
         private string QueryBuilder(Type property)
         {
-            //todo also make it possible to not use the attribute but a variable inside the mutationdetail class // also add null check
             var variableInputName = (Attribute.GetCustomAttribute(property, typeof(VariableInputAttribute)) as VariableInputAttribute)?.ModelInputName;
+            if (string.IsNullOrEmpty(variableInputName))
+            {
+                var errorMessage = "No VariableInputAttribute found. Please ensure the model has been marked or the value is not null";
+                throw new RequestException(errorMessage);
+
+            }
+
             var variableString = CreateVariableString();
             var methodString = CreateInputString(Mutation, variableInputName);
             var queryString = $"mutation{methodString}{variableString}";
@@ -148,25 +138,30 @@ namespace Xablu.WebApiClient.Services.GraphQL
                 {
                     queryString = queryString.Any() ? queryString.Insert(0, ToLowerFirstChar(property?.FieldName) + " ") : queryString.Insert(0, ToLowerFirstChar(property?.FieldName));
                 }
-                queryString = "{" + $"{queryString}" + "}}";
+                queryString = "{" + $"{queryString}" + "}";
             }
-            return queryString;
+            return queryString + "}";
         }
 
         private string CreateInputString(MutationDetail mutationDetail, string variableInputName)
         {
             string inputString = "";
+            var parameterInputList = new List<string>();
+
+            if (Variables != null)
+            {
+                foreach (var variable in Variables.GetType().GetProperties())
+                {
+                    parameterInputList.Add(variable.Name);
+                }
+            }
+
             if (mutationDetail != null && !string.IsNullOrEmpty(variableInputName))
             {
-                inputString = $"($MutationParameterInputName: {variableInputName}!)" + $"{{{mutationDetail.MutationName}({mutationDetail.MutationParameterName}: $MutationParameterInputName)";
+                var parameterInputName = parameterInputList.Count > 0 ? parameterInputList[0] : "mutationParameterInputName";
+                inputString = $"(${ToLowerFirstChar(parameterInputName)}: {variableInputName}!)" + $"{{{mutationDetail.MutationName}({mutationDetail.MutationParameterName}: ${parameterInputName})";
             }
-            {
-                return inputString;
-            }
-            // ($changeUserStatusInputModel: ChangeUserStatusInput!) { changeUserStatus(input: $changeUserStatusInputModel)
-
-
-            // var mutationQuery = @" mutation ($changeUserStatusInputModel: ChangeUserStatusInput!) { changeUserStatus(input: $changeUserStatusInputModel){ clientMutationId, status { message }}}";
+            return inputString;
         }
 
         private string ToLowerFirstChar(string input)
