@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -144,9 +145,38 @@ namespace Xablu.WebApiClient
                 message += string.Join(" /// ", result.Errors.Select(e => e.Message));
                 throw new Exception(message);
             }
-            var name = typeof(TModel).Name;
-            var variableName = char.ToLower(name[0]) + name?.Substring(1);
-            var resultData = result?.GetDataFieldAs<TModel>(variableName);
+
+            var resultData = result.Data as TModel;
+
+            var model = typeof(TModel);
+
+            var dic = new Dictionary<string, object>();
+            var objData = result?.Data as object;
+
+            foreach (var item in objData.GetType().GetProperties())
+            {
+                var value = item.GetValue(objData);
+                dic.Add(item.Name, value);
+            }
+
+            // crashes 
+            // var dic = test.GetType().GetProperties().ToDictionary(p => p.Name, p => p?.GetValue(test, null));
+
+            foreach (var item in model.GetProperties())
+            {
+
+                dic.TryGetValue(item.Name, out var value);
+
+                if (value != null)
+                {
+                    item.SetValue(model, value);
+                }
+
+            }
+
+            //var name = typeof(TModel).Name;
+            //var variableName = char.ToLower(name[0]) + name?.Substring(1);
+            //var resultData = result?.GetDataFieldAs<TModel>(variableName);
             if (resultData == null)
             {
                 throw new InvalidCastException("Result is not a valid Json");
