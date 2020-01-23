@@ -8,7 +8,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
 {
     public class MutationRequest : BaseRequest
     {
-        public MutationRequest(string query, object variables = null)
+        public MutationRequest(string query, object variables)
         {
             if (string.IsNullOrEmpty(query))
             {
@@ -23,7 +23,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
         where T : class
     {
         private List<List<PropertyDetail>> _propertyListList = new List<List<PropertyDetail>>();
-        public MutationRequest(MutationDetail mutation, object variables = null)
+        public MutationRequest(MutationDetail mutation, object variables)
         {
             Mutation = mutation;
             Variables = variables;
