@@ -15,7 +15,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
                 throw new ArgumentNullException(query, "Query specified is null, please pass a valid query.");
             }
             Query = query;
-            Variables = variables;
+            Variables = new { variables };
         }
     }
 
@@ -26,7 +26,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
         public MutationRequest(MutationDetail mutation, object variables)
         {
             Mutation = mutation;
-            Variables = variables;
+            Variables = new { variables };
             CreateMutationQuery();
         }
 
@@ -158,7 +158,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
 
             if (mutationDetail != null && !string.IsNullOrEmpty(variableInputName))
             {
-                var parameterInputName = parameterInputList.Count > 0 ? parameterInputList[0] : "mutationParameterInputName";
+                var parameterInputName = parameterInputList[0];
                 inputString = $"(${ToLowerFirstChar(parameterInputName)}: {variableInputName}!)" + $"{{{mutationDetail.MutationName}({mutationDetail.MutationParameterName}: ${parameterInputName})";
             }
             return inputString;
