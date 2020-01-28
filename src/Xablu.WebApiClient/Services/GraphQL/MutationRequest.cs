@@ -159,7 +159,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
             if (mutationDetail != null && !string.IsNullOrEmpty(variableInputName))
             {
                 var parameterInputName = parameterInputList[0];
-                inputString = $"(${ToLowerFirstChar(parameterInputName)}: {variableInputName}!)" + $"{{{mutationDetail.MutationName}({mutationDetail.MutationParameterName}: ${parameterInputName})";
+                inputString = $"(${ToLowerFirstChar(parameterInputName)}: {variableInputName}!)" + $"{{{mutationDetail.MutationName}({mutationDetail.MutationParameterName}: ${ToLowerFirstChar(parameterInputName)})";
             }
             return inputString;
         }
