@@ -1,5 +1,6 @@
 ﻿using System;
 using BooksQL.Services;
+using BooksQL.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -13,7 +14,7 @@ namespace BooksQL
 
             DependencyService.Register<BooksService>();
 
-            MainPage = new MainPage();
+            MainPage = new BooksMasterDetailPage();
         }
 
         protected override void OnStart()

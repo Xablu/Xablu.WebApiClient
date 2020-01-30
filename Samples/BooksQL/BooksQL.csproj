@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="4.3.0.991211" />
-    <PackageReference Include="Xamarin.Essentials" Version="1.2.0" />
+    <PackageReference Include="Xamarin.Forms" Version="4.4.0.991537" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.3.1" />
     <PackageReference Include="Xablu.WebApiClient" Version="2.0.0.17" />
   </ItemGroup>
   <ItemGroup>
@@ -16,8 +16,35 @@
     <Folder Include="Services\" />
     <Folder Include="ApiEndpoints\" />
     <Folder Include="Models\" />
+    <Folder Include="Views\" />
+    <Folder Include="Views\Items\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Xablu.WebApiClient\Xablu.WebApiClient.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="Views\MainPageDetail.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Views\MainPageDetail.xaml.cs" />
+    <Compile Remove="Views\test2.xaml.cs" />
+    <Compile Remove="Views\MasterDetailPageMenuItem.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Views\MasterDetailPage.cs">
+      <DependentUpon>MasterDetailPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\BooksMasterDetailPage.cs">
+      <DependentUpon>BooksMasterDetailPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\BooksMasterDetailPage.xaml.cs">
+      <DependentUpon>BooksMasterDetailPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\BooksMasterDetailPageDetail.xaml.cs">
+      <DependentUpon>BooksMasterDetailPageDetail.xaml</DependentUpon>
+    </Compile>
+    <Compile Update="Views\BooksMasterDetailPageMaster.xaml.cs">
+      <DependentUpon>BooksMasterDetailPageMaster.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

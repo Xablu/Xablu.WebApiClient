@@ -9,12 +9,12 @@ namespace BooksQL
     [DesignTimeVisible(false)]
     public partial class MainPage : ContentPage
     {
-        private MainViewModel ViewModel => (MainViewModel)BindingContext;
+
 
         public MainPage()
         {
             InitializeComponent();
             BindingContext = new MainViewModel();
-        } 
+        }
     }
 }

@@ -19,7 +19,7 @@ namespace BooksQL.Services
         }
 
         public async Task<IEnumerable<Book>> GetBooks()
-        { 
+        {
             var booksResponse = await _webApiClient.SendQueryAsync(new Request<BooksResponseModel>());
 
             return booksResponse.Books;
@@ -32,7 +32,7 @@ namespace BooksQL.Services
                 BookISBN = "0544272994",
                 Review = "This is a mutation test"
             };
-            var review = await _webApiClient.SendMutationAsync(new MutationRequest<BookReview>(new MutationDetail("createReview", "review"), new { bookISBN = bookreview }));
+            var review = await _webApiClient.SendMutationAsync(new MutationRequest<BookReview>(new MutationDetail("createReview", "review"), bookreview));
 
 
             //var asd = new MutationRequest<BookReview>(new MutationDetail("createReview", "review"), bookreview);
