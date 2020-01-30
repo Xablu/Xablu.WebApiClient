@@ -17,4 +17,7 @@
     <Folder Include="ApiEndpoints\" />
     <Folder Include="Models\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Xablu.WebApiClient\Xablu.WebApiClient.csproj" />
+  </ItemGroup>
 </Project>

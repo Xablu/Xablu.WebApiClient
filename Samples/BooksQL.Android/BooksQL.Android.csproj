@@ -94,8 +94,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BooksQL\BooksQL.csproj">
-      <Project>{FF4BA5E4-02BF-45F3-9EB6-1A1B33B83377}</Project>
+      <Project>{F4C6AC45-8B3C-4684-8F64-AACBC2B721A2}</Project>
       <Name>BooksQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Xablu.WebApiClient\Xablu.WebApiClient.csproj">
+      <Project>{353DBDAF-A31D-461A-99BA-B217399E968A}</Project>
+      <Name>Xablu.WebApiClient</Name>
     </ProjectReference>
   </ItemGroup>
  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
