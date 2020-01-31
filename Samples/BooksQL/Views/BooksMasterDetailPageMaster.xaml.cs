@@ -24,17 +24,8 @@ namespace BooksQL.Views
         public BooksMasterDetailPageMaster()
         {
             InitializeComponent();
-
-            BindingContext = new BooksMasterDetailPageMasterViewModel();
             ListView = MenuItemsListView;
-        }
-
-        protected override void OnAppearing()
-        {
-            base.OnAppearing();
-            //var safeInsets = On<iOS>().SafeAreaInsets();
-            //safeInsets.Top = 20;
-            //Padding = safeInsets;
+            BindingContext = new BooksMasterDetailPageMasterViewModel();
         }
 
     }

@@ -25,7 +25,7 @@ namespace BooksQL.Services
             return booksResponse.Books;
         }
 
-        public async Task CreateReview()
+        public async Task<BookReview> CreateReview()
         {
             var bookreview = new BookReview
             {
@@ -33,7 +33,7 @@ namespace BooksQL.Services
                 Review = "This is a mutation test"
             };
             var review = await _webApiClient.SendMutationAsync(new MutationRequest<BookReview>(new MutationDetail("createReview", "review"), bookreview));
-
+            return review;
 
             //var asd = new MutationRequest<BookReview>(new MutationDetail("createReview", "review"), bookreview);
 
