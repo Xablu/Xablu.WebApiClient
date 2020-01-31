@@ -10,7 +10,7 @@
     <MasterDetailPage.Detail>
         <NavigationPage>
             <x:Arguments>
-                <pages:BooksMasterDetailPageDetail />
+                <pages:HomeView />
             </x:Arguments>
         </NavigationPage>
     </MasterDetailPage.Detail>

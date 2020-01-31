@@ -18,7 +18,6 @@ namespace BooksQL.Views
         {
             InitializeComponent();
             BindingContext = new QueryViewModel();
-
         }
 
 

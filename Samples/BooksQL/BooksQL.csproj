@@ -41,9 +41,6 @@
     <Compile Update="Views\BooksMasterDetailPage.xaml.cs">
       <DependentUpon>BooksMasterDetailPage.xaml</DependentUpon>
     </Compile>
-    <Compile Update="Views\BooksMasterDetailPageDetail.xaml.cs">
-      <DependentUpon>BooksMasterDetailPageDetail.xaml</DependentUpon>
-    </Compile>
     <Compile Update="Views\BooksMasterDetailPageMaster.xaml.cs">
       <DependentUpon>BooksMasterDetailPageMaster.xaml</DependentUpon>
     </Compile>

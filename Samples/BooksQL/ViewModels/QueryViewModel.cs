@@ -13,7 +13,7 @@ namespace BooksQL.ViewModels
     public class QueryViewModel : INotifyPropertyChanged
     {
         private BooksService _booksService;
-        private string _query;
+        private string _query = "Query result";
 
         public QueryViewModel()
         {
@@ -31,8 +31,11 @@ namespace BooksQL.ViewModels
             get { return _query; }
             set
             {
-                _query = Query;
-                OnPropertyChanged(nameof(Query));
+                if (_query != value)
+                {
+                    _query = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -45,7 +48,8 @@ namespace BooksQL.ViewModels
                 IsRefreshing = true;
 
                 await _booksService.CreateReview();
-                Query = new Request<BooksResponseModel>().Query;
+                var result = new Request<BooksResponseModel>();
+                Query = result.Query;
                 var books = await _booksService.GetBooks();
 
                 Books.Clear();

@@ -16,6 +16,7 @@ namespace BooksQL.ViewModels
             {
                     new MasterMenuItem { Id = 0, Title = "GraphQL", TargetType = typeof(CallSelectionPage) },
                     new MasterMenuItem { Id = 1, Title = "Refit" },
+                    new MasterMenuItem { Id = 2, Title = "Home", TargetType = typeof(HomeView) }
                 });
         }
 

@@ -6,7 +6,7 @@ namespace BooksQL.Views.Items
     {
         public MasterMenuItem()
         {
-            TargetType = typeof(BooksMasterDetailPageDetail);
+            TargetType = typeof(HomeView);
         }
 
 

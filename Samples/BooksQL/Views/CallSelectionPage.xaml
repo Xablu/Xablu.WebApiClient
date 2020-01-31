@@ -5,7 +5,6 @@
     <ListView x:Name="MyListView" ItemsSource="{Binding SelectionItems}"
             HasUnevenRows="True" CachingStrategy="RecycleElement"
             ItemSelected="ListView_ItemSelected" SeparatorVisibility="None">
-        <!--Built in Cells-->
         <ListView.ItemTemplate>
             <DataTemplate>
                 <ViewCell>
@@ -25,23 +24,7 @@
                                 HeightRequest="0.1" BackgroundColor="LightGray" />
                     </StackLayout>
                 </ViewCell>
-                <!--<TextCell Text="{Binding .}" />-->
             </DataTemplate>
         </ListView.ItemTemplate>
-        <!--Custom View Cells-->
-        <!--
-    <ListView.ItemTemplate>
-      <DataTemplate>
-        <ViewCell>
-          <StackLayout>
-            <Label Text="{Binding Text}" 
-                   Style="{DynamicResource ListItemTextStyle}" />
-            <Label Text="{Binding Detail}" 
-                   Style="{DynamicResource ListItemDetailTextStyle}"/>
-          </StackLayout>
-        </ViewCell>
-      </DataTemplate>
-    </ListView.ItemTemplate>
-    -->
     </ListView>
 </ContentPage>
