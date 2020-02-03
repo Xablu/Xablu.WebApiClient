@@ -147,9 +147,9 @@ namespace Xablu.WebApiClient
             }
 
             var model = typeof(TModel);
-            var jObj = result?.Data as JObject;
+            var jObj = (JObject)result?.Data;
 
-            var jToken = jObj.Properties().Select(p => p.Value).FirstOrDefault();
+            var jToken = jObj.Properties().Select(p => p.Value).First();
             var resultData = jToken.ToObject(model) as TModel;
 
             if (resultData == null)
@@ -195,9 +195,9 @@ namespace Xablu.WebApiClient
             }
 
             var model = typeof(TModel);
-            var jObj = result?.Data as JObject;
+            var jObj = (JObject)result?.Data;
 
-            var jToken = jObj.Properties().Select(p => p.Value).FirstOrDefault();
+            var jToken = jObj.Properties().Select(p => p.Value).First();
             var resultData = jToken.ToObject(model) as TModel;
 
             if (resultData == null)
