@@ -6,65 +6,56 @@ using Xablu.WebApiClient.Attributes;
 
 namespace Xablu.WebApiClient.Services.GraphQL
 {
-    public class Request : BaseRequest
+    public class MutationRequest : BaseRequest
     {
-        public Request(string query)
+        public MutationRequest(string query, object variables)
         {
             if (string.IsNullOrEmpty(query))
             {
                 throw new ArgumentNullException(query, "Query specified is null, please pass a valid query.");
             }
             Query = query;
+            Variables = new { variables };
         }
     }
 
-    public class Request<T> : BaseRequest
+    public class MutationRequest<T> : BaseRequest
         where T : class
     {
         private List<List<PropertyDetail>> _propertyListList = new List<List<PropertyDetail>>();
-        private int attributeNumber;
-
-        public Request(params string[] optionalParameters)
+        public MutationRequest(MutationDetail mutation, object variables)
         {
-            OptionalParameters = optionalParameters;
-            CreateQuery();
+            Mutation = mutation;
+            Variables = new { variables };
+            CreateMutationQuery();
         }
 
-        public string GraphQLQuery { get; set; }
 
-        public string[] OptionalParameters { get; set; }
+        public MutationDetail Mutation { get; set; }
 
-        private void CreateQuery()
+        public string GraphQLMutationQuery { get; set; }
+
+        private void CreateMutationQuery()
         {
             if (string.IsNullOrEmpty(Query))
             {
                 var queryString = GetQuery();
-                GraphQLQuery = queryString;
-                Query = GraphQLQuery;
+                GraphQLMutationQuery = queryString;
+                Query = GraphQLMutationQuery;
             }
             else
             {
-                GraphQLQuery = Query;
+                GraphQLMutationQuery = Query;
             }
         }
 
-        protected virtual string GetQuery()
+        private string GetQuery()
         {
-            LoadProperties(typeof(T));
-
+            var property = typeof(T);
+            LoadProperties(property);
             CurateProperties();
-
-            var unformattedQuery = QueryBuilder();
-
-            var result = OptionalParameters != null ? FormatQuery(unformattedQuery, OptionalParameters) : unformattedQuery;
-
-            if (string.IsNullOrEmpty(result))
-            {
-                var errorMessage = string.IsNullOrEmpty(unformattedQuery) ? "No valid query. Something went wrong with building the query." : "No valid query. Something went wrong when formatting the query";
-                throw new RequestException(errorMessage);
-            }
-
-            return result;
+            var query = QueryBuilder(property);
+            return query;
         }
 
         protected virtual void LoadProperties(Type type)
@@ -93,8 +84,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
                 var propType = property.PropertyType;
 
                 var propDetail = new PropertyDetail() { FieldName = property.Name, PropertyName = property.Name, ParentName = property.DeclaringType.Name };
-
-                PopulatePropertyDetailsByProperty(property, propList, propDetail);
+                propList.Add(propDetail);
 
                 if (propType.IsClass)
                 {
@@ -121,30 +111,23 @@ namespace Xablu.WebApiClient.Services.GraphQL
             }
         }
 
-        private void PopulatePropertyDetailsByProperty(PropertyInfo property, List<PropertyDetail> propertyList, PropertyDetail propertyDetail)
+        private string QueryBuilder(Type property)
         {
-            var queryName = Attribute.GetCustomAttribute(property, typeof(NameOfFieldAttribute)) as NameOfFieldAttribute;
-            string query = property.Name;
-
-            if (OptionalParameters != null && attributeNumber < OptionalParameters.Count())
+            var variableInputName = (Attribute.GetCustomAttribute(property, typeof(VariableInputAttribute)) as VariableInputAttribute)?.ModelInputName;
+            if (string.IsNullOrEmpty(variableInputName))
             {
-                query = !string.IsNullOrEmpty(queryName?.NameOfField) ? $"{property?.Name}" + $"{{{attributeNumber.ToString()}}}: {queryName?.NameOfField}" : $"{property?.Name}" + $"{{{attributeNumber.ToString()}}}";
-                attributeNumber++;
+                var errorMessage = "No VariableInputAttribute found. Please ensure the model has been marked or the value is not null";
+                throw new RequestException(errorMessage);
+
             }
 
-            if (queryName != null)
-            {
-                if (!string.IsNullOrEmpty(queryName.NameOfField))
-                {
-                    query = $"{property.Name}: {queryName.NameOfField}";
-                }
-            }
-
-            propertyDetail.FieldName = query;
-            propertyList.Add(propertyDetail);
+            var variableString = CreateVariableString();
+            var methodString = CreateInputString(Mutation, variableInputName);
+            var queryString = $"mutation{methodString}{variableString}";
+            return queryString;
         }
 
-        private string QueryBuilder()
+        private string CreateVariableString()
         {
             string queryString = "";
 
@@ -155,16 +138,30 @@ namespace Xablu.WebApiClient.Services.GraphQL
                 {
                     queryString = queryString.Any() ? queryString.Insert(0, ToLowerFirstChar(property?.FieldName) + " ") : queryString.Insert(0, ToLowerFirstChar(property?.FieldName));
                 }
-                queryString = "{{" + $"{queryString}" + "}}";
+                queryString = "{" + $"{queryString}" + "}";
             }
-            return queryString;
+            return queryString + "}";
         }
 
-        private string FormatQuery(string query, string[] optionalParameters)
+        private string CreateInputString(MutationDetail mutationDetail, string variableInputName)
         {
-            var formattedString = string.Format(query, optionalParameters);
+            string inputString = "";
+            var parameterInputList = new List<string>();
 
-            return formattedString;
+            if (Variables != null)
+            {
+                foreach (var variable in Variables.GetType().GetProperties())
+                {
+                    parameterInputList.Add(variable.Name);
+                }
+            }
+
+            if (mutationDetail != null && !string.IsNullOrEmpty(variableInputName))
+            {
+                var parameterInputName = parameterInputList[0];
+                inputString = $"(${ToLowerFirstChar(parameterInputName)}: {variableInputName}!)" + $"{{{mutationDetail.MutationName}({mutationDetail.MutationParameterName}: ${ToLowerFirstChar(parameterInputName)})";
+            }
+            return inputString;
         }
 
         private string ToLowerFirstChar(string input)

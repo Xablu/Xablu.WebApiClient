@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TestApp.Services;
 using Xablu.WebApiClient;
+using Xablu.WebApiClient.Attributes;
 using Xablu.WebApiClient.Services.GraphQL;
 
 namespace TestConsoleApp
@@ -49,18 +50,18 @@ namespace TestConsoleApp
             };
 
             var webApiClient = WebApiClientFactory.Get<IGitHubApi>("https://api.github.com", false, default, defaultHeaders);
-            var mutationQuery = @" mutation ($changeUserStatusInputModel: ChangeUserStatusInput!) { changeUserStatus(input: $changeUserStatusInputModel){ clientMutationId, status { message }}}";
 
-            var variables = new
+            var testModel = new ChangeUserInputVariables()
             {
-                changeUserStatusInputModel = new ChangeUserInputVariables()
-                {
-                    ClientMutationId = "101010101",
-                    Message = "The mutation has succeeded"
-                }
+                ClientMutationId = "101010101",
+                Message = "The mutation has succeeded"
             };
 
-            var result = await webApiClient.SendMutationAsync<ChangeUserStatus>(mutationQuery, variables);
+            // Example of a written query:
+            // var mutationQuery = @" mutation ($changeUserStatusInputModel: ChangeUserStatusInput!) { changeUserStatus(input: $changeUserStatusInputModel){ clientMutationId, status { message }}}";
+            var mutationRequest = new MutationRequest<ChangeUserStatus>(new MutationDetail("changeUserStatus", "input"), testModel);
+
+            var result = await webApiClient.SendMutationAsync(mutationRequest);
             var serializedObject = JsonConvert.SerializeObject(result);
 
             return serializedObject;
@@ -72,6 +73,7 @@ namespace TestConsoleApp
         [JsonProperty("users")]
         public List<User> Users { get; set; }
     }
+
     public class UserResponseModel
     {
         [JsonProperty("user")]
@@ -103,6 +105,7 @@ namespace TestConsoleApp
 
     }
 
+    [VariableInput("ChangeUserStatusInput")]
     public class ChangeUserStatus
     {
         [JsonProperty("clientMutationId")]

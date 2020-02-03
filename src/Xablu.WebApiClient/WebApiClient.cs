@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -116,19 +117,19 @@ namespace Xablu.WebApiClient
             return model;
         }
 
-        public Task<TModel> SendMutationAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default)
+        public Task<TModel> SendMutationAsync<TModel>(MutationRequest<TModel> request, CancellationToken cancellationToken = default)
             where TModel : class, new()
         {
             return SendMutationAsync(request, GetDefaultOptions(), cancellationToken);
         }
 
-        public Task<TModel> SendMutationAsync<TModel>(Request<TModel> request, RequestOptions options, CancellationToken cancellationToken = default)
+        public Task<TModel> SendMutationAsync<TModel>(MutationRequest<TModel> request, RequestOptions options, CancellationToken cancellationToken = default)
             where TModel : class, new()
         {
             return SendMutationAsync(request, options.Priority, options.RetryCount, options.ShouldRetry, options.Timeout, cancellationToken);
         }
 
-        public async Task<TModel> SendMutationAsync<TModel>(Request<TModel> request, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
+        public async Task<TModel> SendMutationAsync<TModel>(MutationRequest<TModel> request, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
             where TModel : class, new()
         {
             var service = _graphQLService.GetByPriority(priority);
@@ -145,27 +146,32 @@ namespace Xablu.WebApiClient
                 throw new Exception(message);
             }
 
-            var resultData = result?.Data as JObject;
+            var model = typeof(TModel);
+            var jObj = (JObject)result?.Data;
+
+            var jToken = jObj.Properties().Select(p => p.Value).First();
+            var resultData = jToken.ToObject(model) as TModel;
+
             if (resultData == null)
             {
                 throw new InvalidCastException("Result is not a valid Json");
             }
-            var model = JsonConvert.DeserializeObject<TModel>(resultData.ToString());
-            return model;
+
+            return resultData;
         }
 
-        public Task<TModel> SendMutationAsync<TModel>(string mutationString, dynamic queryVariable, CancellationToken cancellationToken = default)
+        public Task<TModel> SendMutationAsync<TModel>(string mutationString, object queryVariable, CancellationToken cancellationToken = default)
             where TModel : class, new()
         {
             return SendMutationAsync<TModel>(mutationString, queryVariable, GetDefaultOptions(), cancellationToken);
         }
 
-        public Task<TModel> SendMutationAsync<TModel>(string mutationString, dynamic queryVariable, RequestOptions options, CancellationToken cancellationToken = default) where TModel : class, new()
+        public Task<TModel> SendMutationAsync<TModel>(string mutationString, object queryVariable, RequestOptions options, CancellationToken cancellationToken = default) where TModel : class, new()
         {
             return SendMutationAsync<TModel>(mutationString, queryVariable, options.Priority, options.RetryCount, options.ShouldRetry, options.Timeout, cancellationToken);
         }
 
-        public async Task<TModel> SendMutationAsync<TModel>(string mutationString, dynamic queryVariables, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
+        public async Task<TModel> SendMutationAsync<TModel>(string mutationString, object queryVariables, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
            where TModel : class, new()
         {
             var service = _graphQLService.GetByPriority(priority);
@@ -188,9 +194,11 @@ namespace Xablu.WebApiClient
                 throw new Exception(message);
             }
 
-            var name = typeof(TModel).Name;
-            var variableName = char.ToLower(name[0]) + name?.Substring(1);
-            var resultData = result?.GetDataFieldAs<TModel>(variableName);
+            var model = typeof(TModel);
+            var jObj = (JObject)result?.Data;
+
+            var jToken = jObj.Properties().Select(p => p.Value).First();
+            var resultData = jToken.ToObject(model) as TModel;
 
             if (resultData == null)
             {
@@ -240,7 +248,5 @@ namespace Xablu.WebApiClient
                     ShouldRetry = RequestOptions.DefaultShouldRetry
                 };
         }
-
-
     }
 }
