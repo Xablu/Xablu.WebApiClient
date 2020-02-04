@@ -32,21 +32,13 @@ namespace Xablu.WebApiClient.Services.GraphQL
 
 
         public MutationDetail Mutation { get; set; }
-
-        public string GraphQLMutationQuery { get; set; }
-
+         
         private void CreateMutationQuery()
         {
             if (string.IsNullOrEmpty(Query))
             {
-                var queryString = GetQuery();
-                GraphQLMutationQuery = queryString;
-                Query = GraphQLMutationQuery;
-            }
-            else
-            {
-                GraphQLMutationQuery = Query;
-            }
+                Query = GetQuery();
+            } 
         }
 
         private string GetQuery()
@@ -116,8 +108,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
             if (string.IsNullOrEmpty(variableInputName))
             {
                 var errorMessage = "No VariableInputAttribute found. Please ensure the model has been marked or the value is not null";
-                throw new RequestException(errorMessage);
-
+                throw new RequestException(errorMessage); 
             }
 
             var variableString = CreateVariableString();
