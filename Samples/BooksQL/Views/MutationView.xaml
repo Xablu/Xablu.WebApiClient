@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        x:Class="BooksQL.Views.MutationView"
+        NavigationPage.HasNavigationBar="False"
+        NavigationPage.HasBackButton="False">
+    <StackLayout Orientation="Vertical">
+        <Label HorizontalOptions="FillAndExpand" Text="query:" FontSize="30"
+                FontAttributes="Bold" Margin="3,0,3,0" />
+        <Label HorizontalOptions="FillAndExpand" x:Name="QueryLabel"
+                Margin="3,0,3,0" Text="{Binding Query, Mode=TwoWay}" />
+        <Button Text="SendMutation" BackgroundColor="Blue" Margin="3,0,3,0"
+                Command="{Binding RefreshCommand}"></Button>
+        <Frame BorderColor="LightGray" HeightRequest="500" WidthRequest="500">
+            <StackLayout VerticalOptions="FillAndExpand"
+                    HorizontalOptions="FillAndExpand">
+                <Label Text="{Binding Result}" VerticalOptions="FillAndExpand"
+                        HorizontalOptions="FillAndExpand"
+                        BackgroundColor="White"></Label>
+            </StackLayout>
+        </Frame>
+    </StackLayout>
+</ContentPage>

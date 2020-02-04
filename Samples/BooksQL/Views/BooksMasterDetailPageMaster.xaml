@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        x:Class="BooksQL.Views.BooksMasterDetailPageMaster">
+    <StackLayout Orientation="Vertical" BackgroundColor="LightGray">
+
+        <StackLayout VerticalOptions="Fill" Orientation="Vertical">
+            <ListView x:Name="MenuItemsListView" SeparatorVisibility="None"
+                    BackgroundColor="LightGray" HasUnevenRows="True"
+                    Margin="0,-20,0,0" ItemsSource="{Binding MenuItems}">
+                <ListView.Header>
+                    <Grid BackgroundColor="#03A9F4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="10" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30" />
+                            <RowDefinition Height="80" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="10" />
+                        </Grid.RowDefinitions>
+                        <Label Grid.Column="1" Grid.Row="2" Text="BooksQL"
+                                Style="{DynamicResource SubtitleStyle}" />
+                    </Grid>
+                </ListView.Header>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout HorizontalOptions="FillAndExpand"
+                                    Orientation="Vertical"
+                                    BackgroundColor="LightGray">
+                                <StackLayout Padding="15,10"
+                                        HorizontalOptions="FillAndExpand"
+                                        Orientation="Horizontal">
+                                    <Image Source="{Binding IconSource}"
+                                            WidthRequest="20" HeightRequest="20"
+                                            Aspect="AspectFill" />
+                                    <Label VerticalOptions="FillAndExpand"
+                                            VerticalTextAlignment="Center"
+                                            Text="{Binding Title}" FontSize="24" />
+                                </StackLayout>
+                                <BoxView HorizontalOptions="FillAndExpand"
+                                        VerticalOptions="FillAndExpand"
+                                        HeightRequest="1"
+                                        BackgroundColor="DarkGray" />
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackLayout>
+    </StackLayout>
+</ContentPage>

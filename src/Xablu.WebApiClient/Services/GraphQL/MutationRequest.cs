@@ -32,29 +32,20 @@ namespace Xablu.WebApiClient.Services.GraphQL
 
 
         public MutationDetail Mutation { get; set; }
-
-        public string GraphQLMutationQuery { get; set; }
-
+         
         private void CreateMutationQuery()
         {
             if (string.IsNullOrEmpty(Query))
             {
-                var queryString = GetQuery();
-                GraphQLMutationQuery = queryString;
-                Query = GraphQLMutationQuery;
-            }
-            else
-            {
-                GraphQLMutationQuery = Query;
-            }
+                Query = GetQuery();
+            } 
         }
 
         private string GetQuery()
         {
-            var property = typeof(T);
-            LoadProperties(property);
+            LoadProperties(typeof(T));
             CurateProperties();
-            var query = QueryBuilder(property);
+            var query = QueryBuilder();
             return query;
         }
 
@@ -111,14 +102,13 @@ namespace Xablu.WebApiClient.Services.GraphQL
             }
         }
 
-        private string QueryBuilder(Type property)
+        private string QueryBuilder()
         {
-            var variableInputName = (Attribute.GetCustomAttribute(property, typeof(VariableInputAttribute)) as VariableInputAttribute)?.ModelInputName;
+            var variableInputName = (Attribute.GetCustomAttribute(typeof(T), typeof(VariableInputAttribute)) as VariableInputAttribute)?.ModelInputName;
             if (string.IsNullOrEmpty(variableInputName))
             {
                 var errorMessage = "No VariableInputAttribute found. Please ensure the model has been marked or the value is not null";
-                throw new RequestException(errorMessage);
-
+                throw new RequestException(errorMessage); 
             }
 
             var variableString = CreateVariableString();

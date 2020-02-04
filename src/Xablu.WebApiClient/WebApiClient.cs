@@ -108,7 +108,7 @@ namespace Xablu.WebApiClient
                 throw new Exception(message);
             }
 
-            var resultData = result?.Data as JObject;
+            var resultData = result.Data as JObject;
             if (resultData == null)
             {
                 throw new InvalidCastException("Result is not a valid Json");
@@ -147,14 +147,14 @@ namespace Xablu.WebApiClient
             }
 
             var model = typeof(TModel);
-            var jObj = (JObject)result?.Data;
+            var jObj = (JObject)result.Data;
 
             var jToken = jObj.Properties().Select(p => p.Value).First();
             var resultData = jToken.ToObject(model) as TModel;
 
             if (resultData == null)
             {
-                throw new InvalidCastException("Result is not a valid Json");
+                throw new InvalidCastException("Model provided is not of correct type");
             }
 
             return resultData;
@@ -179,7 +179,7 @@ namespace Xablu.WebApiClient
 
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
-            var mutationRequest = new GraphQLRequest()
+            var mutationRequest = new GraphQLRequest
             {
                 Query = mutationString,
                 Variables = queryVariables
@@ -195,7 +195,7 @@ namespace Xablu.WebApiClient
             }
 
             var model = typeof(TModel);
-            var jObj = (JObject)result?.Data;
+            var jObj = (JObject)result.Data;
 
             var jToken = jObj.Properties().Select(p => p.Value).First();
             var resultData = jToken.ToObject(model) as TModel;
@@ -229,12 +229,12 @@ namespace Xablu.WebApiClient
         private static string GetGraphQLEndpoint()
         {
             var attributes = typeof(T).GetCustomAttributes(false);
-            if (attributes.Any(a => a.GetType() == typeof(GraphQLEndpointAttribute)))
+            var graphQLEndpointAttribute = attributes.FirstOrDefault(a => a.GetType() == typeof(GraphQLEndpointAttribute));
+            if (graphQLEndpointAttribute == null)
             {
-                var endpointAttribute = (GraphQLEndpointAttribute)attributes.First(a => a.GetType() == typeof(GraphQLEndpointAttribute));
-                return endpointAttribute.Path;
+                throw new RequestException("GraphQL endpoint not found");
             }
-            throw new RequestException("No endpoint found");
+            return ((GraphQLEndpointAttribute)graphQLEndpointAttribute).Path;
         }
 
         private RequestOptions GetDefaultOptions()
