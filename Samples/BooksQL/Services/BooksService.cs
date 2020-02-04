@@ -25,54 +25,10 @@ namespace BooksQL.Services
             return booksResponse.Books;
         }
 
-        public async Task<BookReview> CreateReview()
-        {
-            var bookreview = new BookReview
-            {
-                BookISBN = "0544272994",
-                Review = "This is a mutation test"
-            };
+        public async Task<BookReview> CreateReview(BookReview bookreview)
+        { 
             var review = await _webApiClient.SendMutationAsync(new MutationRequest<BookReview>(new MutationDetail("createReview", "review"), bookreview));
-            return review;
-
-            //var asd = new MutationRequest<BookReview>(new MutationDetail("createReview", "review"), bookreview);
-
-            //JsonConvert.SerializeObject(new
-            //{
-            //    reviewNico = new
-            //    {
-            //        bookISBN = "0544272994",
-            //        review = "This is a mutation test"
-            //    }
-            //});
-
-            //var result = await _webApiClient.SendMutationAsync<BookReview>(
-            //    @"mutation ($reviewNico: reviewInput!) {
-            //        createReview(review: $reviewNico) {
-            //            id
-            //            review
-            //        }
-            //    }",
-            //    //"{ review: { bookISBN: \"0544272994\", review:  \"cool!\"} }");
-            //    new {
-            //        reviewNico = new BookReview {
-            //            BookISBN = "0544272994",
-            //            Review = "This is a mutation test"
-            //        }
-            //    });
-            //{
-            //    reviewNico = new
-            //    {
-            //        bookISBN = "0544272994",
-            //        review = "This is a mutation test"
-            //    }
-            //});
-            //new {
-            //    reviewNico = new {
-            //        bookISBN = "0544272994",
-            //        review = "This is a mutation test"
-            //        }
-            //    });
+            return review; 
         }
     }
 

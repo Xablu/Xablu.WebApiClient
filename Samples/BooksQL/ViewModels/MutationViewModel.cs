@@ -61,7 +61,7 @@ namespace BooksQL.ViewModels
             var result = new MutationRequest<BookReview>(new MutationDetail("createReview", "review"), bookreview);
             Query = result.Query;
 
-            var review = await _booksService.CreateReview();
+            var review = await _booksService.CreateReview(bookreview);
 
             var json = JsonConvert.SerializeObject(review);
             var formattedJson = JValue.Parse(json).ToString(Formatting.Indented);
