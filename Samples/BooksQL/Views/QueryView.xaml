@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
         x:Class="BooksQL.Views.QueryView"
         NavigationPage.HasNavigationBar="False"
-        NavigationPage.HasBackButton="False">
+        NavigationPage.HasBackButton="False" Visual="Material">
     <StackLayout Orientation="Vertical">
         <Label HorizontalOptions="FillAndExpand" Text="query:" FontSize="30"
                 FontAttributes="Bold" Margin="3,0,3,0" />

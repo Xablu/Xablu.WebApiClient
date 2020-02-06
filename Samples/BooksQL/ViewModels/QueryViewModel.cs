@@ -46,9 +46,8 @@ namespace BooksQL.ViewModels
             try
             {
                 IsRefreshing = true;
-
-                await _booksService.CreateReview();
                 var result = new Request<BooksResponseModel>();
+
                 Query = result.Query;
                 var books = await _booksService.GetBooks();
 
