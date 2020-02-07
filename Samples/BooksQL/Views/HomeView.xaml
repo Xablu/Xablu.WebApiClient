@@ -31,13 +31,13 @@
                     <Label Text="Welcome to BooksQL" VerticalOptions="Start"
                             HorizontalOptions="Center" FontSize="Title"
                             FontAttributes="Bold"></Label>
-                    <Label Text="This application is made as playground.
-                           Please use the navigation menu to the left and use one of the desired Web Api services."
+                    <Label Text="This application is made as a playground.
+                           Please use the navigation menu on the left to use one of the desired Web Api services."
                             HorizontalTextAlignment="Center" LineHeight="1.1"
                             VerticalTextAlignment="Center" TextColor="Gray"
                             HorizontalOptions="Center" FontSize="Body"
                             FontAttributes="None" />
-                    <Label  Text="Currently this example contains the following services:"
+                    <Label  Text="Currently, this example contains the following services:"
                             HorizontalTextAlignment="Center" LineHeight="1.1"
                             VerticalTextAlignment="Center" TextColor="Gray"
                             HorizontalOptions="Center" FontSize="Body"
