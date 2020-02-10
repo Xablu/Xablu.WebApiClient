@@ -20,6 +20,7 @@ namespace BooksQL.ViewModels
             _booksService = DependencyService.Resolve<BooksService>();
 
             RefreshCommand = new Command(() => GetBooks());
+            SetQuery();
         }
 
         public Command RefreshCommand { get; private set; }
@@ -41,14 +42,18 @@ namespace BooksQL.ViewModels
 
         public ObservableCollection<Book> Books { get; private set; } = new ObservableCollection<Book>();
 
+        private void SetQuery()
+        {
+            var result = new Request<BooksResponseModel>();
+            Query = result.Query;
+        }
+
         private async Task GetBooks()
         {
             try
             {
                 IsRefreshing = true;
-                var result = new Request<BooksResponseModel>();
 
-                Query = result.Query;
                 var books = await _booksService.GetBooks();
 
                 Books.Clear();
