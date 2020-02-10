@@ -19,5 +19,6 @@
     <Folder Include="GraphQL\Types\" />
     <Folder Include="Controllers\" />
     <Folder Include="Entities\" />
+    <Folder Include="Controllers\" />
   </ItemGroup>
 </Project>

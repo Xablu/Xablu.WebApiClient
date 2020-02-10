@@ -24,7 +24,7 @@ namespace BooksQL.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddControllers();
+            services.AddControllers();
 
             services.AddSingleton<BooksRepository>();
             services.AddSingleton<BookReviewsRepository>();
@@ -51,16 +51,16 @@ namespace BooksQL.API
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
-            //app.UseRouting();
+            app.UseRouting();
 
-            //app.UseAuthorization();
+            app.UseAuthorization();
 
-            //app.UseEndpoints(endpoints =>
-            //{
-            //    endpoints.MapControllers();
-            //});
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
 
             app.UseGraphQL<BooksSchema>();
             app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());
