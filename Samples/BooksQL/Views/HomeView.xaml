@@ -55,9 +55,7 @@
                     </StackLayout>
 
                 </StackLayout>
-
             </Grid>
-
             <Frame CornerRadius="75" HeightRequest="150" WidthRequest="150"
                     HorizontalOptions="CenterAndExpand" Padding="0"
                     VerticalOptions="CenterAndExpand" Grid.Column="0"
@@ -67,15 +65,6 @@
                 <Image Source="rocket.png" HorizontalOptions="CenterAndExpand"
                         Aspect="AspectFit" VerticalOptions="CenterAndExpand" />
             </Frame>
-
         </AbsoluteLayout>
     </StackLayout>
-
-
-
-
-
-
-
-
 </ContentPage>

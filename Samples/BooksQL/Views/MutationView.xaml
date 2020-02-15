@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
         x:Class="BooksQL.Views.MutationView"
         NavigationPage.HasNavigationBar="False"
-        NavigationPage.HasBackButton="False" Visual="Material">
+        NavigationPage.HasBackButton="False" Visual="Material" Title="Mutation">
     <StackLayout Orientation="Vertical">
         <Label HorizontalOptions="FillAndExpand" Text="Example query"
                 HorizontalTextAlignment="Center" FontSize="25"
