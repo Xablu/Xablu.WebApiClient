@@ -152,6 +152,7 @@
     <BundleResource Include="Resources\home.png" />
     <BundleResource Include="Resources\rocket.png" />
     <BundleResource Include="Resources\rocket_black.png" />
+    <BundleResource Include="Resources\xablu_icon_white.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>

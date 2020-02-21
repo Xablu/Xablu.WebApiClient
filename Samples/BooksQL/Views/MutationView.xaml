@@ -5,7 +5,7 @@
         NavigationPage.HasNavigationBar="False"
         NavigationPage.HasBackButton="False" Visual="Material" Title="Mutation">
     <StackLayout Orientation="Vertical">
-        <Label HorizontalOptions="FillAndExpand" Text="Example query"
+        <Label HorizontalOptions="FillAndExpand" Text="Example mutation"
                 HorizontalTextAlignment="Center" FontSize="25"
                 FontAttributes="Bold" Margin="3,10,3,0" />
         <Frame BorderColor="LightGray" Margin="5" HasShadow="true">
@@ -17,7 +17,7 @@
         </Frame>
         <BoxView BackgroundColor="LightGray" HeightRequest="1" Margin="0,10,0,0"
                 HorizontalOptions="FillAndExpand"></BoxView>
-        <Label HorizontalOptions="FillAndExpand" Text="Query result"
+        <Label HorizontalOptions="FillAndExpand" Text="Mutation result"
                 HorizontalTextAlignment="Center" FontSize="25"
                 FontAttributes="Bold" Margin="3,0,3,0" />
         <Frame BorderColor="LightGray" HorizontalOptions="FillAndExpand"

@@ -28,20 +28,24 @@
                 <StackLayout Padding="0,100,0,0" Grid.Row="1"
                         VerticalOptions="FillAndExpand"
                         HorizontalOptions="FillAndExpand">
-                    <Label Text="Welcome to BooksQL" VerticalOptions="Start"
-                            HorizontalOptions="Center" FontSize="Title"
-                            FontAttributes="Bold"></Label>
-                    <Label Text="This application is made as a playground.
+                    <StackLayout Margin="25,0,25,4">
+                        <Label Text="Welcome to BooksQL" VerticalOptions="Start"
+                                HorizontalOptions="Center" FontSize="Title"
+                                FontAttributes="Bold"></Label>
+                        <Label Text="This application is made as a playground.
                            Please use the navigation menu on the left to use one of the desired Web Api services."
-                            HorizontalTextAlignment="Center" LineHeight="1.1"
-                            VerticalTextAlignment="Center" TextColor="Gray"
-                            HorizontalOptions="Center" FontSize="Body"
-                            FontAttributes="None" />
-                    <Label  Text="Currently, this example contains the following services:"
-                            HorizontalTextAlignment="Center" LineHeight="1.1"
-                            VerticalTextAlignment="Center" TextColor="Gray"
-                            HorizontalOptions="Center" FontSize="Body"
-                            FontAttributes="None" />
+                                HorizontalTextAlignment="Center"
+                                LineHeight="1.1" VerticalTextAlignment="Center"
+                                TextColor="Gray" HorizontalOptions="Center"
+                                FontSize="Body" FontAttributes="None" />
+                        <Label  Text="Currently, this example contains the following services:"
+                                HorizontalTextAlignment="Center"
+                                LineHeight="1.1" Margin="0,-6,0,0"
+                                VerticalTextAlignment="Center" TextColor="Gray"
+                                HorizontalOptions="Center" FontSize="Body"
+                                FontAttributes="None" />
+                    </StackLayout>
+
                     <StackLayout>
                         <Label  Text="• GraphQL"
                                 HorizontalTextAlignment="Center"
