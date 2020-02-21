@@ -23,9 +23,9 @@
                 CachingStrategy="RecycleElement" Margin="0,-20,0,0"
                 ItemsSource="{Binding MenuItems}">
             <ListView.Header>
-                <StackLayout HeightRequest="150"
-                        HorizontalOptions="FillAndExpand"
+                <StackLayout HorizontalOptions="FillAndExpand"
                         VerticalOptions="FillAndExpand"
+                        HeightRequest="{x:OnPlatform iOS=175, Android=150}"
                         BackgroundColor="Transparent" Spacing="0">
                     <Image Source="xablu_icon_white.png"
                             HorizontalOptions="Center"
