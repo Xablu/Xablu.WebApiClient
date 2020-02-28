@@ -136,20 +136,20 @@ namespace Xablu.WebApiClient.Services.GraphQL
         private string CreateInputString(MutationDetail mutationDetail, string variableInputTypeName)
         {
             string inputString = "";
-            var parameterInputList = new List<string>();
+            var variableInputList = new List<string>();
 
             if (Variables != null)
             {
                 foreach (var variable in Variables.GetType().GetProperties())
                 {
-                    parameterInputList.Add(variable.Name);
+                    variableInputList.Add(variable.Name);
                 }
             }
 
             if (mutationDetail != null && !string.IsNullOrEmpty(variableInputTypeName))
             {
-                var parameterInputName = parameterInputList[0];
-                inputString = $"(${ToLowerFirstChar(parameterInputName)}: {variableInputTypeName}!)" + $"{{{mutationDetail.MutationName}({mutationDetail.MutationParameterName}: ${ToLowerFirstChar(parameterInputName)})";
+                var variableInputName = variableInputList[0];
+                inputString = $"(${ToLowerFirstChar(variableInputName)}: {variableInputTypeName}!)" + $"{{{mutationDetail.MutationName}({mutationDetail.MutationParameterName}: ${ToLowerFirstChar(variableInputName)})";
             }
             return inputString;
         }
