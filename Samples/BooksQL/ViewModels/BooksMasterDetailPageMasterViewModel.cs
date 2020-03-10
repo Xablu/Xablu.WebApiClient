@@ -14,9 +14,9 @@ namespace BooksQL.ViewModels
         {
             MenuItems = new ObservableCollection<MasterMenuItem>(new[]
             {
-                    new MasterMenuItem { Id = 0, Title = "GraphQL", TargetType = typeof(CallSelectionPage) },
-                    new MasterMenuItem { Id = 1, Title = "Refit" },
-                    new MasterMenuItem { Id = 2, Title = "Home", TargetType = typeof(HomeView) }
+                    new MasterMenuItem { Id = 0, Title = "GraphQL", IconSource ="graphql_icon.png", TargetType = typeof(CallSelectionPage) },
+                    new MasterMenuItem { Id = 1, Title = "Refit", IconSource="refit_icon_white.png" },
+                    new MasterMenuItem { Id = 2, Title = "Home", IconSource="home.png", TargetType = typeof(HomeView) }
                 });
         }
 

@@ -3,7 +3,7 @@ using Xablu.WebApiClient.Attributes;
 
 namespace BooksQL.Models
 {
-    [VariableInput("reviewInput")]
+    [VariableInputType("reviewInput")]
     public class BookReview
     {
         public string BookISBN { get; set; }

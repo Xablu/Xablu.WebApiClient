@@ -105,7 +105,7 @@ namespace TestConsoleApp
 
     }
 
-    [VariableInput("ChangeUserStatusInput")]
+    [VariableInputType("ChangeUserStatusInput")]
     public class ChangeUserStatus
     {
         [JsonProperty("clientMutationId")]

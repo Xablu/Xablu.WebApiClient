@@ -2,9 +2,9 @@ using System;
 namespace Xablu.WebApiClient.Attributes
 {
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
-    public class VariableInputAttribute : Attribute
+    public class VariableInputTypeAttribute : Attribute
     {
-        public VariableInputAttribute(string VariableInputModelName = "")
+        public VariableInputTypeAttribute(string VariableInputModelName = "")
         {
             if (!string.IsNullOrEmpty(VariableInputModelName))
             {

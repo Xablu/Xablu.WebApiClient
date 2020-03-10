@@ -1,5 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
         xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-        x:Class="BooksQL.Views.HomeView" Title="Home">
+        x:Class="BooksQL.Views.HomeView" Visual="Material">
+    <StackLayout BackgroundColor="AntiqueWhite">
+        <AbsoluteLayout HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand">
+            <Grid HorizontalOptions="FillAndExpand"
+                    VerticalOptions="FillAndExpand"
+                    BackgroundColor="Transparent"
+                    AbsoluteLayout.LayoutFlags="All"
+                    AbsoluteLayout.LayoutBounds="1,1,1,1" RowSpacing="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="0.20*" />
+                    <RowDefinition Height="0.80*" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <BoxView BackgroundColor="White"
+                        HorizontalOptions="FillAndExpand"
+                        VerticalOptions="FillAndExpand" Grid.Row="0"
+                        Grid.Column="0" />
+                <BoxView BackgroundColor="GhostWhite"
+                        HorizontalOptions="FillAndExpand"
+                        VerticalOptions="FillAndExpand" Grid.Row="1"
+                        Grid.Column="0" />
+                <StackLayout Padding="0,100,0,0" Grid.Row="1"
+                        VerticalOptions="FillAndExpand"
+                        HorizontalOptions="FillAndExpand">
+                    <StackLayout Margin="25,0,25,4">
+                        <Label Text="Welcome to BooksQL" VerticalOptions="Start"
+                                HorizontalOptions="Center" FontSize="Title"
+                                FontAttributes="Bold"></Label>
+                        <Label Text="This application is made as a playground.
+                           Please use the navigation menu on the left to use one of the desired Web Api services."
+                                HorizontalTextAlignment="Center"
+                                LineHeight="1.1" VerticalTextAlignment="Center"
+                                TextColor="Gray" HorizontalOptions="Center"
+                                FontSize="Body" FontAttributes="None" />
+                        <Label  Text="Currently, this example contains the following services:"
+                                HorizontalTextAlignment="Center"
+                                LineHeight="1.1" Margin="0,-6,0,0"
+                                VerticalTextAlignment="Center" TextColor="Gray"
+                                HorizontalOptions="Center" FontSize="Body"
+                                FontAttributes="None" />
+                    </StackLayout>
+
+                    <StackLayout>
+                        <Label  Text="• GraphQL"
+                                HorizontalTextAlignment="Center"
+                                LineHeight="1.1" VerticalTextAlignment="Center"
+                                TextColor="Gray" HorizontalOptions="Center"
+                                FontSize="Body" FontAttributes="bold"></Label>
+                        <Label  Text="• Refit" HorizontalTextAlignment="Center"
+                                LineHeight="1.1" VerticalTextAlignment="Center"
+                                TextColor="Gray" HorizontalOptions="Center"
+                                FontSize="Body" FontAttributes="Bold"></Label>
+                    </StackLayout>
+
+                </StackLayout>
+            </Grid>
+            <Frame CornerRadius="75" HeightRequest="150" WidthRequest="150"
+                    HorizontalOptions="CenterAndExpand" Padding="0"
+                    VerticalOptions="CenterAndExpand" Grid.Column="0"
+                    IsClippedToBounds="True"
+                    AbsoluteLayout.LayoutFlags="PositionProportional"
+                    AbsoluteLayout.LayoutBounds="0.5,0.125" HasShadow="False">
+                <Image Source="rocket.png" HorizontalOptions="CenterAndExpand"
+                        Aspect="AspectFit" VerticalOptions="CenterAndExpand" />
+            </Frame>
+        </AbsoluteLayout>
+    </StackLayout>
 </ContentPage>

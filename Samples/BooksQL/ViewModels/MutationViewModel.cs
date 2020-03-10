@@ -14,13 +14,20 @@ namespace BooksQL.ViewModels
     public class MutationViewModel : INotifyPropertyChanged
     {
         private BooksService _booksService;
-        private string _query = "Query result";
+        private string _query;
         private string _result;
 
         public MutationViewModel()
         {
             _booksService = DependencyService.Resolve<BooksService>();
             RefreshCommand = new Command(() => CreateMutation());
+            BookReview = new BookReview
+            {
+                BookISBN = "0544272994",
+                Review = "This is a mutation test"
+            };
+
+            SetQuery();
         }
 
         public Command RefreshCommand { get; private set; }
@@ -51,17 +58,17 @@ namespace BooksQL.ViewModels
             }
         }
 
+        public BookReview BookReview { get; set; }
+
+        private void SetQuery()
+        {
+            var result = new MutationRequest<BookReview>(new MutationDetail("createReview", "review"), BookReview);
+            Query = result.Query;
+        }
+
         private async Task CreateMutation()
         {
-            var bookreview = new BookReview
-            {
-                BookISBN = "0544272994",
-                Review = "This is a mutation test"
-            };
-            var result = new MutationRequest<BookReview>(new MutationDetail("createReview", "review"), bookreview);
-            Query = result.Query;
-
-            var review = await _booksService.CreateReview(bookreview);
+            var review = await _booksService.CreateReview(BookReview);
 
             var json = JsonConvert.SerializeObject(review);
             var formattedJson = JValue.Parse(json).ToString(Formatting.Indented);

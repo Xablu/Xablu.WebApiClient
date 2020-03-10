@@ -4,7 +4,8 @@
         x:Class="BooksQL.Views.CallSelectionPage">
     <ListView x:Name="MyListView" ItemsSource="{Binding SelectionItems}"
             HasUnevenRows="True" CachingStrategy="RecycleElement"
-            ItemSelected="ListView_ItemSelected" SeparatorVisibility="None">
+            ItemSelected="ListView_ItemSelected" SeparatorVisibility="None"
+            Visual="Material">
         <ListView.ItemTemplate>
             <DataTemplate>
                 <ViewCell>
@@ -21,7 +22,7 @@
                         </StackLayout>
                         <BoxView HorizontalOptions="FillAndExpand"
                                 VerticalOptions="FillAndExpand"
-                                HeightRequest="0.1" BackgroundColor="LightGray" />
+                                HeightRequest="0.5" BackgroundColor="LightGray" />
                     </StackLayout>
                 </ViewCell>
             </DataTemplate>

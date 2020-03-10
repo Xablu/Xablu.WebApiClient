@@ -29,9 +29,7 @@ namespace BooksQL.Views
 
             var page = (Page)Activator.CreateInstance(item.TargetType);
 
-            page.Title = item.Title;
-
-            Navigation.PushAsync(new NavigationPage(page));
+            Navigation.PushAsync(new NavigationPage(page) { Title = item.Title });
 
             MyListView.SelectedItem = null;
         }

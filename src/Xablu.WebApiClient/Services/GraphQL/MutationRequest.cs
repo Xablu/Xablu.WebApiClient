@@ -32,13 +32,13 @@ namespace Xablu.WebApiClient.Services.GraphQL
 
 
         public MutationDetail Mutation { get; set; }
-         
+
         private void CreateMutationQuery()
         {
             if (string.IsNullOrEmpty(Query))
             {
                 Query = GetQuery();
-            } 
+            }
         }
 
         private string GetQuery()
@@ -104,15 +104,15 @@ namespace Xablu.WebApiClient.Services.GraphQL
 
         private string QueryBuilder()
         {
-            var variableInputName = (Attribute.GetCustomAttribute(typeof(T), typeof(VariableInputAttribute)) as VariableInputAttribute)?.ModelInputName;
-            if (string.IsNullOrEmpty(variableInputName))
+            var variableInputTypeName = (Attribute.GetCustomAttribute(typeof(T), typeof(VariableInputTypeAttribute)) as VariableInputTypeAttribute)?.ModelInputName;
+            if (string.IsNullOrEmpty(variableInputTypeName))
             {
                 var errorMessage = "No VariableInputAttribute found. Please ensure the model has been marked or the value is not null";
-                throw new RequestException(errorMessage); 
+                throw new RequestException(errorMessage);
             }
 
             var variableString = CreateVariableString();
-            var methodString = CreateInputString(Mutation, variableInputName);
+            var methodString = CreateInputString(Mutation, variableInputTypeName);
             var queryString = $"mutation{methodString}{variableString}";
             return queryString;
         }
@@ -133,23 +133,23 @@ namespace Xablu.WebApiClient.Services.GraphQL
             return queryString + "}";
         }
 
-        private string CreateInputString(MutationDetail mutationDetail, string variableInputName)
+        private string CreateInputString(MutationDetail mutationDetail, string variableInputTypeName)
         {
             string inputString = "";
-            var parameterInputList = new List<string>();
+            var variableInputList = new List<string>();
 
             if (Variables != null)
             {
                 foreach (var variable in Variables.GetType().GetProperties())
                 {
-                    parameterInputList.Add(variable.Name);
+                    variableInputList.Add(variable.Name);
                 }
             }
 
-            if (mutationDetail != null && !string.IsNullOrEmpty(variableInputName))
+            if (mutationDetail != null && !string.IsNullOrEmpty(variableInputTypeName))
             {
-                var parameterInputName = parameterInputList[0];
-                inputString = $"(${ToLowerFirstChar(parameterInputName)}: {variableInputName}!)" + $"{{{mutationDetail.MutationName}({mutationDetail.MutationParameterName}: ${ToLowerFirstChar(parameterInputName)})";
+                var variableInputName = variableInputList[0];
+                inputString = $"(${ToLowerFirstChar(variableInputName)}: {variableInputTypeName}!)" + $"{{{mutationDetail.MutationName}({mutationDetail.MutationParameterName}: ${ToLowerFirstChar(variableInputName)})";
             }
             return inputString;
         }
