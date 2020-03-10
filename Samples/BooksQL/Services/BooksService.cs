@@ -16,8 +16,7 @@ namespace BooksQL.Services
 
         public BooksService()
         {
-            var endPoint = GetEndPoint();
-            _webApiClient = WebApiClientFactory.Get<IBooksApi>(endPoint);
+            _webApiClient = WebApiClientFactory.Get<IBooksApi>(GetEndPoint());
         }
 
         public async Task<IEnumerable<Book>> GetBooks()
