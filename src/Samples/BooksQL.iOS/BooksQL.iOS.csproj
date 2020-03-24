@@ -138,7 +138,7 @@
       <Project>{2628F341-FD01-45C8-9748-42C77A8D5673}</Project>
       <Name>BooksQL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Xablu.WebApiClient\Xablu.WebApiClient.csproj">
+    <ProjectReference Include="..\..\Xablu.WebApiClient\Xablu.WebApiClient.csproj">
       <Project>{353DBDAF-A31D-461A-99BA-B217399E968A}</Project>
       <Name>Xablu.WebApiClient</Name>
     </ProjectReference>

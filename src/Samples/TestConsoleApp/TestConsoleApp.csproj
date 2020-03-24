@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Xablu.WebApiClient\Xablu.WebApiClient.csproj" />
+    <ProjectReference Include="..\..\Xablu.WebApiClient\Xablu.WebApiClient.csproj" />
     <ProjectReference Include="..\TestApp\TestApp.csproj" />
   </ItemGroup>
 </Project>

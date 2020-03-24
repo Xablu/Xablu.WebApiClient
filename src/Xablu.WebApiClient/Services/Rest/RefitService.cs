@@ -1,18 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using Fusillade;
-using Refit;
-using Xablu.WebApiClient.Logging;
+using Refit; 
 using Xablu.WebApiClient.Native;
 
 namespace Xablu.WebApiClient.Services.Rest
 {
     public class RefitService<T> : IRefitService<T>
         where T : class
-    {
-        private static readonly ILog Logger = LogProvider.For<RefitService<T>>();
-
+    { 
         private readonly Lazy<T> _background;
         private readonly Lazy<T> _userInitiated;
         private readonly Lazy<T> _speculative;
@@ -21,11 +19,8 @@ namespace Xablu.WebApiClient.Services.Rest
         {
             if (string.IsNullOrEmpty(apiBaseAddress))
                 throw new ArgumentNullException(nameof(apiBaseAddress));
-
-            if (Logger.IsTraceEnabled())
-            {
-                Logger.Trace($"Base url set to: {apiBaseAddress} and delegatingHandler: {delegatingHandler != null}");
-            }
+             
+            Debug.WriteLine($"Base url set to: {apiBaseAddress} and delegatingHandler: {delegatingHandler != null}");
 
             Func<HttpMessageHandler, T> createClient = messageHandler =>
             {
@@ -72,11 +67,9 @@ namespace Xablu.WebApiClient.Services.Rest
         {
             if (messageHandler is DelegatingHandler internalDelegate
                 && internalDelegate.InnerHandler is HttpClientHandler internalClientHandler)
-            {
-                if (Logger.IsTraceEnabled())
-                {
-                    Logger.Trace("Disabling AutoRedirects");
-                }
+            { 
+                Debug.WriteLine("Disabling AutoRedirects");
+
                 internalClientHandler.AllowAutoRedirect = false;
             }
         }

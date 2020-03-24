@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,17 +10,14 @@ using Newtonsoft.Json.Linq;
 using Polly;
 using Polly.Wrap;
 using Xablu.WebApiClient.Attributes;
-using Xablu.WebApiClient.Enums;
-using Xablu.WebApiClient.Logging;
+using Xablu.WebApiClient.Enums; 
 using Xablu.WebApiClient.Services.GraphQL;
 using Xablu.WebApiClient.Services.Rest;
 
 namespace Xablu.WebApiClient
 {
     public class WebApiClient<T> : IWebApiClient<T>
-    {
-        private static readonly ILog Logger = LogProvider.For<WebApiClient<T>>();
-
+    { 
         private readonly IRefitService<T> _refitService;
         private readonly IGraphQLService _graphQLService;
 
@@ -58,11 +56,8 @@ namespace Xablu.WebApiClient
 
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
-            if (Logger.IsTraceEnabled())
-            {
-                Logger.Trace($"Operation running with parameters: Priority: {priority}, retryCount: {retryCount}, has should retry condition: {shouldRetry != null}, timeout: {timeout}");
-            }
-
+            Debug.WriteLine($"Operation running with parameters: Priority: {priority}, retryCount: {retryCount}, has should retry condition: {shouldRetry != null}, timeout: {timeout}");
+            
             await policy.ExecuteAsync(() => operation.Invoke(service));
         }
 
@@ -72,11 +67,8 @@ namespace Xablu.WebApiClient
 
             var policy = GetWrappedPolicy<TResult>(retryCount, shouldRetry, timeout);
 
-            if (Logger.IsTraceEnabled())
-            {
-                Logger.Trace($"Operation running with parameters: Priority: {priority}, retryCount: {retryCount}, has should retry condition: {shouldRetry != null}, timeout: {timeout}");
-            }
-
+            Debug.WriteLine($"Operation running with parameters: Priority: {priority}, retryCount: {retryCount}, has should retry condition: {shouldRetry != null}, timeout: {timeout}");
+            
             return await policy.ExecuteAsync(() => operation.Invoke(service));
         }
 
