@@ -1,17 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using Fusillade;
 using GraphQL.Client.Http;
-using Xablu.WebApiClient.Logging;
 using Xablu.WebApiClient.Native;
 
 namespace Xablu.WebApiClient.Services.GraphQL
 {
     public class GraphQLService : IGraphQLService
-    {
-        private static readonly ILog Logger = LogProvider.For<GraphQLService>();
-
+    { 
         private readonly Lazy<GraphQLHttpClient> _background;
         private readonly Lazy<GraphQLHttpClient> _userInitiated;
         private readonly Lazy<GraphQLHttpClient> _speculative;
@@ -23,11 +21,8 @@ namespace Xablu.WebApiClient.Services.GraphQL
             if (string.IsNullOrEmpty(apiBaseAddress))
                 throw new ArgumentNullException(nameof(apiBaseAddress));
 
-            if (Logger.IsTraceEnabled())
-            {
-                Logger.Trace($"Base url set to: {apiBaseAddress} and delegatingHandler: {delegatingHandler != null}");
-            }
-
+            Debug.WriteLine($"Base url set to: {apiBaseAddress} and delegatingHandler: {delegatingHandler != null}");
+            
             BaseUrl = apiBaseAddress;
 
             Func<HttpMessageHandler, GraphQLHttpClient> createClient = messageHandler =>
@@ -76,10 +71,8 @@ namespace Xablu.WebApiClient.Services.GraphQL
             if (messageHandler is DelegatingHandler internalDelegate
                 && internalDelegate.InnerHandler is HttpClientHandler internalClientHandler)
             {
-                if (Logger.IsTraceEnabled())
-                {
-                    Logger.Trace("Disabling AutoRedirects");
-                }
+                Debug.WriteLine("Disabling AutoRedirects");
+
                 internalClientHandler.AllowAutoRedirect = false;
             }
         }
