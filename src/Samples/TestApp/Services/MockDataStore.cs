@@ -14,7 +14,7 @@ namespace TestApp.Services
 
         public MockDataStore()
         {
-            _webApiClient = WebApiClientFactory.Get<IStarwarsApi>("https://swapi.co/api", false, () => new SampleHttpClientHandler());
+            _webApiClient = WebApiClientFactory.Get<IStarwarsApi>("https://swapi.co/apiddd", false, () => new SampleHttpClientHandler());
             items = new List<Starships>();
             var mockItems = new List<Starships>
             {
@@ -79,6 +79,7 @@ namespace TestApp.Services
                     2,
                     (ex) => true,
                     60);
+
 
             //var clientResult = refitClient.RefitService.UserInitiated.GetTask("/starships");
 

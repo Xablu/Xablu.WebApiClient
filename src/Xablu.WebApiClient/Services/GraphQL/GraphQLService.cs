@@ -21,7 +21,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
             if (string.IsNullOrEmpty(apiBaseAddress))
                 throw new ArgumentNullException(nameof(apiBaseAddress));
 
-            Debug.WriteLine($"Base url set to: {apiBaseAddress} and delegatingHandler: {delegatingHandler != null}");
+            Debug.WriteLine($"GraphQL base url set to: {apiBaseAddress}, autoRedirects: {autoRedirectRequests} and delegatingHandler: {delegatingHandler != null}");
             
             BaseUrl = apiBaseAddress;
 

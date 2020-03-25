@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Xablu.WebApiClient.Attributes;
@@ -41,6 +42,8 @@ namespace Xablu.WebApiClient.Services.GraphQL
                 var queryString = GetQuery();
                 GraphQLQuery = queryString;
                 Query = GraphQLQuery;
+
+                Debug.WriteLine($"GraphQL query string generated: {Query}");
             }
             else
             {
