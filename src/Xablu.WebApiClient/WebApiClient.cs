@@ -1,10 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using GraphQL;
-
 using Polly;
 using Polly.Wrap;
 using Xablu.WebApiClient.Attributes;
@@ -55,16 +56,19 @@ namespace Xablu.WebApiClient
     }
 
     public class WebApiClient<T> : WebApiClient, IWebApiClient<T>
+        where T : class
     { 
-        private readonly IRefitService<T> _refitService;
-        private readonly IGraphQLService _graphQLService;
+        private readonly Lazy<IRefitService<T>> _refitService;
+        private readonly Lazy<IGraphQLService> _graphQLService;
 
-        public WebApiClient(
-            IRefitService<T> refitService,
-            IGraphQLService graphQLService)
+        internal WebApiClient(
+            string baseUrl,
+            bool autoRedirectRequests = true,
+            Func<DelegatingHandler> delegatingHandler = default,
+            IDictionary<string, string> defaultHeaders = default)
         {
-            _refitService = refitService;
-            _graphQLService = graphQLService;
+            _refitService = new Lazy<IRefitService<T>>(() => new RefitService<T>(baseUrl, autoRedirectRequests, delegatingHandler, defaultHeaders));
+            _graphQLService = new Lazy<IGraphQLService>(() => new GraphQLService(baseUrl, autoRedirectRequests, delegatingHandler, defaultHeaders));
         }
 
         public Task Call(Func<T, Task> operation)
@@ -76,8 +80,7 @@ namespace Xablu.WebApiClient
         {
             return Call<TResult>(operation, GetDefaultOptions());
         }
-
-
+         
         public Task Call(Func<T, Task> operation, RequestOptions options)
         {
             return Call(operation, options.Priority, options.RetryCount, options.ShouldRetry, options.Timeout);
@@ -90,7 +93,7 @@ namespace Xablu.WebApiClient
 
         public async Task Call(Func<T, Task> operation, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout)
         {
-            var service = _refitService.GetByPriority(priority);
+            var service = _refitService.Value.GetByPriority(priority);
 
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
@@ -101,7 +104,7 @@ namespace Xablu.WebApiClient
 
         public async Task<TResult> Call<TResult>(Func<T, Task<TResult>> operation, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout)
         {
-            var service = _refitService.GetByPriority(priority);
+            var service = _refitService.Value.GetByPriority(priority);
 
             var policy = GetWrappedPolicy<TResult>(retryCount, shouldRetry, timeout);
 
@@ -124,9 +127,9 @@ namespace Xablu.WebApiClient
 
         public async Task<TModel> SendQueryAsync<TModel>(Request<TModel> request, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
             where TModel : class, new()
-        {
-            var service = _graphQLService.GetByPriority(priority);
-            service.Options.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
+        {  
+            var service = _graphQLService.Value.GetByPriority(priority);
+            service.Options.EndPoint = new Uri(_graphQLService.Value.BaseUrl + GetGraphQLEndpoint());
 
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
@@ -158,9 +161,9 @@ namespace Xablu.WebApiClient
          
         public async Task<TResponseModel> SendMutationAsync<TResponseModel>(MutationRequest<TResponseModel> request, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
             where TResponseModel : class, new()
-        {
-            var service = _graphQLService.GetByPriority(priority);
-            service.Options.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
+        { 
+            var service = _graphQLService.Value.GetByPriority(priority);
+            service.Options.EndPoint = new Uri(_graphQLService.Value.BaseUrl + GetGraphQLEndpoint()); 
 
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
@@ -192,9 +195,9 @@ namespace Xablu.WebApiClient
 
         public async Task<TResponseModel> SendMutationAsync<TResponseModel>(string mutationString, object queryVariables, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
            where TResponseModel : class, new()
-        {
-            var service = _graphQLService.GetByPriority(priority);
-            service.Options.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
+        { 
+            var service = _graphQLService.Value.GetByPriority(priority);
+            service.Options.EndPoint = new Uri(_graphQLService.Value.BaseUrl + GetGraphQLEndpoint());
 
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
