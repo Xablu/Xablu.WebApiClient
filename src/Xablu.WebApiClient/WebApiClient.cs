@@ -203,7 +203,7 @@ namespace Xablu.WebApiClient
         {
             var retryPolicy = Policy.Handle<Exception>(e => shouldRetry?.Invoke(e) ?? true)
                                     .RetryAsync(retryCount,
-                                                onRetry: (Exception ex, int count) => Debug.WriteLine($"Retrying call. Count: {count} | Exception: {ex.Message}"))
+                                                onRetry: (Exception ex, int count) => Debug.WriteLine($"Retrying call. Count: {count} | Exception: {ex.Message}"));
             var timeoutPolicy = Policy.TimeoutAsync(timeout,
                                                     onTimeoutAsync: async (context, span, task) => Debug.WriteLine("Call timed out"));
 
