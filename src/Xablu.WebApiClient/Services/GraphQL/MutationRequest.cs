@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Xablu.WebApiClient.Attributes;
@@ -38,6 +39,8 @@ namespace Xablu.WebApiClient.Services.GraphQL
             if (string.IsNullOrEmpty(Query))
             {
                 Query = GetQuery();
+
+                Debug.WriteLine($"GraphQL mutation query string generated: {Query}");
             }
         }
 

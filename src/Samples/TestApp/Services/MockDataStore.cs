@@ -80,6 +80,7 @@ namespace TestApp.Services
                     (ex) => true,
                     60);
 
+
             //var clientResult = refitClient.RefitService.UserInitiated.GetTask("/starships");
 
             //give either result back with own refit interface and endpoints or either give endpoint and let our package handle it for you

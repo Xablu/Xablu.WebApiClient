@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -56,7 +55,7 @@ namespace Xablu.WebApiClient
 
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
-            Debug.WriteLine($"Operation running with parameters: Priority: {priority}, retryCount: {retryCount}, has should retry condition: {shouldRetry != null}, timeout: {timeout}");
+            Debug.WriteLine($"WebApiClient call with parameters: Priority: {priority}, retryCount: {retryCount}, has should retry condition: {shouldRetry != null}, timeout: {timeout}");
             
             await policy.ExecuteAsync(() => operation.Invoke(service));
         }
@@ -67,7 +66,7 @@ namespace Xablu.WebApiClient
 
             var policy = GetWrappedPolicy<TResult>(retryCount, shouldRetry, timeout);
 
-            Debug.WriteLine($"Operation running with parameters: Priority: {priority}, retryCount: {retryCount}, has should retry condition: {shouldRetry != null}, timeout: {timeout}");
+            Debug.WriteLine($"WebApiClient call with parameters: Priority: {priority}, retryCount: {retryCount}, has should retry condition: {shouldRetry != null}, timeout: {timeout}");
             
             return await policy.ExecuteAsync(() => operation.Invoke(service));
         }
@@ -91,6 +90,9 @@ namespace Xablu.WebApiClient
             service.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
 
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
+
+            Debug.WriteLine($"WebApiClient call with parameters: Priority: {priority}, retryCount: {retryCount}, has should retry condition: {shouldRetry != null}, timeout: {timeout}");
+
             var result = await policy.ExecuteAsync(async () => await service.SendQueryAsync(request, cancellationToken));
 
             if (result.Errors != null && result.Errors.Any())
@@ -100,12 +102,12 @@ namespace Xablu.WebApiClient
                 throw new Exception(message);
             }
 
-            var resultData = result.Data as JObject;
-            if (resultData == null)
+            if (!(result.Data is JObject resultData))
             {
                 throw new InvalidCastException("Result is not a valid Json");
             }
             var model = JsonConvert.DeserializeObject<TModel>(resultData.ToString());
+
             return model;
         }
 
@@ -129,6 +131,8 @@ namespace Xablu.WebApiClient
 
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
+            Debug.WriteLine($"WebApiClient call with parameters: Priority: {priority}, retryCount: {retryCount}, has should retry condition: {shouldRetry != null}, timeout: {timeout}");
+
             var result = await policy.ExecuteAsync(async () => await service.SendMutationAsync(request, cancellationToken));
 
             if (result.Errors != null && result.Errors.Any())
@@ -138,13 +142,10 @@ namespace Xablu.WebApiClient
                 throw new Exception(message);
             }
 
-            var model = typeof(TModel);
             var jObj = (JObject)result.Data;
 
             var jToken = jObj.Properties().Select(p => p.Value).First();
-            var resultData = jToken.ToObject(model) as TModel;
-
-            if (resultData == null)
+            if (!(jToken.ToObject(typeof(TModel)) is TModel resultData))
             {
                 throw new InvalidCastException("Model provided is not of correct type");
             }
@@ -171,6 +172,8 @@ namespace Xablu.WebApiClient
 
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
+            Debug.WriteLine($"WebApiClient call with parameters: Priority: {priority}, retryCount: {retryCount}, has should retry condition: {shouldRetry != null}, timeout: {timeout}");
+
             var mutationRequest = new GraphQLRequest
             {
                 Query = mutationString,
@@ -185,14 +188,11 @@ namespace Xablu.WebApiClient
                 message += string.Join(" /// ", result.Errors.Select(e => e.Message));
                 throw new Exception(message);
             }
-
-            var model = typeof(TModel);
+             
             var jObj = (JObject)result.Data;
 
             var jToken = jObj.Properties().Select(p => p.Value).First();
-            var resultData = jToken.ToObject(model) as TModel;
-
-            if (resultData == null)
+            if (!(jToken.ToObject(typeof(TModel)) is TModel resultData))
             {
                 throw new InvalidCastException("Model provided is not of correct type");
             }
@@ -202,8 +202,10 @@ namespace Xablu.WebApiClient
         private static AsyncPolicyWrap GetWrappedPolicy(int retryCount, Func<Exception, bool> shouldRetry, int timeout)
         {
             var retryPolicy = Policy.Handle<Exception>(e => shouldRetry?.Invoke(e) ?? true)
-                                    .RetryAsync(retryCount);
-            var timeoutPolicy = Policy.TimeoutAsync(timeout);
+                                    .RetryAsync(retryCount,
+                                                onRetry: (Exception ex, int count) => Debug.WriteLine($"Retrying call. Count: {count} | Exception: {ex.Message}"));
+            var timeoutPolicy = Policy.TimeoutAsync(timeout,
+                                                    onTimeoutAsync: async (context, span, task) => Debug.WriteLine("Call timed out"));
 
             return Policy.WrapAsync(retryPolicy, timeoutPolicy);
         }
@@ -211,9 +213,11 @@ namespace Xablu.WebApiClient
         private static AsyncPolicyWrap<TResult> GetWrappedPolicy<TResult>(int retryCount, Func<Exception, bool> shouldRetry, int timeout)
         {
             var retryPolicy = Policy.Handle<Exception>(e => shouldRetry?.Invoke(e) ?? true)
-                                    .RetryAsync(retryCount)
+                                    .RetryAsync(retryCount,
+                                                onRetry: (Exception ex, int count) => Debug.WriteLine($"Retrying call. Count: {count} | Exception: {ex.Message}"))
                                     .AsAsyncPolicy<TResult>();
-            var timeoutPolicy = Policy.TimeoutAsync<TResult>(timeout);
+            var timeoutPolicy = Policy.TimeoutAsync<TResult>(timeout,
+                                                             onTimeoutAsync: async (context, span, task) => Debug.WriteLine("Call timed out"));
 
             return Policy.WrapAsync<TResult>(retryPolicy, timeoutPolicy);
         }
