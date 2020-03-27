@@ -1,7 +1,27 @@
+trigger:
+  branches:
+    include:
+    - master
+    - develop
+  paths:
+    exclude:
+    - 'README.md'
+    - '**/*.md'
+
+pr:
+  branches:
+    include:
+    - master
+    - develop
+  paths:
+    exclude:
+    - 'README.md'
+    - '**/*.md'
+
 pool:
   name: Azure Pipelines
   demands: msbuild
-  vmImage: windows-2019
+  vmImage: windows-latest
 
 #here is where we set the version number (Build.BuildNumber)
 name: 2.0.0$(rev:.r)
@@ -13,22 +33,14 @@ steps:
 - task: NuGetCommand@2
   displayName: 'NuGet restore'
   inputs:
-    restoreSolution: src/Xablu.WebApiClient.sln
+    restoreSolution: src/Xablu.WebApiClient/Xablu.WebApiClient.csproj
 
 - task: MSBuild@1
-  displayName: 'Build Beta'
-  inputs:
-    solution: src/Xablu.WebApiClient/Xablu.WebApiClient.csproj
-    configuration: 'Release'
-    msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber)-beta /p:PackageOutputPath=$(build.artifactstagingdirectory)/beta /p:AssemblyFileVersion=$(Build.BuildNumber) '
-
-- task: MSBuild@1
-  displayName: 'Build Public'
+  displayName: 'Build project Xablu.WebApiClient.csproj'
   inputs:
     solution: src/Xablu.WebApiClient/Xablu.WebApiClient.csproj
     configuration: 'Release'
     msbuildArguments: '/t:restore;build;pack /p:PackageVersion=$(Build.BuildNumber) /p:PackageOutputPath=$(build.artifactstagingdirectory)/public  /p:AssemblyFileVersion=$(Build.BuildNumber) '
-
 - task: CopyFiles@2
   displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
   inputs:
