@@ -87,7 +87,7 @@ namespace Xablu.WebApiClient
             where TModel : class, new()
         {
             var service = _graphQLService.GetByPriority(priority);
-            service.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
+            service.Options.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
 
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
@@ -127,7 +127,7 @@ namespace Xablu.WebApiClient
             where TModel : class, new()
         {
             var service = _graphQLService.GetByPriority(priority);
-            service.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
+            service.Options.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
 
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
@@ -168,7 +168,7 @@ namespace Xablu.WebApiClient
            where TModel : class, new()
         {
             var service = _graphQLService.GetByPriority(priority);
-            service.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
+            service.Options.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
 
             var policy = GetWrappedPolicy(retryCount, shouldRetry, timeout);
 
