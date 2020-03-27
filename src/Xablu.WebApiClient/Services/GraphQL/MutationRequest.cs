@@ -44,11 +44,14 @@ namespace Xablu.WebApiClient.Services.GraphQL
          
         private string BuildQuery()
         {
-            LoadProperties(_requestObjectType);
+            LoadProperties(typeof(TResponseModel));
+
+            _propertyListList.Remove(_propertyListList.Last());
+
             CurateProperties();
             return CreateQueryFromProperties();
         }
-
+        
         protected virtual void LoadProperties(Type type)
         {
             var propsList = new List<PropertyInfo>();
@@ -98,7 +101,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
             var variableInputTypeName = (Attribute.GetCustomAttribute(_requestObjectType, typeof(VariableInputTypeAttribute)) as VariableInputTypeAttribute)?.ModelInputName;
             if (string.IsNullOrEmpty(variableInputTypeName))
             {
-                var errorMessage = "No VariableInputAttribute found. Please ensure the model has been marked or the value is not null";
+                var errorMessage = $"No {nameof(VariableInputTypeAttribute)} found. Please ensure the model has been marked or the value is not null";
                 throw new RequestException(errorMessage);
             }
 
