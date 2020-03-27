@@ -17,10 +17,8 @@ namespace TestApp
         }
 
         protected override void OnStart()
-        {
-            // Handle when your app starts
-
-            RequestOptions.DefaultRequestOptions = new RequestOptions
+        { 
+            WebApiClient.DefaultRequestOptions = new RequestOptions 
             {
                 Timeout = 5,
                 RetryCount = 2

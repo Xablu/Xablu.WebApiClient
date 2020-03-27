@@ -14,7 +14,47 @@ using Xablu.WebApiClient.Services.Rest;
 
 namespace Xablu.WebApiClient
 {
-    public class WebApiClient<T> : IWebApiClient<T>
+    public class WebApiClient
+    {
+        /// <summary>
+        /// Default RequestOptions object. If defined, it will be used when no options are specified
+        /// </summary>
+        public static RequestOptions DefaultRequestOptions { get; set; }
+
+        /// <summary>
+        /// Default value for retry intents
+        /// </summary>
+        public static int DefaultRetryCount { get; set; } = 1;
+
+        /// <summary>
+        /// Default timeout for requests
+        /// </summary>
+        public static int DefaultTimeout { get; set; } = 60;
+
+        /// <summary>
+        /// Default priority for requests. Matches fusillade policy
+        /// </summary>
+        public static Priority DefaultPriority { get; set; } = Priority.UserInitiated;
+
+        /// <summary>
+        /// Default should retry condition. Default value is null
+        /// </summary>
+        public static Func<Exception, bool> DefaultShouldRetry { get; set; }
+
+        protected RequestOptions GetDefaultOptions()
+        {
+            return DefaultRequestOptions
+                ?? new RequestOptions
+                {
+                    Priority = DefaultPriority,
+                    RetryCount = DefaultRetryCount,
+                    Timeout = DefaultTimeout,
+                    ShouldRetry = DefaultShouldRetry
+                };
+        }
+    }
+
+    public class WebApiClient<T> : WebApiClient, IWebApiClient<T>
     { 
         private readonly IRefitService<T> _refitService;
         private readonly IGraphQLService _graphQLService;
@@ -210,18 +250,6 @@ namespace Xablu.WebApiClient
                 throw new RequestException("GraphQL endpoint not found");
             }
             return ((GraphQLEndpointAttribute)graphQLEndpointAttribute).Path;
-        }
-
-        private RequestOptions GetDefaultOptions()
-        {
-            return RequestOptions.DefaultRequestOptions
-                ?? new RequestOptions
-                {
-                    Priority = RequestOptions.DefaultPriority,
-                    RetryCount = RequestOptions.DefaultRetryCount,
-                    Timeout = RequestOptions.DefaultTimeout,
-                    ShouldRetry = RequestOptions.DefaultShouldRetry
-                };
         }
     }
 }
