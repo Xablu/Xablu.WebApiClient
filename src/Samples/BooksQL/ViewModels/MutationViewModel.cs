@@ -1,8 +1,6 @@
-using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using BooksQL.Models;
+using BooksQL.Models.GraphQL;
 using BooksQL.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -11,22 +9,19 @@ using Xamarin.Forms;
 
 namespace BooksQL.ViewModels
 {
-    public class MutationViewModel : INotifyPropertyChanged
+    public class MutationViewModel : BaseViewModel
     {
         private BooksService _booksService;
+        private MutationRequest<BookReviewMutationResponse> _request;
         private string _query;
         private string _result;
 
         public MutationViewModel()
         {
             _booksService = DependencyService.Resolve<BooksService>();
-            RefreshCommand = new Command(() => CreateMutation());
-            BookReview = new BookReview
-            {
-                BookISBN = "0544272994",
-                Review = "This is a mutation test"
-            };
 
+            RefreshCommand = new Command(() => CreateMutation());
+            
             SetQuery();
         }
 
@@ -58,33 +53,25 @@ namespace BooksQL.ViewModels
             }
         }
 
-        public BookReview BookReview { get; set; }
-
         private void SetQuery()
         {
-            var result = new MutationRequest<BookReview>(new MutationDetail("createReview", "review"), BookReview);
-            Query = result.Query;
+            var bookReview = new BookReview
+            {
+                BookISBN = "0544272994",
+                Review = "This is a mutation test"
+            };
+            _request = new MutationRequest<BookReviewMutationResponse>("createReview", "review", bookReview);
+            Query = _request.Query;
         }
 
         private async Task CreateMutation()
         {
-            var review = await _booksService.CreateReview(BookReview);
+            var review = await _booksService.CreateReview(_request);
 
             var json = JsonConvert.SerializeObject(review);
             var formattedJson = JValue.Parse(json).ToString(Formatting.Indented);
 
             Result = formattedJson;
         }
-
-        #region INotifyPropertyChanged Implementation
-        public event PropertyChangedEventHandler PropertyChanged;
-        void OnPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            if (PropertyChanged == null)
-                return;
-
-            PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-        #endregion
     }
 }

@@ -3,13 +3,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using GraphQL.Common.Request;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using GraphQL;
+
 using Polly;
 using Polly.Wrap;
 using Xablu.WebApiClient.Attributes;
-using Xablu.WebApiClient.Enums; 
+using Xablu.WebApiClient.Enums;
 using Xablu.WebApiClient.Services.GraphQL;
 using Xablu.WebApiClient.Services.Rest;
 
@@ -93,7 +92,7 @@ namespace Xablu.WebApiClient
 
             Debug.WriteLine($"WebApiClient call with parameters: Priority: {priority}, retryCount: {retryCount}, has should retry condition: {shouldRetry != null}, timeout: {timeout}");
 
-            var result = await policy.ExecuteAsync(async () => await service.SendQueryAsync(request, cancellationToken));
+            var result = await policy.ExecuteAsync(async () => await service.SendQueryAsync<TModel>(request, cancellationToken));
 
             if (result.Errors != null && result.Errors.Any())
             {
@@ -102,29 +101,23 @@ namespace Xablu.WebApiClient
                 throw new Exception(message);
             }
 
-            if (!(result.Data is JObject resultData))
-            {
-                throw new InvalidCastException("Result is not a valid Json");
-            }
-            var model = JsonConvert.DeserializeObject<TModel>(resultData.ToString());
-
-            return model;
+            return result.Data;
         }
 
-        public Task<TModel> SendMutationAsync<TModel>(MutationRequest<TModel> request, CancellationToken cancellationToken = default)
-            where TModel : class, new()
+        public Task<TResponseModel> SendMutationAsync<TResponseModel>(MutationRequest<TResponseModel> request, CancellationToken cancellationToken = default)
+            where TResponseModel : class, new()
         {
             return SendMutationAsync(request, GetDefaultOptions(), cancellationToken);
         }
 
-        public Task<TModel> SendMutationAsync<TModel>(MutationRequest<TModel> request, RequestOptions options, CancellationToken cancellationToken = default)
-            where TModel : class, new()
+        public Task<TResponseModel> SendMutationAsync<TResponseModel>(MutationRequest<TResponseModel> request, RequestOptions options, CancellationToken cancellationToken = default)
+            where TResponseModel : class, new()
         {
             return SendMutationAsync(request, options.Priority, options.RetryCount, options.ShouldRetry, options.Timeout, cancellationToken);
         }
-
-        public async Task<TModel> SendMutationAsync<TModel>(MutationRequest<TModel> request, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
-            where TModel : class, new()
+         
+        public async Task<TResponseModel> SendMutationAsync<TResponseModel>(MutationRequest<TResponseModel> request, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
+            where TResponseModel : class, new()
         {
             var service = _graphQLService.GetByPriority(priority);
             service.Options.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
@@ -133,7 +126,7 @@ namespace Xablu.WebApiClient
 
             Debug.WriteLine($"WebApiClient call with parameters: Priority: {priority}, retryCount: {retryCount}, has should retry condition: {shouldRetry != null}, timeout: {timeout}");
 
-            var result = await policy.ExecuteAsync(async () => await service.SendMutationAsync(request, cancellationToken));
+            var result = await policy.ExecuteAsync(async () => await service.SendMutationAsync<TResponseModel>(request, cancellationToken));
 
             if (result.Errors != null && result.Errors.Any())
             {
@@ -142,30 +135,23 @@ namespace Xablu.WebApiClient
                 throw new Exception(message);
             }
 
-            var jObj = (JObject)result.Data;
-
-            var jToken = jObj.Properties().Select(p => p.Value).First();
-            if (!(jToken.ToObject(typeof(TModel)) is TModel resultData))
-            {
-                throw new InvalidCastException("Model provided is not of correct type");
-            }
-
-            return resultData;
+            return result.Data;
         }
 
-        public Task<TModel> SendMutationAsync<TModel>(string mutationString, object queryVariable, CancellationToken cancellationToken = default)
-            where TModel : class, new()
+        public Task<TResponseModel> SendMutationAsync<TResponseModel>(string mutationString, object queryVariable, CancellationToken cancellationToken = default)
+            where TResponseModel : class, new()
         {
-            return SendMutationAsync<TModel>(mutationString, queryVariable, GetDefaultOptions(), cancellationToken);
+            return SendMutationAsync<TResponseModel>(mutationString, queryVariable, GetDefaultOptions(), cancellationToken);
         }
 
-        public Task<TModel> SendMutationAsync<TModel>(string mutationString, object queryVariable, RequestOptions options, CancellationToken cancellationToken = default) where TModel : class, new()
+        public Task<TResponseModel> SendMutationAsync<TResponseModel>(string mutationString, object queryVariable, RequestOptions options, CancellationToken cancellationToken = default)
+            where TResponseModel : class, new()
         {
-            return SendMutationAsync<TModel>(mutationString, queryVariable, options.Priority, options.RetryCount, options.ShouldRetry, options.Timeout, cancellationToken);
+            return SendMutationAsync<TResponseModel>(mutationString, queryVariable, options.Priority, options.RetryCount, options.ShouldRetry, options.Timeout, cancellationToken);
         }
 
-        public async Task<TModel> SendMutationAsync<TModel>(string mutationString, object queryVariables, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
-           where TModel : class, new()
+        public async Task<TResponseModel> SendMutationAsync<TResponseModel>(string mutationString, object queryVariables, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
+           where TResponseModel : class, new()
         {
             var service = _graphQLService.GetByPriority(priority);
             service.Options.EndPoint = new Uri(_graphQLService.BaseUrl + GetGraphQLEndpoint());
@@ -180,7 +166,7 @@ namespace Xablu.WebApiClient
                 Variables = queryVariables
             };
 
-            var result = await policy.ExecuteAsync(async () => await service.SendMutationAsync(mutationRequest, cancellationToken));
+            var result = await policy.ExecuteAsync(async () => await service.SendMutationAsync<TResponseModel>(mutationRequest, cancellationToken));
 
             if (result.Errors != null && result.Errors.Any())
             {
@@ -189,14 +175,7 @@ namespace Xablu.WebApiClient
                 throw new Exception(message);
             }
              
-            var jObj = (JObject)result.Data;
-
-            var jToken = jObj.Properties().Select(p => p.Value).First();
-            if (!(jToken.ToObject(typeof(TModel)) is TModel resultData))
-            {
-                throw new InvalidCastException("Model provided is not of correct type");
-            }
-            return resultData;
+            return result.Data;
         }
 
         private static AsyncPolicyWrap GetWrappedPolicy(int retryCount, Func<Exception, bool> shouldRetry, int timeout)
