@@ -113,20 +113,20 @@ namespace Xablu.WebApiClient
             return await policy.ExecuteAsync(() => operation.Invoke(service));
         }
 
-        public Task<TModel> SendQueryAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default)
-           where TModel : class, new()
+        public Task<TResponseModel> SendQueryAsync<TResponseModel>(QueryRequest<TResponseModel> request, CancellationToken cancellationToken = default)
+           where TResponseModel : class, new()
         {
             return SendQueryAsync(request, GetDefaultOptions(), cancellationToken);
         }
 
-        public Task<TModel> SendQueryAsync<TModel>(Request<TModel> request, RequestOptions options, CancellationToken cancellationToken = default)
-            where TModel : class, new()
+        public Task<TResponseModel> SendQueryAsync<TResponseModel>(QueryRequest<TResponseModel> request, RequestOptions options, CancellationToken cancellationToken = default)
+            where TResponseModel : class, new()
         {
             return SendQueryAsync(request, options.Priority, options.RetryCount, options.ShouldRetry, options.Timeout, cancellationToken);
         }
 
-        public async Task<TModel> SendQueryAsync<TModel>(Request<TModel> request, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
-            where TModel : class, new()
+        public async Task<TResponseModel> SendQueryAsync<TResponseModel>(QueryRequest<TResponseModel> request, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
+            where TResponseModel : class, new()
         {  
             var service = _graphQLService.Value.GetByPriority(priority);
             service.Options.EndPoint = new Uri(_graphQLService.Value.BaseUrl + GetGraphQLEndpoint());
@@ -135,7 +135,7 @@ namespace Xablu.WebApiClient
 
             Debug.WriteLine($"WebApiClient call with parameters: Priority: {priority}, retryCount: {retryCount}, has should retry condition: {shouldRetry != null}, timeout: {timeout}");
 
-            var result = await policy.ExecuteAsync(async () => await service.SendQueryAsync<TModel>(request, cancellationToken));
+            var result = await policy.ExecuteAsync(async () => await service.SendQueryAsync<TResponseModel>(request, cancellationToken));
 
             if (result.Errors != null && result.Errors.Any())
             {

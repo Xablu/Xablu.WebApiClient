@@ -20,12 +20,10 @@ namespace Xablu.WebApiClient.Services.GraphQL
         }
     }
 
-    public class MutationRequest<TResponseModel> : BaseRequest
+    public class MutationRequest<TResponseModel> : BaseRequest<TResponseModel>
         where TResponseModel : class
     {
         private Type _requestObjectType;
-
-        private List<List<PropertyDetail>> _propertyListList = new List<List<PropertyDetail>>();
 
         public MutationRequest(string mutationName, string mutationParameterName, object variable)
         {
@@ -95,15 +93,6 @@ namespace Xablu.WebApiClient.Services.GraphQL
             }
         }
 
-        protected virtual void CurateProperties()
-        {
-            var parentTypeToExclude = typeof(List<>);
-            foreach (List<PropertyDetail> propertyList in _propertyListList.Where(list => list.Any()))
-            {
-                propertyList.RemoveAll(p => p.ParentName == parentTypeToExclude.Name);
-            }
-        }
-
         private string CreateQueryFromProperties()
         {
             var variableInputTypeName = (Attribute.GetCustomAttribute(_requestObjectType, typeof(VariableInputTypeAttribute)) as VariableInputTypeAttribute)?.ModelInputName;
@@ -133,14 +122,6 @@ namespace Xablu.WebApiClient.Services.GraphQL
                 queryString = "{" + $"{queryString}" + "}";
             }
             return queryString + "}";
-        }
-
-        private string ToLowerFirstChar(string input)
-        {
-            string newString = input;
-            if (!string.IsNullOrEmpty(newString) && char.IsUpper(newString[0]))
-                newString = char.ToLower(newString[0]) + newString.Substring(1);
-            return newString;
         }
     }
 }

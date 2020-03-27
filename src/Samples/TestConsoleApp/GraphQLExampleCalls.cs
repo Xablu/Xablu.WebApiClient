@@ -30,7 +30,7 @@ namespace TestConsoleApp
 
             var webApiClient = WebApiClientFactory.Get<IGitHubApi>("https://api.github.com", false, default, defaultHeaders);
 
-            var requestForSingleUser = new Request<UserResponseModel>("(login: \"exampleuserxablu\")");
+            var requestForSingleUser = new QueryRequest<UserResponseModel>("(login: \"exampleuserxablu\")");
 
             var result = await webApiClient.SendQueryAsync(requestForSingleUser);
             var serializedObject = JsonConvert.SerializeObject(result);
@@ -59,7 +59,7 @@ namespace TestConsoleApp
 
             // Example of a written query:
             // var mutationQuery = @" mutation ($changeUserStatusInputModel: ChangeUserStatusInput!) { changeUserStatus(input: $changeUserStatusInputModel){ clientMutationId, status { message }}}";
-            var mutationRequest = new MutationRequest<ChangeUserStatus>(new MutationDetail("changeUserStatus", "input"), testModel);
+            var mutationRequest = new MutationRequest<ChangeUserStatus>("changeUserStatus", "input", testModel);
 
             var result = await webApiClient.SendMutationAsync(mutationRequest);
             var serializedObject = JsonConvert.SerializeObject(result);

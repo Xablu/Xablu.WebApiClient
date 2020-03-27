@@ -18,7 +18,7 @@ namespace BooksQL.Services
             _webApiClient = WebApiClientFactory.Get<IBooksApi>(GetEndPoint());
         }
 
-        public async Task<IEnumerable<Book>> GetBooks(Request<BooksQueryResponse> request)
+        public async Task<IEnumerable<Book>> GetBooks(QueryRequest<BooksQueryResponse> request)
         {
             var booksResponse = await _webApiClient.SendQueryAsync(request);
             return booksResponse.Books;

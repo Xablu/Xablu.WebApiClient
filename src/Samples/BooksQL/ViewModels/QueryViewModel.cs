@@ -13,7 +13,7 @@ namespace BooksQL.ViewModels
     {
         private readonly BooksService _booksService;
 
-        private Request<BooksQueryResponse> _request;
+        private QueryRequest<BooksQueryResponse> _request;
         private string _query = "Query result";
 
         public QueryViewModel()
@@ -46,7 +46,7 @@ namespace BooksQL.ViewModels
 
         private void SetQuery()
         {
-            _request = new Request<BooksQueryResponse>();
+            _request = new QueryRequest<BooksQueryResponse>();
             Query = _request.Query;
         }
 

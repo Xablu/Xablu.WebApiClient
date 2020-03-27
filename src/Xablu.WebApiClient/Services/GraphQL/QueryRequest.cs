@@ -7,9 +7,9 @@ using Xablu.WebApiClient.Attributes;
 
 namespace Xablu.WebApiClient.Services.GraphQL
 {
-    public class Request : BaseRequest
+    public class QueryRequest : BaseRequest
     {
-        public Request(string query)
+        public QueryRequest(string query)
         {
             if (string.IsNullOrEmpty(query))
             {
@@ -19,41 +19,25 @@ namespace Xablu.WebApiClient.Services.GraphQL
         }
     }
 
-    public class Request<T> : BaseRequest
-        where T : class
+    public class QueryRequest<TResponseModel> : BaseRequest<TResponseModel>
+        where TResponseModel : class
     {
-        private List<List<PropertyDetail>> _propertyListList = new List<List<PropertyDetail>>();
         private int attributeNumber;
 
-        public Request(params string[] optionalParameters)
+        public QueryRequest(params string[] optionalParameters)
         {
             OptionalParameters = optionalParameters;
-            CreateQuery();
-        }
 
-        public string GraphQLQuery { get; set; }
+            Query = BuildQuery();
+
+            Debug.WriteLine($"GraphQL query string generated: {Query}");
+        }
 
         public string[] OptionalParameters { get; set; }
 
-        private void CreateQuery()
+        private string BuildQuery()
         {
-            if (string.IsNullOrEmpty(Query))
-            {
-                var queryString = GetQuery();
-                GraphQLQuery = queryString;
-                Query = GraphQLQuery;
-
-                Debug.WriteLine($"GraphQL query string generated: {Query}");
-            }
-            else
-            {
-                GraphQLQuery = Query;
-            }
-        }
-
-        protected virtual string GetQuery()
-        {
-            LoadProperties(typeof(T));
+            LoadProperties(typeof(TResponseModel));
 
             CurateProperties();
 
@@ -70,7 +54,7 @@ namespace Xablu.WebApiClient.Services.GraphQL
             return result;
         }
 
-        protected virtual void LoadProperties(Type type)
+        private void LoadProperties(Type type)
         {
             var propsList = new List<PropertyInfo>();
             var baseType = type;
@@ -112,15 +96,6 @@ namespace Xablu.WebApiClient.Services.GraphQL
             if (propList.Any())
             {
                 _propertyListList.Add(propList);
-            }
-        }
-
-        protected virtual void CurateProperties()
-        {
-            var parentTypeToExclude = typeof(List<>);
-            foreach (List<PropertyDetail> propertyList in _propertyListList.Where(list => list.Any()))
-            {
-                propertyList.RemoveAll(p => p.ParentName == parentTypeToExclude.Name);
             }
         }
 
@@ -168,14 +143,6 @@ namespace Xablu.WebApiClient.Services.GraphQL
             var formattedString = string.Format(query, optionalParameters);
 
             return formattedString;
-        }
-
-        private string ToLowerFirstChar(string input)
-        {
-            string newString = input;
-            if (!string.IsNullOrEmpty(newString) && char.IsUpper(newString[0]))
-                newString = char.ToLower(newString[0]) + newString.Substring(1);
-            return newString;
         }
     }
 }
