@@ -1,18 +1,19 @@
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using BooksQL.Models;
+using BooksQL.Models.GraphQL;
 using BooksQL.Services;
 using Xablu.WebApiClient.Services.GraphQL;
 using Xamarin.Forms;
 
 namespace BooksQL.ViewModels
 {
-    public class QueryViewModel : INotifyPropertyChanged
+    public class QueryViewModel : BaseViewModel
     {
-        private BooksService _booksService;
+        private readonly BooksService _booksService;
+
+        private QueryRequest<BooksQueryResponse> _request;
         private string _query = "Query result";
 
         public QueryViewModel()
@@ -20,6 +21,7 @@ namespace BooksQL.ViewModels
             _booksService = DependencyService.Resolve<BooksService>();
 
             RefreshCommand = new Command(() => GetBooks());
+
             SetQuery();
         }
 
@@ -44,8 +46,8 @@ namespace BooksQL.ViewModels
 
         private void SetQuery()
         {
-            var result = new Request<BooksResponseModel>();
-            Query = result.Query;
+            _request = new QueryRequest<BooksQueryResponse>();
+            Query = _request.Query;
         }
 
         private async Task GetBooks()
@@ -54,7 +56,7 @@ namespace BooksQL.ViewModels
             {
                 IsRefreshing = true;
 
-                var books = await _booksService.GetBooks();
+                var books = await _booksService.GetBooks(_request);
 
                 Books.Clear();
 
@@ -71,18 +73,6 @@ namespace BooksQL.ViewModels
             {
                 IsRefreshing = false;
             }
-        }
-
-        #region INotifyPropertyChanged Implementation
-        public event PropertyChangedEventHandler PropertyChanged;
-        void OnPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            if (PropertyChanged == null)
-                return;
-
-            PropertyChanged.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-        #endregion
-
+        } 
     }
 }

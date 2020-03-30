@@ -5,9 +5,8 @@ using BooksQL.Views.Items;
 
 namespace BooksQL.ViewModels
 {
-    public class CallSelectionPageViewModel
+    public class CallSelectionPageViewModel : BaseViewModel
     {
-
         public CallSelectionPageViewModel()
         {
             SelectionItems = new ObservableCollection<SelectionItem>

@@ -20,6 +20,7 @@
     <Folder Include="Models\" />
     <Folder Include="Views\" />
     <Folder Include="Enums\" />
+    <Folder Include="Models\GraphQL\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Xablu.WebApiClient\Xablu.WebApiClient.csproj" />

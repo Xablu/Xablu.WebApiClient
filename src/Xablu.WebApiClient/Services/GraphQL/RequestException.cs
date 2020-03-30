@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+
 namespace Xablu.WebApiClient.Services.GraphQL
 {
     public class RequestException : Exception
@@ -7,14 +9,13 @@ namespace Xablu.WebApiClient.Services.GraphQL
         {
             StatusCode = statusCode;
             ErrorMessage = errorMessage;
-            Console.WriteLine($"Statuscode:{StatusCode}:" + Environment.NewLine +
-                              $"{errorMessage}");
+            Debug.WriteLine($"Statuscode:{StatusCode}: {Environment.NewLine} {errorMessage}");
         }
 
         public RequestException(string errorMessage)
         {
             ErrorMessage = errorMessage;
-            Console.WriteLine(errorMessage);
+            Debug.WriteLine(errorMessage);
         }
 
         public string StatusCode { get; set; }

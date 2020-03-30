@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Net.Http;
 using Fusillade;
 using GraphQL.Client.Http;
+using GraphQL.Client.Serializer.Newtonsoft;
 using Xablu.WebApiClient.Native;
 
 namespace Xablu.WebApiClient.Services.GraphQL
@@ -43,16 +44,17 @@ namespace Xablu.WebApiClient.Services.GraphQL
                 if (!autoRedirectRequests)
                     DisableAutoRedirects(messageHandler);
 
-                // note: the string parameter is just a placeholder here
-                var client = new GraphQLHttpClient(apiBaseAddress);
-
-                client.Options = new GraphQLHttpClientOptions { HttpMessageHandler = handler };
+                var client = new GraphQLHttpClient(new GraphQLHttpClientOptions
+                {
+                    HttpMessageHandler = handler,
+                    EndPoint = new Uri(apiBaseAddress)
+                }, new NewtonsoftJsonSerializer());
 
                 if (defaultHeaders != default)
                 {
                     foreach (var header in defaultHeaders)
                     {
-                        client.DefaultRequestHeaders.Add(header.Key, header.Value);
+                        client.HttpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
                     }
                 }
 
@@ -92,6 +94,3 @@ namespace Xablu.WebApiClient.Services.GraphQL
         }
     }
 }
-
-
-

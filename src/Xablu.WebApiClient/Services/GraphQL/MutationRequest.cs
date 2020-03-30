@@ -20,38 +20,38 @@ namespace Xablu.WebApiClient.Services.GraphQL
         }
     }
 
-    public class MutationRequest<T> : BaseRequest
-        where T : class
+    public class MutationRequest<TResponseModel> : BaseRequest<TResponseModel>
+        where TResponseModel : class
     {
-        private List<List<PropertyDetail>> _propertyListList = new List<List<PropertyDetail>>();
-        public MutationRequest(MutationDetail mutation, object variables)
+        private Type _requestObjectType;
+
+        public MutationRequest(string mutationName, string mutationParameterName, object variable)
         {
-            Mutation = mutation;
-            Variables = new { variables };
-            CreateMutationQuery();
+            _requestObjectType = variable.GetType();
+
+            MutationName = mutationName;
+            MutationParameterName = mutationParameterName;
+
+            Variables = new { variable };
+
+            Query = BuildQuery();
+
+            Debug.WriteLine($"GraphQL mutation query string generated: {Query}");
         }
 
-
-        public MutationDetail Mutation { get; set; }
-
-        private void CreateMutationQuery()
+        public string MutationName { get; set; }
+        public string MutationParameterName { get; set; } 
+         
+        private string BuildQuery()
         {
-            if (string.IsNullOrEmpty(Query))
-            {
-                Query = GetQuery();
+            LoadProperties(typeof(TResponseModel));
 
-                Debug.WriteLine($"GraphQL mutation query string generated: {Query}");
-            }
-        }
+            _propertyListList.Remove(_propertyListList.Last());
 
-        private string GetQuery()
-        {
-            LoadProperties(typeof(T));
             CurateProperties();
-            var query = QueryBuilder();
-            return query;
+            return CreateQueryFromProperties();
         }
-
+        
         protected virtual void LoadProperties(Type type)
         {
             var propsList = new List<PropertyInfo>();
@@ -96,31 +96,22 @@ namespace Xablu.WebApiClient.Services.GraphQL
             }
         }
 
-        protected virtual void CurateProperties()
+        private string CreateQueryFromProperties()
         {
-            var parentTypeToExclude = typeof(List<>);
-            foreach (List<PropertyDetail> propertyList in _propertyListList.Where(list => list.Any()))
-            {
-                propertyList.RemoveAll(p => p.ParentName == parentTypeToExclude.Name);
-            }
-        }
-
-        private string QueryBuilder()
-        {
-            var variableInputTypeName = (Attribute.GetCustomAttribute(typeof(T), typeof(VariableInputTypeAttribute)) as VariableInputTypeAttribute)?.ModelInputName;
+            var variableInputTypeName = (Attribute.GetCustomAttribute(_requestObjectType, typeof(VariableInputTypeAttribute)) as VariableInputTypeAttribute)?.ModelInputName;
             if (string.IsNullOrEmpty(variableInputTypeName))
             {
-                var errorMessage = "No VariableInputAttribute found. Please ensure the model has been marked or the value is not null";
+                var errorMessage = $"No {nameof(VariableInputTypeAttribute)} found. Please ensure the model has been marked or the value is not null";
                 throw new RequestException(errorMessage);
             }
 
-            var variableString = CreateVariableString();
-            var methodString = CreateInputString(Mutation, variableInputTypeName);
-            var queryString = $"mutation{methodString}{variableString}";
-            return queryString;
+            var methodString = $"($variable: {variableInputTypeName}!)" + $"{{{MutationName}({MutationParameterName}: $variable)";
+            var variableString = GetVariableString();
+            var finalQuery = $"mutation{methodString}{variableString}";
+            return finalQuery;
         }
 
-        private string CreateVariableString()
+        private string GetVariableString()
         {
             string queryString = "";
 
@@ -134,35 +125,6 @@ namespace Xablu.WebApiClient.Services.GraphQL
                 queryString = "{" + $"{queryString}" + "}";
             }
             return queryString + "}";
-        }
-
-        private string CreateInputString(MutationDetail mutationDetail, string variableInputTypeName)
-        {
-            string inputString = "";
-            var variableInputList = new List<string>();
-
-            if (Variables != null)
-            {
-                foreach (var variable in Variables.GetType().GetProperties())
-                {
-                    variableInputList.Add(variable.Name);
-                }
-            }
-
-            if (mutationDetail != null && !string.IsNullOrEmpty(variableInputTypeName))
-            {
-                var variableInputName = variableInputList[0];
-                inputString = $"(${ToLowerFirstChar(variableInputName)}: {variableInputTypeName}!)" + $"{{{mutationDetail.MutationName}({mutationDetail.MutationParameterName}: ${ToLowerFirstChar(variableInputName)})";
-            }
-            return inputString;
-        }
-
-        private string ToLowerFirstChar(string input)
-        {
-            string newString = input;
-            if (!string.IsNullOrEmpty(newString) && char.IsUpper(newString[0]))
-                newString = char.ToLower(newString[0]) + newString.Substring(1);
-            return newString;
         }
     }
 }

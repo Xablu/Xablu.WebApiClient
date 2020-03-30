@@ -11,36 +11,45 @@ namespace TestConsoleApp
 {
     class Program
     {
-        static IWebApiClient<IStarwarsApi> _webApiClient;
-        static List<Starships> items = new List<Starships>();
-        string postResult;
-
         static void Main(string[] args)
         {
-            MainAsync(args).GetAwaiter().GetResult();
+            MainAsync().GetAwaiter().GetResult();
         }
 
-        static async Task MainAsync(string[] args)
+        static async Task MainAsync()
         {
             await CallMenu();
         }
 
         static async Task CallMenu()
         {
-            Console.WriteLine("WebApiClient test console");
-            Console.WriteLine("------------------------\n");
-            Console.WriteLine("Type a number to choose the API service, and then press Enter");
-            Console.WriteLine("\t1 - Refit");
-            Console.WriteLine("\t2 - GraphQL");
-            Console.WriteLine("\t3 - Quit Program");
-            Console.Write("Your option? ");
+            string option = string.Empty;
+            do
+            {
+                try
+                {
+                    Console.WriteLine("WebApiClient test console");
+                    Console.WriteLine("------------------------\n");
+                    Console.WriteLine("Type a number to choose the API service, and then press Enter");
+                    Console.WriteLine("\t1 - Refit");
+                    Console.WriteLine("\t2 - GraphQL");
+                    Console.WriteLine("\t3 - Quit Program");
+                    Console.Write("Your option? ");
 
-            await ServiceMenu();
+                    option = Console.ReadLine();
+
+                    await ExecuteOption(option);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            } while (option != "3");
         }
 
-        static async Task ServiceMenu()
+        static async Task ExecuteOption(string option)
         {
-            switch (Console.ReadLine())
+            switch (option)
             {
                 case "1":
                     Console.WriteLine("Type a number to choose a randomised example Refitcall, and then press Enter");
@@ -49,8 +58,11 @@ namespace TestConsoleApp
                     Console.WriteLine("\t3 - AUTHENTICATE");
                     Console.WriteLine("\t4 - Back to Home Menu");
                     Console.Write("Your option? ");
-                    await PrintRefitCall();
+
+                    var refitOption = Console.ReadLine();
+                    await ExecuteRefitOption(refitOption);
                     break;
+
                 case "2":
                     Console.WriteLine("Type a number to choose the randomised exmaple call, and then press Enter");
                     Console.WriteLine("\t1 - GET");
@@ -59,33 +71,37 @@ namespace TestConsoleApp
                     //  Console.WriteLine("\t2 - DELETE");
                     Console.WriteLine("\t3 - Back to Home Menu");
                     Console.Write("Your option? ");
-                    await PrintGraphqlCall();
+
+                    var graphQLOption = Console.ReadLine();
+                    await ExecuteGraphQLOption(graphQLOption); 
                     break;
                 case "3":
-                    Environment.Exit(0);
+                    Console.Write("Have a nice day!");
                     break;
                 default:
-                    await CallMenu();
+                    Console.Write("Please enter a valid option");
                     break;
             }
         }
 
-        static async Task PrintRefitCall()
+        static async Task ExecuteRefitOption(string refitOption)
         {
             Console.WriteLine("Wait for your result...");
-            switch (Console.ReadLine())
+
+            switch (refitOption)
             {
                 case "1":
                     try
                     {
                         var _items = await RefitExampleCalls.GetStarShipItemsAsync(true);
-                        items = _items as List<Starships>;
+                        List<Starships> items = _items as List<Starships>;
                     }
                     catch (ArgumentException aex)
                     {
                         Console.WriteLine($"Caught ArgumentException: {aex.Message}");
                     }
                     break;
+
                 case "2":
                     try
                     {
@@ -96,6 +112,7 @@ namespace TestConsoleApp
                         Console.WriteLine($"Caught ArgumentException: {aex.Message}");
                     }
                     break;
+
                 case "3":
                     try
                     {
@@ -106,21 +123,17 @@ namespace TestConsoleApp
                         Console.WriteLine($"Caught ArgumentException: {aex.Message}");
                     }
                     break;
-                default:
-                    await CallMenu();
-                    break;
-            }
-            await ServiceMenu();
+            } 
         }
 
-        static async Task PrintGraphqlCall()
+        static async Task ExecuteGraphQLOption(string graphQLOption)
         {
-            switch (Console.ReadLine())
+            switch (graphQLOption)
             {
                 case "1":
                     try
                     {
-                        var model = await GraphQLExampleCalls.GraphqlAsync();
+                        var model = await GraphQLExampleCalls.GraphQLQueryAsync();
                         Console.WriteLine(model);
                     }
                     catch (ArgumentException aex)
@@ -128,19 +141,17 @@ namespace TestConsoleApp
                         Console.WriteLine($"Caught ArgumentException: {aex.Message}");
                     }
                     break;
+
                 case "2":
                     try
                     {
-                        var model = await GraphQLExampleCalls.GraphqlMutationAsync();
+                        var model = await GraphQLExampleCalls.GraphQLMutationAsync();
                         Console.WriteLine(model);
                     }
                     catch (ArgumentException aex)
                     {
                         Console.WriteLine($"Caught ArgumentException: {aex.Message}");
                     }
-                    break;
-                default:
-                    await CallMenu();
                     break;
             }
         }

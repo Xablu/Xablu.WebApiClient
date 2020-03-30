@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using BooksQL.ApiEndpoints;
 using BooksQL.Models;
-using Newtonsoft.Json;
+using BooksQL.Models.GraphQL;
 using Xablu.WebApiClient;
 using Xablu.WebApiClient.Services.GraphQL;
 using Xamarin.Essentials;
@@ -19,15 +18,15 @@ namespace BooksQL.Services
             _webApiClient = WebApiClientFactory.Get<IBooksApi>(GetEndPoint());
         }
 
-        public async Task<IEnumerable<Book>> GetBooks()
+        public async Task<IEnumerable<Book>> GetBooks(QueryRequest<BooksQueryResponse> request)
         {
-            var booksResponse = await _webApiClient.SendQueryAsync(new Request<BooksResponseModel>());
+            var booksResponse = await _webApiClient.SendQueryAsync(request);
             return booksResponse.Books;
         }
 
-        public async Task<BookReview> CreateReview(BookReview bookreview)
+        public async Task<BookReviewMutationResponse> CreateReview(MutationRequest<BookReviewMutationResponse> mutationRequest)
         {
-            var review = await _webApiClient.SendMutationAsync(new MutationRequest<BookReview>(new MutationDetail("createReview", "review"), bookreview));
+            var review = await _webApiClient.SendMutationAsync(mutationRequest);
             return review;
         }
 
@@ -43,10 +42,5 @@ namespace BooksQL.Services
                     return "http://localhost:5000";
             }
         }
-    }
-
-    public class BooksResponseModel
-    {
-        public List<Book> Books { get; set; }
     }
 }

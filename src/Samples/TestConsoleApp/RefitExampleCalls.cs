@@ -1,9 +1,5 @@
 using System;
-using System.Buffers.Text;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using TestApp.Models;
@@ -11,7 +7,6 @@ using TestApp.Models.StarWarsAPI;
 using TestApp.Services;
 using Xablu.WebApiClient;
 using Xablu.WebApiClient.Enums;
-using Xablu.WebApiClient.Native;
 
 namespace TestConsoleApp
 {
