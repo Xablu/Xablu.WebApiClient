@@ -29,12 +29,24 @@ namespace BooksQL.API
             services.AddSingleton<BooksRepository>();
             services.AddSingleton<BookReviewsRepository>();
 
+            // register IDependencyResolver, the DI abstraction from dotnet GraphQL
             services.AddScoped<IDependencyResolver>(s => new FuncDependencyResolver(s.GetRequiredService));
+
+            // register the schema, resolved later by IDependencyResolver
             services.AddScoped<BooksSchema>();
+
+            // configure and register all types for GraphQL
             services.AddGraphQL(options =>
             {
+#if DEBUG
                 options.ExposeExceptions = true;
-            }).AddGraphTypes(ServiceLifetime.Scoped);
+#else
+                options.ExposeExceptions = false;
+#endif
+            })
+                .AddGraphTypes(ServiceLifetime.Scoped);
+                //.AddUserContextBuilder(httpContext => httpContext.User)
+                //.AddDataLoader();
 
             // kestrel workaround
             services.Configure<KestrelServerOptions>(options =>
@@ -62,6 +74,7 @@ namespace BooksQL.API
                 endpoints.MapControllers();
             });
 
+            // configure Middleware (path can be specified as a parameter)
             app.UseGraphQL<BooksSchema>();
             app.UseGraphQLPlayground(new GraphQLPlaygroundOptions());
         }
