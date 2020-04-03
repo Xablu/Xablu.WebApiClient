@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        x:Class="BooksQL.Views.BooksMasterDetailPage"
+        xmlns:pages="clr-namespace:BooksQL.Views" Title="BooksQL"
+        Visual="Material">
+    <MasterDetailPage.Master>
+        <pages:BooksMasterDetailPageMaster x:Name="MasterPage" Title="Menu"
+                IconImageSource="hamburger.png" />
+    </MasterDetailPage.Master>
+    <MasterDetailPage.Detail>
+        <NavigationPage>
+            <x:Arguments>
+                <pages:HomeView Title="Home" />
+            </x:Arguments>
+        </NavigationPage>
+    </MasterDetailPage.Detail>
+</MasterDetailPage>

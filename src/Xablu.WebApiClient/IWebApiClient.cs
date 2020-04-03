@@ -17,31 +17,31 @@ namespace Xablu.WebApiClient
         Task Call(Func<T, Task> operation, RequestOptions options);
         Task<TResult> Call<TResult>(Func<T, Task<TResult>> operation, RequestOptions options);
 
-        Task<TModel> SendQueryAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default(CancellationToken))
-        where TModel : class, new();
+        Task<TResponseModel> SendQueryAsync<TResponseModel>(QueryRequest<TResponseModel> request, CancellationToken cancellationToken = default)
+            where TResponseModel : class, new();
 
-        Task<TModel> SendQueryAsync<TModel>(Request<TModel> request, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default(CancellationToken))
-            where TModel : class, new();
+        Task<TResponseModel> SendQueryAsync<TResponseModel>(QueryRequest<TResponseModel> request, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
+            where TResponseModel : class, new();
 
-        Task<TModel> SendQueryAsync<TModel>(Request<TModel> request, RequestOptions options, CancellationToken cancellationToken = default(CancellationToken))
-            where TModel : class, new();
+        Task<TResponseModel> SendQueryAsync<TResponseModel>(QueryRequest<TResponseModel> request, RequestOptions options, CancellationToken cancellationToken = default)
+            where TResponseModel : class, new();
 
-        Task<TModel> SendMutationAsync<TModel>(Request<TModel> request, CancellationToken cancellationToken = default(CancellationToken))
-            where TModel : class, new();
+        Task<TResponseModel> SendMutationAsync<TResponseModel>(MutationRequest<TResponseModel> request, CancellationToken cancellationToken = default)
+            where TResponseModel : class, new();
 
-        Task<TModel> SendMutationAsync<TModel>(Request<TModel> request, RequestOptions options, CancellationToken cancellationToken = default(CancellationToken))
-            where TModel : class, new();
+        Task<TResponseModel> SendMutationAsync<TResponseModel>(MutationRequest<TResponseModel> request, RequestOptions options, CancellationToken cancellationToken = default)
+            where TResponseModel : class, new();
 
-        Task<TModel> SendMutationAsync<TModel>(Request<TModel> request, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default(CancellationToken))
-            where TModel : class, new();
+        Task<TResponseModel> SendMutationAsync<TResponseModel>(MutationRequest<TResponseModel> request, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
+            where TResponseModel : class, new();
 
-        Task<TModel> SendMutationAsync<TModel>(string mutationString, dynamic queryVariable, CancellationToken cancellationToken = default(CancellationToken))
-            where TModel : class, new();
+        Task<TResponseModel> SendMutationAsync<TResponseModel>(string mutationString, object queryVariable, CancellationToken cancellationToken = default)
+            where TResponseModel : class, new();
 
-        Task<TModel> SendMutationAsync<TModel>(string mutationString, dynamic queryVariable, RequestOptions options, CancellationToken cancellationToken = default(CancellationToken))
-            where TModel : class, new();
+        Task<TResponseModel> SendMutationAsync<TResponseModel>(string mutationString, object queryVariable, RequestOptions options, CancellationToken cancellationToken = default)
+            where TResponseModel : class, new();
 
-        Task<TModel> SendMutationAsync<TModel>(string mutationString, dynamic queryVariable, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default(CancellationToken))
-            where TModel : class, new();
+        Task<TResponseModel> SendMutationAsync<TResponseModel>(string mutationString, object queryVariable, Priority priority, int retryCount, Func<Exception, bool> shouldRetry, int timeout, CancellationToken cancellationToken = default)
+            where TResponseModel : class, new();
     }
 }

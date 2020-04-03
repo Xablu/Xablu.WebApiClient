@@ -15,10 +15,7 @@ namespace Xablu.WebApiClient
             IDictionary<string, string> defaultHeaders = default)
             where T : class
         {
-            var refitService = new RefitService<T>(baseUrl, autoRedirectRequests, delegatingHandler, defaultHeaders);
-            var graphQLService = new GraphQLService(baseUrl, autoRedirectRequests, delegatingHandler, defaultHeaders);
-
-            return new WebApiClient<T>(refitService, graphQLService);
+            return new WebApiClient<T>(baseUrl, autoRedirectRequests, delegatingHandler, defaultHeaders);
         }
     }
 }

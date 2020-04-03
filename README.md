@@ -3,19 +3,22 @@
 # Xablu.WebApiClient   
 
 
-The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of Web API services in .NET projects.<br/> 
+The Xablu WebApiClient is a C# HTTP library which aims to simplify consuming of REST / GraphQL API services in .NET projects.<br/> 
 
 > :construction: :warning: *Already using this library*?<br/> 
 > *We have been working on a 2nd version of WebApiClient which is based on Refit and will support GraphQL. This version has may new features. Beware, upgrading from version 1 to version 2 has some breaking changes since it’s not backwards compatible.* 
 
+[![Build Status](https://xablu.visualstudio.com/WebApiClient/_apis/build/status/Xablu.Xablu.WebApiClient?branchName=develop)](https://xablu.visualstudio.com/WebApiClient/_build/latest?definitionId=1&branchName=develop)
+![Github tag](https://img.shields.io/github/tag/Xablu/Xablu.WebApiClient.svg)
+[![NuGet](https://img.shields.io/nuget/v/Xablu.WebApiClient.svg?label=NuGet)](https://www.nuget.org/packages/Xablu.WebApiClient/)
+
 ## Table of contents  
 1. [How Xablu.WebApiClient Works](#howto)<br/>
 2. [Download / Install](#downloadinstal)<br/>
-3. [Build Status](#buildstatus)<br/> 
-4. [Key Features](#features)<br/>
-5. [Example ](#examples)<br/>
-6. [Contributions](#contributions)<br/>
-7. [Feedback](#feedback)
+3. [Key Features](#features)<br/>
+4. [Example ](#examples)<br/>
+5. [Contributions](#contributions)<br/>
+6. [Feedback](#feedback)
 
 ## How Xablu.WebApiClient Works <a name="howto"></a>
 WebApiClient is an open source library, created and maintained by [Xablu](https://www.xablu.com/). It is currently available for .NET / Xamarin. Through experience, we discovered that any .NET client app that has resilient calls to web services, uses a combination of libraries. Therefore, we built: 
@@ -48,12 +51,6 @@ The Xablu.WebApiClient is written following the multi-target library approach. M
 * PM> Install-Package Xablu.WebApiClient
 * Namespace: using Xablu.WebApiClient
 
-## Build Status: <a name="buildstatus"></a>
-![Build status](https://nmilcoff0789.visualstudio.com/_apis/public/build/definitions/b9713819-cf93-4353-bee0-197f0e27cd8d/1/badge) 
-![Github tag](https://img.shields.io/github/tag/Xablu/Xablu.WebApiClient.svg)
-[![NuGet](https://img.shields.io/nuget/v/Xablu.WebApiClient.svg?label=NuGet)](https://www.nuget.org/packages/Xablu.WebApiClient/)
-[![MyGet](https://img.shields.io/myget/xabluhq/v/Xablu.WebApiClient.svg)](https://www.myget.org/feed/xabluhq/package/nuget/Xablu.WebApiClient)
-
 ## Key Features <a name="features"></a>
 
 The WebApiClient contains new features with respect to the previous version. The list of key features is depicted below: 
@@ -71,7 +68,7 @@ GraphQL Client:
 
 ## Example <a name="examples"></a>
 
-Make sure to check out the [Test Console App](https://github.com/Xablu/Xablu.WebApiClient/tree/develop/Samples/TestConsoleApp) inside the package. Down here is an example call for connecting with a Web API service through Refit:
+Make sure to check out the [Samples](https://github.com/Xablu/Xablu.WebApiClient/tree/develop/src/Samples) in this repository. Instructions on how to run the BooksQL sample app can be found [here](https://github.com/Xablu/Xablu.WebApiClient/wiki/3.-Mobile-Sample). Here is also an example call for connecting with a Web API service through Refit:
 
 Abstract:
 ```c#

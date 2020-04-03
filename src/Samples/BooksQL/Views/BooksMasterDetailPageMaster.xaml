@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        xmlns:magic="clr-namespace:MagicGradients;assembly=MagicGradients"
+        x:Class="BooksQL.Views.BooksMasterDetailPageMaster" Visual="Material">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <magic:GradientView VerticalOptions="FillAndExpand" Grid.Row="0">
+            <magic:GradientView.GradientSource>
+                <magic:CssGradientSource>
+                    <x:String>
+                        <![CDATA[
+                   linear-gradient(149deg, rgba(85, 85, 85, 0.05) 0%, rgba(85, 85, 85, 0.05) 25%,rgba(11, 11, 11, 0.05) 25%, rgba(11, 11, 11, 0.05) 50%,rgba(182, 182, 182, 0.05) 50%, rgba(182, 182, 182, 0.05) 75%,rgba(28, 28, 28, 0.05) 75%, rgba(28, 28, 28, 0.05) 100%),linear-gradient(232deg, rgba(145, 145, 145, 0.05) 0%, rgba(145, 145, 145, 0.05) 25%,rgba(165, 165, 165, 0.05) 25%, rgba(165, 165, 165, 0.05) 50%,rgba(84, 84, 84, 0.05) 50%, rgba(84, 84, 84, 0.05) 75%,rgba(131, 131, 131, 0.05) 75%, rgba(131, 131, 131, 0.05) 100%),linear-gradient(321deg, rgba(254, 254, 254, 0.05) 0%, rgba(254, 254, 254, 0.05) 25%,rgba(249, 249, 249, 0.05) 25%, rgba(249, 249, 249, 0.05) 50%,rgba(0, 0, 0, 0.05) 50%, rgba(0, 0, 0, 0.05) 75%,rgba(104, 104, 104, 0.05) 75%, rgba(104, 104, 104, 0.05) 100%),linear-gradient(90deg, rgb(21, 8, 116),rgb(111, 197, 250))
+                ]]>
+                    </x:String>
+                </magic:CssGradientSource>
+            </magic:GradientView.GradientSource>
+        </magic:GradientView>
+        <ListView x:Name="MenuItemsListView" SeparatorVisibility="None"
+                BackgroundColor="Transparent" HasUnevenRows="True"
+                CachingStrategy="RecycleElement" Margin="0,-20,0,0"
+                ItemsSource="{Binding MenuItems}">
+            <ListView.Header>
+                <StackLayout HorizontalOptions="FillAndExpand"
+                        VerticalOptions="FillAndExpand"
+                        HeightRequest="{x:OnPlatform iOS=175, Android=150}"
+                        BackgroundColor="Transparent" Spacing="0">
+                    <Image Source="xablu_icon_white.png"
+                            HorizontalOptions="Center"
+                            VerticalOptions="EndAndExpand" HeightRequest="65"
+                            Margin="0,0,0,15" />
+                    <BoxView HeightRequest="0.8" BackgroundColor="White" />
+                </StackLayout>
+            </ListView.Header>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout HorizontalOptions="FillAndExpand"
+                                Orientation="Vertical" HeightRequest="48"
+                                BackgroundColor="Transparent" Spacing="0">
+                            <StackLayout HorizontalOptions="FillAndExpand"
+                                    VerticalOptions="FillAndExpand"
+                                    Orientation="Horizontal" Padding="6,6,6,6"
+                                    Spacing="10">
+                                <Image Source="{Binding IconSource}"
+                                        VerticalOptions="CenterAndExpand"
+                                        HeightRequest="28" Aspect="AspectFit">
+                                </Image>
+
+                                <Label VerticalOptions="FillAndExpand"
+                                        VerticalTextAlignment="Center"
+                                        TextColor="White" Text="{Binding Title}"
+                                        FontSize="24" />
+
+                            </StackLayout>
+                            <BoxView HeightRequest="0.8" BackgroundColor="White"
+                                    Margin="45,0,0,0" />
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Grid x:Name="FooterWrapper" Padding="0" VerticalOptions="EndAndExpand"
+                HorizontalOptions="FillAndExpand" Grid.Row="0">
+            <Label Text="© Copyright 2020 – Xablu B.V." TextColor="White"
+                    FontSize="15" BackgroundColor="Transparent"
+                    Margin="0,0,0,10" HorizontalTextAlignment="Center"
+                    VerticalOptions="EndAndExpand" HorizontalOptions="Fill" />
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        x:Class="BooksQL.Views.CallSelectionPage">
+    <ListView x:Name="MyListView" ItemsSource="{Binding SelectionItems}"
+            HasUnevenRows="True" CachingStrategy="RecycleElement"
+            ItemSelected="ListView_ItemSelected" SeparatorVisibility="None"
+            Visual="Material">
+        <ListView.ItemTemplate>
+            <DataTemplate>
+                <ViewCell>
+                    <StackLayout HorizontalOptions="FillAndExpand"
+                            Orientation="Vertical">
+                        <StackLayout Padding="15,10"
+                                HorizontalOptions="FillAndExpand"
+                                Orientation="Horizontal">
+                            <Label VerticalOptions="FillAndExpand"
+                                    HorizontalOptions="FillAndExpand"
+                                    VerticalTextAlignment="Center"
+                                    HorizontalTextAlignment="Center"
+                                    Text="{Binding Title}" FontSize="24" />
+                        </StackLayout>
+                        <BoxView HorizontalOptions="FillAndExpand"
+                                VerticalOptions="FillAndExpand"
+                                HeightRequest="0.5" BackgroundColor="LightGray" />
+                    </StackLayout>
+                </ViewCell>
+            </DataTemplate>
+        </ListView.ItemTemplate>
+    </ListView>
+</ContentPage>

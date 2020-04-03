@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        x:Class="BooksQL.Views.QueryView"
+        NavigationPage.HasNavigationBar="False"
+        NavigationPage.HasBackButton="False" Visual="Material" Title="Query">
+    <StackLayout Orientation="Vertical">
+        <Label HorizontalOptions="FillAndExpand" Text="Example query"
+                HorizontalTextAlignment="Center" FontSize="25"
+                FontAttributes="Bold" Margin="3,10,3,0" />
+        <Frame BorderColor="LightGray" Margin="5" HasShadow="true">
+            <StackLayout VerticalOptions="FillAndExpand" Spacing="0"
+                    HorizontalOptions="FillAndExpand">
+                <Label HorizontalOptions="FillAndExpand" x:Name="QueryLabel"
+                        Margin="3,0,3,0" Text="{Binding Query}" Visual="Default" />
+            </StackLayout>
+        </Frame>
+        <BoxView BackgroundColor="LightGray" HeightRequest="1" Margin="0,10,0,0"
+                HorizontalOptions="FillAndExpand"></BoxView>
+        <Label HorizontalOptions="FillAndExpand" Text="Query result"
+                HorizontalTextAlignment="Center" FontSize="25"
+                FontAttributes="Bold" Margin="3,0,3,0" />
+        <Frame BorderColor="LightGray" HorizontalOptions="FillAndExpand"
+                VerticalOptions="FillAndExpand" Margin="5" HasShadow="true"
+                Padding="0">
+            <ListView x:Name="BooksList" SeparatorVisibility="None"
+                    ItemsSource="{Binding Books}" HasUnevenRows="True"
+                    RefreshCommand="{Binding RefreshCommand}"
+                    ItemSelected="ListView_ItemSelected"
+                    BackgroundColor="Transparent">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout HorizontalOptions="FillAndExpand"
+                                    VerticalOptions="FillAndExpand"
+                                    Orientation="Vertical"
+                                    BackgroundColor="Transparent" Spacing="0">
+                                <StackLayout HorizontalOptions="FillAndExpand"
+                                        VerticalOptions="FillAndExpand"
+                                        Orientation="Horizontal"
+                                        Padding="6,6,6,6" Spacing="10">
+                                    <Image Source="rocket_black.png"
+                                            VerticalOptions="CenterAndExpand"
+                                            Aspect="AspectFit">
+                                    </Image>
+                                    <Label VerticalOptions="FillAndExpand"
+                                            VerticalTextAlignment="Center"
+                                            Text="{Binding Title}" FontSize="20" />
+                                </StackLayout>
+                                <BoxView HeightRequest="0.75"
+                                        BackgroundColor="LightGray" />
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Frame>
+        <Button Text="GetBooks" BackgroundColor="Blue" Margin="6,0,6,20"
+                Command="{Binding RefreshCommand}"></Button>
+    </StackLayout>
+</ContentPage>
