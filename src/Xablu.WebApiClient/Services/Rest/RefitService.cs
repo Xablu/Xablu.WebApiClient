@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using Fusillade;
-using Refit; 
+using Refit;
 using Xablu.WebApiClient.Native;
 
 namespace Xablu.WebApiClient.Services.Rest
@@ -15,7 +15,12 @@ namespace Xablu.WebApiClient.Services.Rest
         private readonly Lazy<T> _userInitiated;
         private readonly Lazy<T> _speculative;
 
-        public RefitService(string apiBaseAddress, bool autoRedirectRequests, Func<DelegatingHandler> delegatingHandler, IDictionary<string, string> defaultHeaders)
+        public RefitService(
+            string apiBaseAddress,
+            bool autoRedirectRequests,
+            Func<DelegatingHandler> delegatingHandler,
+            IDictionary<string, string> defaultHeaders,
+            RefitSettings refitSettings = null)
         {
             if (string.IsNullOrEmpty(apiBaseAddress))
                 throw new ArgumentNullException(nameof(apiBaseAddress));
@@ -53,7 +58,9 @@ namespace Xablu.WebApiClient.Services.Rest
                     }
                 }
 
-                return RestService.For<T>(client);
+            return refitSettings != null
+                ? RestService.For<T>(client, refitSettings)
+                : RestService.For<T>(client);  
             };
 
             _background = new Lazy<T>(() => createClient(new RateLimitedHttpMessageHandler(new NativeHttpClientHandler(), Priority.Background)));
