@@ -9,8 +9,8 @@ namespace BooksQL.API.GraphQL.Types
     public class BookType : ObjectGraphType<Book>
     {
         public BookType(
-            BookReviewsRepository bookReviewsRepository,
-            IDataLoaderContextAccessor dataLoaderContextAccessor)
+            BookReviewsRepository bookReviewsRepository)
+            //IDataLoaderContextAccessor dataLoaderContextAccessor)
         {
             Field(t => t.ISBN).Description("Unique identifier for a book");
             Field(t => t.Title);
