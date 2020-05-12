@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using Xablu.WebApiClient.Services.GraphQL;
-using Xablu.WebApiClient.Services.Rest;
+using Refit;
 
 namespace Xablu.WebApiClient
 {
@@ -12,10 +11,11 @@ namespace Xablu.WebApiClient
             string baseUrl,
             bool autoRedirectRequests = true,
             Func<DelegatingHandler> delegatingHandler = default,
-            IDictionary<string, string> defaultHeaders = default)
+            IDictionary<string, string> defaultHeaders = default,
+            RefitSettings refitSettings = null)
             where T : class
         {
-            return new WebApiClient<T>(baseUrl, autoRedirectRequests, delegatingHandler, defaultHeaders);
+            return new WebApiClient<T>(baseUrl, autoRedirectRequests, delegatingHandler, defaultHeaders, refitSettings);
         }
     }
 }

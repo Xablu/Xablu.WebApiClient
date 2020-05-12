@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using GraphQL;
 using Polly;
 using Polly.Wrap;
+using Refit;
 using Xablu.WebApiClient.Attributes;
 using Xablu.WebApiClient.Enums;
 using Xablu.WebApiClient.Services.GraphQL;
@@ -65,9 +66,10 @@ namespace Xablu.WebApiClient
             string baseUrl,
             bool autoRedirectRequests = true,
             Func<DelegatingHandler> delegatingHandler = default,
-            IDictionary<string, string> defaultHeaders = default)
+            IDictionary<string, string> defaultHeaders = default,
+            RefitSettings refitSettings = null)
         {
-            _refitService = new Lazy<IRefitService<T>>(() => new RefitService<T>(baseUrl, autoRedirectRequests, delegatingHandler, defaultHeaders));
+            _refitService = new Lazy<IRefitService<T>>(() => new RefitService<T>(baseUrl, autoRedirectRequests, delegatingHandler, defaultHeaders, refitSettings));
             _graphQLService = new Lazy<IGraphQLService>(() => new GraphQLService(baseUrl, autoRedirectRequests, delegatingHandler, defaultHeaders));
         }
 
