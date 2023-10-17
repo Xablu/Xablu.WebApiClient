@@ -16,7 +16,7 @@ namespace TestConsoleApp
         // the first way is more modular and works for any json, the second more adjusted for SWAPI
         public static async Task<IEnumerable<Starships>> GetStarShipItemsAsync(bool forceRefresh = false)
         {
-            IWebApiClient<IStarwarsApi> _webApiClient = WebApiClientFactory.Get<IStarwarsApi>("https://swapi.co/api", true);
+            IWebApiClient<IStarwarsApi> _webApiClient = WebApiClientFactory.Get<IStarwarsApi>("https://swapi.dev/api", true);
             var jsonresult = await _webApiClient.Call(
                     (service) => service.GetTask(),
                     Priority.UserInitiated,
@@ -87,7 +87,7 @@ namespace TestConsoleApp
 
             //var authData = string.Format("{0}:{1}", "postman", "password");
             //var authHeaderValue = Convert.ToBase64String(Encoding.UTF8.GetBytes(authData));
-            //AuthenticationHeaderValue value = new AuthenticationHeaderValue(authHeaderValue, authData); 
+            //AuthenticationHeaderValue value = new AuthenticationHeaderValue(authHeaderValue, authData);
 
             // this basic auth way is working now but less clear imo
             IDictionary<string, string> authValues = new Dictionary<string, string>
