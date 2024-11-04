@@ -56,7 +56,7 @@
   <ItemGroup>    
     <PackageReference Include="fusillade" Version="2.6.1" />     
     <PackageReference Include="Polly" Version="8.0.0" /> 
-    <PackageReference Include="Refit" Version="7.0.0" />
+    <PackageReference Include="Refit" Version="8.0.0" />
     <PackageReference Include="GraphQL.Client" Version="6.0.1" />
     <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="6.0.1" />
   </ItemGroup>
